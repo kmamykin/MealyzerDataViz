@@ -1,0 +1,78 @@
+---
+title: "DataProcessing"
+output: html_document
+---
+
+## Contact
+Kliment: 
+github:
+dropbox:
+
+Sunny
+github:
+dropbox:
+
+Carol:
+github:
+dropbox:
+
+
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Data Import
+
+
+```{r}
+raw_data_path = "~/Dropbox/MealyzerData"
+mealyser_data_overview = read_csv(file.path(raw_data_path, "mealyzer_data_overview.csv"), col_types = cols())
+```
+```{r}
+mealyser_data_overview %>%
+  select(total_meals, total_bg_readings, meals_with_nutrition_eval, meals_with_pre_post_bg, complete_meals) %>%
+  pairs()
+```
+
+
+### Selecting users for the analysis
+
+```{r}
+users = mealyser_data_overview %>%
+  filter(complete_meals > 14)
+print(users[["user_id"]])
+```
+
+```{r}
+read_mealyzer_files <- function(data_dir, user_ids, file_name, col_types) {
+  result <- c()
+  for (user_id in user_ids) {
+    file_path = file.path(data_dir, as.character(user_id), file_name)
+    df = read_csv(file_path, col_types = col_types)
+    if (length(result) == 0) {
+      result <- df
+    } else {
+      result <- rbind(result, df)
+    }
+  }
+  return(result)
+}
+
+
+read_mealyzer_files(raw_data_path, users[["user_id"]], "bg_labeled.csv", col_types = cols(
+  time = col_double(),
+  bg = col_double(),
+  meals_kind = col_character(),
+  meal_id = col_double(),
+  readings_kind = col_character()
+))
+```
+
+```{r}
+read_mealyzer_files(raw_data_path, users[["user_id"]], "mealyzer_data.csv", col_types = cols())
+```
+
