@@ -3,23 +3,6 @@ title: "DataProcessing"
 output: html_document
 ---
 
-## Contact
-Kliment: 
-github:
-dropbox:
-
-Sunny
-github:
-dropbox:
-
-Carol:
-github:
-dropbox:
-
-
-
-
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
@@ -32,11 +15,6 @@ library(tidyverse)
 raw_data_path = "~/Dropbox/MealyzerData"
 mealyser_data_overview = read_csv(file.path(raw_data_path, "mealyzer_data_overview.csv"), col_types = cols())
 ```
-```{r}
-mealyser_data_overview %>%
-  select(total_meals, total_bg_readings, meals_with_nutrition_eval, meals_with_pre_post_bg, complete_meals) %>%
-  pairs()
-```
 
 
 ### Selecting users for the analysis
@@ -46,13 +24,17 @@ users = mealyser_data_overview %>%
   filter(complete_meals > 14)
 print(users[["user_id"]])
 ```
-
 ```{r}
-read_mealyzer_files <- function(data_dir, user_ids, file_name, col_types) {
+library(tidyverse)
+
+read_mealyzer_files <- function(data_dir, user_ids, file_name, add_user_id, col_types) {
   result <- c()
   for (user_id in user_ids) {
     file_path = file.path(data_dir, as.character(user_id), file_name)
     df = read_csv(file_path, col_types = col_types)
+    if (add_user_id) {
+      df = cbind(user_id = user_id, df)
+    }
     if (length(result) == 0) {
       result <- df
     } else {
@@ -62,17 +44,40 @@ read_mealyzer_files <- function(data_dir, user_ids, file_name, col_types) {
   return(result)
 }
 
+as.timestamp <- function(minutes_since, anchor_date = '2019-01-01 00:00:00 EST') {
+  anchor_time = as.POSIXct(anchor_date)
+  return(anchor_time + minutes_since * 60)
+}
 
-read_mealyzer_files(raw_data_path, users[["user_id"]], "bg_labeled.csv", col_types = cols(
+as.meals_kind <- function(values) {
+  return(fct_relevel(values, c("breakfast", "morning_snack", "lunch", "afternoon_snack", "dinner", "after_dinner_snack")))
+}
+```
+
+```{r}
+bg_labeled = read_mealyzer_files(raw_data_path, users[["user_id"]], "bg_labeled.csv", add_user_id = TRUE, col_types = cols(
   time = col_double(),
   bg = col_double(),
   meals_kind = col_character(),
   meal_id = col_double(),
   readings_kind = col_character()
-))
+)) %>%
+  mutate(
+    time = as.timestamp(time), 
+    meals_kind = as.meals_kind(meals_kind),
+    readings_kind = fct_relevel(readings_kind, c("premeal", "postmeal"))
+  )
+head(bg_labeled)
 ```
 
 ```{r}
-read_mealyzer_files(raw_data_path, users[["user_id"]], "mealyzer_data.csv", col_types = cols())
+mealyzer_data = read_mealyzer_files(raw_data_path, users[["user_id"]], "mealyzer_data.csv", add_user_id = FALSE, col_types = cols()) %>%
+  mutate(
+    eaten_at = as.timestamp(eaten_at),
+    kind = as.meals_kind(kind),
+    premeal_bg_time = as.timestamp(premeal_bg_time),
+    postmeal_bg_time = as.timestamp(postmeal_bg_time)
+  )
+head(mealyzer_data)
 ```
 
