@@ -25,8 +25,6 @@ users = mealyser_data_overview %>%
 print(users[["user_id"]])
 ```
 ```{r}
-library(tidyverse)
-
 read_mealyzer_files <- function(data_dir, user_ids, file_name, add_user_id, col_types) {
   result <- c()
   for (user_id in user_ids) {
@@ -55,7 +53,7 @@ as.meals_kind <- function(values) {
 ```
 
 ```{r}
-bg_labeled = read_mealyzer_files(raw_data_path, users[["user_id"]], "bg_labeled.csv", add_user_id = TRUE, col_types = cols(
+bg_readings = read_mealyzer_files(raw_data_path, users[["user_id"]], "bg_labeled.csv", add_user_id = TRUE, col_types = cols(
   time = col_double(),
   bg = col_double(),
   meals_kind = col_character(),
@@ -67,17 +65,26 @@ bg_labeled = read_mealyzer_files(raw_data_path, users[["user_id"]], "bg_labeled.
     meals_kind = as.meals_kind(meals_kind),
     readings_kind = fct_relevel(readings_kind, c("premeal", "postmeal"))
   )
-head(bg_labeled)
+head(bg_readings)
 ```
 
 ```{r}
-mealyzer_data = read_mealyzer_files(raw_data_path, users[["user_id"]], "mealyzer_data.csv", add_user_id = FALSE, col_types = cols()) %>%
+meals_data = read_mealyzer_files(raw_data_path, users[["user_id"]], "mealyzer_data.csv", add_user_id = FALSE, col_types = cols()) %>%
   mutate(
     eaten_at = as.timestamp(eaten_at),
     kind = as.meals_kind(kind),
     premeal_bg_time = as.timestamp(premeal_bg_time),
     postmeal_bg_time = as.timestamp(postmeal_bg_time)
   )
-head(mealyzer_data)
+head(meals_data)
 ```
 
+### Dataset highlevel view
+
+```{r}
+meals_data %>%
+  mutate(eaten_at_hour = lubridate::hour(eaten_at)) %>%
+  ggplot() +
+  geom_histogram(aes(x=eaten_at_hour), bins = 24) +
+  facet_wrap(~user_id, ncol = 7)
+```
