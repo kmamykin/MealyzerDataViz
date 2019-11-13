@@ -92,7 +92,7 @@ head(meals_data)
 
 ### Dataset highlevel view
 
-```{r}
+```{r fig.width=18}
 meals_data %>%
   mutate(eaten_at_hour = hour(eaten_at)) %>%
   ggplot() +
@@ -103,14 +103,14 @@ meals_data %>%
   )
 ```
 
-```{r}
+```{r fig.width=18}
 premeal_delay_buckets = c("< 15 min", "10 - 60 min", "> 60 min")
 meals_data %>%
   #filter(user_id == 2392) %>%
   #filter(premeal_bg_delay_minutes <= 300 & premeal_bg_delay_minutes >= 0) %>%
   #mutate(premeal_bg_delay = ifelse(premeal_bg_delay_minutes < 15, premeal_delay_buckets[1], ifelse(premeal_bg_delay_minutes < 60, premeal_delay_buckets[2], premeal_delay_buckets[3]))) %>%
   #mutate(premeal_bg_delay = fct_relevel(premeal_bg_delay, premeal_delay_buckets)) %>%
-  print_df(user_id, premeal_bg_time, eaten_at, premeal_bg_delay_minutes) %>%
+  #print_df(user_id, premeal_bg_time, eaten_at, premeal_bg_delay_minutes) %>%
   ggplot() +
   #geom_bar(aes(x=premeal_bg_delay, fill=premeal_bg_delay)) +
   geom_histogram(aes(x=premeal_bg_delay_minutes), binwidth = 30) +
@@ -130,12 +130,12 @@ meals_data %>%
   )
 ```
 
-```{r}
+```{r fig.width=18}
 postmeal_delay_buckets = c("< 1 hour", "1 - 2 hours", "> 2 hours")
 meals_data %>%
   #mutate(postmeal_bg_delay = ifelse(postmeal_bg_delay_minutes < 60, postmeal_delay_buckets[1], ifelse(postmeal_bg_delay_minutes < 120, postmeal_delay_buckets[2], postmeal_delay_buckets[3]))) %>%
   #mutate(postmeal_bg_delay = fct_relevel(postmeal_bg_delay, postmeal_delay_buckets)) %>%
-  print_df(user_id, eaten_at, postmeal_bg_time, postmeal_bg_delay_minutes) %>%
+  #print_df(user_id, eaten_at, postmeal_bg_time, postmeal_bg_delay_minutes) %>%
   ggplot() +
   #geom_bar(aes(x=postmeal_bg_delay, fill=postmeal_bg_delay)) +
   geom_histogram(aes(x=postmeal_bg_delay_minutes), binwidth = 30) +
