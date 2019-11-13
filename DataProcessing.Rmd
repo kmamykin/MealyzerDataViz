@@ -217,3 +217,14 @@ Talking points:
 * negative correlation between eval_proportion_carbs & eval_proportion_fat
 * interactions between ..._log_ratio varables split the meals into 2 or 3 clusters
 
+
+### Time effect
+
+```{r}
+meals_data %>% sample_n(500) %>%
+  ggplot() +
+  geom_segment(aes(x = -premeal_bg_delay_minutes, xend = postmeal_bg_delay_minutes, y=premeal_bg, yend=postmeal_bg), alpha = 0.2) + 
+  scale_x_continuous(breaks=c(-15, 0, 60, 120, 180, 240), labels = c("-15min", "0", "1h", "2h", "3h", "4h"), limits = c(-15, 180))
+
+```
+```
