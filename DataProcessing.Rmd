@@ -174,4 +174,46 @@ meals_data %>%
   labs( title = "" )
 ```
 
-The premeal BG delay varies greatly, for some users 
+
+
+## Per user analysis
+
+```{r}
+focus_user_id = "2254"
+```
+
+```{r fig.width=18, fig.height=18}
+library(lattice) #sploms
+
+meals_data %>%
+  filter(user_id == focus_user_id) %>%
+  mutate(
+    bg_impact=postmeal_bg-premeal_bg, 
+    protein_fat=eval_proportion_protein-eval_proportion_fat, 
+    protein_carb=eval_proportion_protein-eval_proportion_carbs, 
+    carb_fat=eval_proportion_carbs-eval_proportion_fat) %>%
+  select(calories_eval, carbs_eval, fat_eval, protein_eval, fiber_eval, premeal_bg, postmeal_bg, bg_impact, protein_fat, protein_carb, carb_fat) %>%
+  splom()
+```
+
+```{r fig.width=18, fig.height=18}
+library(lattice) #sploms
+
+meals_data %>%
+  filter(user_id == focus_user_id) %>%
+  mutate(
+    bg_impact=postmeal_bg-premeal_bg, 
+    protein_fat_log_ratio=log(eval_proportion_protein/(eval_proportion_fat+0.0000001)), 
+    protein_carb_log_ratio=log(eval_proportion_protein/(eval_proportion_carbs+0.0000001)), 
+    carb_fat_log_ratio=log(eval_proportion_carbs/(eval_proportion_fat+0.0000001))
+  ) %>%
+  select(eval_calories_computed, eval_proportion_carbs, eval_proportion_fat, eval_proportion_protein, premeal_bg, postmeal_bg, bg_impact, protein_fat_log_ratio, protein_carb_log_ratio, carb_fat_log_ratio) %>%
+  splom()
+```
+Talking points:
+
+* Correlation between calories_eval and all carbs|fat|protein, but much smaller correlation to fiber
+* premeal_bg and postmeal_bg - positively correlated
+* negative correlation between eval_proportion_carbs & eval_proportion_fat
+* interactions between ..._log_ratio varables split the meals into 2 or 3 clusters
+
