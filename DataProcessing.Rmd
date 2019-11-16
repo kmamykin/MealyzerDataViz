@@ -8,6 +8,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(lubridate)
 library(forcats)
+library(r2d3)
 ```
 
 ## Data Import
@@ -57,6 +58,7 @@ print_df <- function(df, ...) {
   print(df %>% select(...))
   return(df)
 }
+
 ```
 
 ```{r}
@@ -85,7 +87,9 @@ meals_data = read_mealyzer_files(raw_data_path, users[["user_id"]], "mealyzer_da
     premeal_bg_time = as.timestamp(premeal_bg_time),
     postmeal_bg_time = as.timestamp(postmeal_bg_time),
     premeal_bg_delay_minutes = as.double(difftime(eaten_at, premeal_bg_time, units = "mins")),
-    postmeal_bg_delay_minutes = as.double(difftime(postmeal_bg_time, eaten_at, units = "mins"))
+    postmeal_bg_delay_minutes = as.double(difftime(postmeal_bg_time, eaten_at, units = "mins")),
+    bg_impact = postmeal_bg - premeal_bg,
+    bg_impact_slope = bg_impact / (premeal_bg_delay_minutes + postmeal_bg_delay_minutes)
   )
 head(meals_data)
 ```
@@ -179,7 +183,7 @@ meals_data %>%
 ## Per user analysis
 
 ```{r}
-focus_user_id = "2254"
+focus_user_id = "1821"
 ```
 
 ```{r fig.width=18, fig.height=18}
@@ -188,7 +192,6 @@ library(lattice) #sploms
 meals_data %>%
   filter(user_id == focus_user_id) %>%
   mutate(
-    bg_impact=postmeal_bg-premeal_bg, 
     protein_fat=eval_proportion_protein-eval_proportion_fat, 
     protein_carb=eval_proportion_protein-eval_proportion_carbs, 
     carb_fat=eval_proportion_carbs-eval_proportion_fat) %>%
@@ -202,7 +205,6 @@ library(lattice) #sploms
 meals_data %>%
   filter(user_id == focus_user_id) %>%
   mutate(
-    bg_impact=postmeal_bg-premeal_bg, 
     protein_fat_log_ratio=log(eval_proportion_protein/(eval_proportion_fat+0.0000001)), 
     protein_carb_log_ratio=log(eval_proportion_protein/(eval_proportion_carbs+0.0000001)), 
     carb_fat_log_ratio=log(eval_proportion_carbs/(eval_proportion_fat+0.0000001))
@@ -221,10 +223,34 @@ Talking points:
 ### Time effect
 
 ```{r}
-meals_data %>% sample_n(500) %>%
+meals_data %>% 
+  filter(user_id == focus_user_id) %>%
   ggplot() +
-  geom_segment(aes(x = -premeal_bg_delay_minutes, xend = postmeal_bg_delay_minutes, y=premeal_bg, yend=postmeal_bg), alpha = 0.2) + 
+  geom_segment(aes(x = -premeal_bg_delay_minutes, xend = postmeal_bg_delay_minutes, y=premeal_bg, yend=postmeal_bg), alpha = 0.5) + 
   scale_x_continuous(breaks=c(-15, 0, 60, 120, 180, 240), labels = c("-15min", "0", "1h", "2h", "3h", "4h"), limits = c(-15, 180))
 
 ```
+
+```{r fig.height=5, fig.width=9}
+display_meals <- function(df, ncol = 6, nrow = 3, rotate = 0) {
+  meals = df[1:(ncol*nrow), ] %>% select(user_id, meal_id)
+  filenames = paste0(normalizePath("~/Dropbox/MealyzerData"), "/", meals[["user_id"]], "/images/medium/", meals[["meal_id"]], ".jpg")
+  #print(filenames)
+  data_uris = sapply(filenames, knitr::image_uri)
+  images = tibble(src = data_uris)
+  r2d3(data=images, script = "display_meals.js", container = "div", options=list(ncol=ncol, nrow=nrow, rotate=rotate))
+}
+
+meals_data %>%
+  filter(user_id == focus_user_id) %>%
+  arrange(desc(calories_eval)) %>%
+  #print_df(bg_impact, title, ingredients, calories_eval) %>%
+  display_meals(ncol = 6, nrow = 4, rotate = 0)
+```
+```{r}
+meals_data %>%
+  filter(user_id == focus_user_id) %>%
+  arrange(calories_eval) %>%
+  #print_df(bg_impact, title, ingredients, calories_eval) %>%
+  display_meals(ncol = 6, nrow = 4, rotate = 0)
 ```
