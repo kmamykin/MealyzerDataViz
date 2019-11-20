@@ -9,6 +9,8 @@ library(tidyverse)
 library(lubridate)
 library(forcats)
 library(r2d3)
+library(parcoords)
+library(dplyr)
 ```
 
 ## Data Import
@@ -27,10 +29,12 @@ users = mealyser_data_overview %>%
   filter(complete_meals > 14)
 print(users[["user_id"]])
 ```
+
 ```{r}
 read_mealyzer_files <- function(data_dir, user_ids, file_name, add_user_id, col_types) {
   result <- c()
   for (user_id in user_ids) {
+    
     file_path = file.path(data_dir, as.character(user_id), file_name)
     df = read_csv(file_path, col_types = col_types)
     if (add_user_id) {
@@ -77,6 +81,11 @@ bg_readings = read_mealyzer_files(raw_data_path, users[["user_id"]], "bg_labeled
   )
 head(bg_readings)
 ```
+```{r}
+# No NA's in the bg_readings file
+extracat::visna(bg_readings)
+```
+
 
 ```{r}
 meals_data = read_mealyzer_files(raw_data_path, users[["user_id"]], "mealyzer_data.csv", add_user_id = FALSE, col_types = cols()) %>%
@@ -92,6 +101,9 @@ meals_data = read_mealyzer_files(raw_data_path, users[["user_id"]], "mealyzer_da
     bg_impact_slope = bg_impact / (premeal_bg_delay_minutes + postmeal_bg_delay_minutes)
   )
 head(meals_data)
+```
+```{r}
+extracat::visna(meals_data)
 ```
 
 ### Dataset highlevel view
@@ -254,3 +266,313 @@ meals_data %>%
   #print_df(bg_impact, title, ingredients, calories_eval) %>%
   display_meals(ncol = 6, nrow = 4, rotate = 0)
 ```
+
+
+### Plotting activeness vs. bg level
+
+```{r}
+bg_readings %>%
+  group_by(meal_id) %>%
+  mutate(change_in_bg = c(0,diff(bg)/first(bg))) %>%
+  select(user_id, change_in_bg) %>%
+  filter(change_in_bg != 0) %>%
+  group_by(user_id) %>%
+  summarise(n = n(), avg_change_in_bg = mean(change_in_bg))  %>%
+  mutate(activeness = ifelse(n > median(n), "high","low"))  %>%
+  ggplot(aes(x=seq_along(avg_change_in_bg), y=avg_change_in_bg)) +
+  geom_point(aes(colour=activeness)) 
+```
+
+
+### Plotting pre/post meal bg ,faceting on user_id
+
+```{r}
+bg_readings %>%
+  group_by(meal_id) %>%
+  mutate(premeal = first(bg), postmeal =last(bg)) %>%
+  select(user_id, meals_kind, premeal, postmeal) %>%
+  distinct() %>%
+  ggplot(aes(x=premeal, y=postmeal)) +
+  geom_point(size = 0.2, aes(colour=meals_kind)) +
+  facet_wrap(~user_id, ncol = 7)
+```
+
+
+```{r}
+meals_data %>%
+  mutate(eaten_at_date = as.Date(eaten_at, tz = "EST")) %>%
+  filter(eaten_at_date <"2019-04-01") %>%
+  group_by(user_id, eaten_at_date) %>%
+  summarise(sum_by_day = sum(calories_eval)) %>%
+  ggplot(aes(x=eaten_at_date, y=sum_by_day))+
+  geom_point(size=0.3)+
+  geom_smooth(method = "lm")+
+  facet_wrap(~user_id, ncol=7)
+```
+
+```{r}
+dplyr::summarise(group_by(meals_data, user_id, kind), freq = n()) %>%
+  group_by(user_id) %>%
+  mutate(prop = freq/sum(freq)) %>%
+  ungroup() %>%
+  ggplot(aes(x = user_id, y = prop, fill = forcats::fct_rev(kind))) +
+      geom_bar(stat = "identity") + 
+      coord_flip() + 
+      labs(x = "User ID",
+           y = "Proportion",
+           title = "Proportion of All Meals by Meal Kind") + 
+           theme(legend.title = element_blank(), legend.position="bottom") +
+  guides(fill = guide_legend(nrow = 1, reverse=T))
+```
+```{r}
+meals_data %>%
+  select(user_id,carbs_eval, protein_eval,fat_eval,fiber_eval) %>%
+  gather(key = "variable", value, -user_id) %>%
+  group_by(user_id, variable) %>%
+  summarise(total=sum(value, na.rm = T)) %>%
+  group_by(user_id) %>%
+  mutate(prop = total/sum(total)) %>%
+  ungroup() %>%
+  ggplot(aes(x = user_id, y = prop, fill = forcats::fct_rev(variable))) +
+      geom_bar(stat = "identity") + 
+      coord_flip() + 
+      labs(x = "User ID",
+           y = "Proportion",
+           title = "Proportion of All Meals by Nutrient") + 
+           theme(legend.title = element_blank(), legend.position="bottom") +
+  guides(fill = guide_legend(nrow = 1, reverse=T))
+```
+
+```{r}
+parcoords(
+  meals_data %>% 
+    select(kind,carbs_eval, protein_eval,fat_eval,fiber_eval,calories_eval, bg_impact)
+  , rownames = F # turn off rownames from the data.frame
+  , brushMode = "1D-axes"
+  , reorderable = T
+  , queue = T,
+  alpha = 0.05,
+  color = list(
+      colorBy = "kind"
+      , colorScale = "scaleOrdinal"
+      , colorScheme = "schemeCategory10"
+    )
+  , withD3 = TRUE
+)
+```
+```{r}
+parcoords(
+  meals_data %>% 
+    select(user_id, kind, bg_impact, calories_eval, carbs_eval, protein_eval,fat_eval,fiber_eval) %>%
+    gather(key = "variable", value, -user_id,-kind) %>%
+    group_by(user_id, kind, variable) %>%
+    summarise(avg_eval=mean(value, na.rm = T)) %>%
+    spread(variable, avg_eval)
+  , rownames = F # turn off rownames from the data.frame
+  , brushMode = "1D-axes"
+  , reorderable = T
+  , queue = T,
+  alpha = 0.3,
+  color = list(
+      colorBy = "kind"
+      , colorScale = "scaleOrdinal"
+      , colorScheme = "schemeCategory10"
+    )
+  , withD3 = TRUE
+)
+```
+
+```{r}
+meals_data %>%
+  select(user_id, kind,carbs_eval, protein_eval,fat_eval,fiber_eval,calories_eval, bg_impact) %>%
+  mutate_if(is.numeric, scale) %>%
+  mutate(ID = 1:3303) %>%
+  gather(key = "variable", value, -user_id,-kind, -ID) %>% 
+  ggplot(aes(x=variable,y=value,colour=kind, group=ID))+
+  geom_line(alpha=0.5)+facet_wrap(~user_id,ncol=7)+
+  theme(axis.text=element_text(size=5, angle = 90))
+```
+
+```{r}
+meals_data %>%
+  select(user_id, kind,carbs_eval, protein_eval,fat_eval,fiber_eval, bg_impact) %>%
+  #mutate(ID = 1:3303) %>%
+  gather(key = "variable", value, -user_id,-kind) %>%
+  group_by(user_id, kind, variable) %>%
+  summarise(avg_eval=mean(value, na.rm = T)) %>%
+  ungroup() %>%
+  mutate_if(is.numeric, scale) %>%
+  #gather(key = "variable", value, -user_id,-kind, -ID, -avg_eval) %>% 
+  ggplot(aes(x=variable,y=avg_eval,group=1))+
+  geom_line(alpha=0.5)+
+  coord_flip() +
+  facet_wrap(~user_id,ncol=7)
+```
+
+```{r}
+focus_user_id = "1983"
+sleep = read_csv(file.path(raw_data_path, focus_user_id,"sleep.csv"), col_types = cols()) %>%
+  mutate(time = as.timestamp(time))
+```
+
+```{r}
+sleep %>%
+  ggplot() +
+  geom_point(aes(x=time, y= seconds,color=factor(level)), size=0.5)
+```
+```{r}
+sleep %>%
+ filter(level %in% c("deep","light","rem","wake")) %>%
+  ggplot(aes(x = seconds)) +
+  geom_histogram(alpha=.7, color="black", fill="steelblue2") +
+  facet_wrap( ~level) +
+  xlab("Time Frame in Seconds") + ylab("Count") + 
+  ggtitle("Histogram of Time Frames By Sleep Stage") +
+  theme(plot.title = element_text(face = "bold"))
+```
+
+```{r}
+library("ggridges")
+sleep %>%
+ filter(level %in% c("deep","light","rem","wake")) %>%
+  ggplot(aes(x = seconds, y = level, fill = level)) +
+  geom_density_ridges_gradient(scale = 2) + theme_ridges()+
+  scale_y_discrete(expand = c(0.3, 0)) +
+  scale_x_continuous(expand = c(0.01, 0))+
+  labs(x="Time Frames", y="Sleep Stage")+
+  ggtitle("Density Curves of Time Frames by Sleep Stage")+
+  theme(plot.title = element_text(hjust = 0.6)) +
+  guides(fill = guide_legend(reverse=T))
+
+```
+
+```{r}
+bg_readings %>%
+  filter(time <"2019-05-01 00:00:00") %>%
+  ggplot(aes(x = time, y = bg)) +
+  geom_line() +
+  facet_wrap(~user_id,ncol=7) +
+  theme(axis.text=element_text(size=5, angle = 90))
+```
+
+```{r}
+bg_readings %>%
+  #mutate(time = round_date(time, '1 hours')) %>%
+  mutate(time = format(as.POSIXct(time,format="%H:%M:%S"),"%H")) %>%
+  group_by(user_id, time) %>%
+  summarise(avg_bg = mean(bg)) %>%
+  ggplot(aes(x=time, y=avg_bg))+
+  geom_point(size=0.3)+
+  facet_wrap(~user_id, ncol=7) +
+  labs(x="Hour", y="Average BG Level")+
+  ggtitle("Average BG Level by Hour") +
+  theme(plot.title = element_text(face = "bold")) +
+  theme(axis.text=element_text(size=5, angle = 90))
+```
+
+```{r}
+distance = read.csv("~/Dropbox/MealyzerData/1983/activities-distance_overview.csv", header=T)
+calories = read.csv("~/Dropbox/MealyzerData/1983/activities-calories_overview.csv", header=T)
+steps = read.csv("~/Dropbox/MealyzerData/1983/activities-steps_overview.csv", header=T)
+
+activities <- merge(steps, merge(distance, calories, by = "date", all = TRUE), by = "date", all = TRUE)
+colnames(activities) <- c("date","steps","distance","calories")
+
+# date vs. calories,distance,steps for user #1983
+activities %>% 
+  mutate(date = date(as.timestamp(date))) %>%
+  slice(1:133) %>% # weird data after this point
+  gather(key = key, value = value, -date) %>%
+  ggplot(aes(date, value, col=key)) + geom_line()
+
+# scale the above data
+activities %>% 
+  mutate(date = date(as.timestamp(date))) %>%
+  slice(1:133) %>% # weird data after this point
+  gather(key = key, value = value, -date) %>%
+  group_by(key) %>%
+  mutate(index = round(100*value/value[1], 2)) %>% 
+  ungroup() %>%
+  ggplot(aes(date, index, col=key)) + geom_line()
+
+# once scaled, we see that the data for distance and steps completely overlaps, suggesting that one is a linear function of another.  
+```
+
+```{r}
+user1983 = bg_readings %>%
+  mutate(date=date(time)) %>%
+  group_by(user_id, date) %>%
+  mutate(avg_bg=mean(bg)) %>%
+  select(user_id,date,avg_bg) %>%
+  unique() %>%
+  filter(user_id==1983) %>%
+  slice(1:72) # weird data after this point
+
+user1983 %>%
+  ggplot(aes(date, avg_bg)) + geom_line()
+
+# plot avg_bg vs. calories for user #1983
+activities %>% 
+  mutate(date = date(as.timestamp(date))) %>%
+  full_join(user1983, by="date") %>%  #or use merge?
+  select(-user_id, -distance, -steps) %>%
+  filter(date < "2019-04-01") %>%
+  gather(key = key, value = value, -date) %>%
+  group_by(key) %>%
+  mutate(index = round(100*value/value[1], 2)) %>% 
+  ungroup() %>%
+  ggplot(aes(date, index, col=key)) + geom_line()
+
+# We see that there are missing values for average BG, which is normal since bg level and calories burnt are measured by two different devices/apps.
+# Based on the data we have here, we see that avg_bg has a nagative relationship with calories burnt, where higher avg_bg usually is associated with lower calories burnt that day.
+```
+
+
+
+```{r}
+#user 1983's avg_bg vs. minutesasleep by day
+
+sleep_overview = read.csv("~/Dropbox/MealyzerData/1983/sleep_overview.csv")
+sleep_overview %>%
+  mutate(date=date(as.timestamp(dateOfSleep))) %>%
+  arrange(date) %>% # to perform correct scaling, must have date in ascending order
+  group_by(date) %>%
+  mutate(minutesAsleep = sum(minutesAsleep)) %>%
+  full_join(user1983, by="date") %>% #merge?
+  select(date, minutesAsleep, avg_bg) %>%
+  filter(date < "2019-04-01") %>%
+  gather(key = key, value = value, -date) %>%
+  group_by(key) %>%
+  mutate(index = round(100*value/value[1], 2)) %>% 
+  ungroup() %>%
+  ggplot(aes(date, index, col=key)) + geom_line()
+
+```
+
+```{r}
+# user 1983's parcoords 
+parcoords(
+  sleep_overview %>% 
+    select(-minutesToFallAsleep) %>%
+    mutate(date=date(as.timestamp(dateOfSleep))) %>%
+    group_by(date) %>%
+    mutate(minutesAsleep = sum(minutesAsleep)) %>%
+    merge(user1983, by="date") %>%
+    ungroup() %>%
+    select(-minutesAfterWakeup, -date, - user_id) 
+  , rownames = F # turn off rownames from the data.frame
+  , brushMode = "1D-axes"
+  , reorderable = T
+  , queue = T,
+  alpha = 0.5,
+  color = list(
+      colorBy = "kind"
+      , colorScale = "scaleOrdinal"
+      , colorScheme = "schemeCategory10"
+    )
+  , withD3 = TRUE
+)
+
+```
+
+
