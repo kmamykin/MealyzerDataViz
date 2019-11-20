@@ -104,6 +104,9 @@ meals_data %>%
   facet_wrap(~user_id, ncol = 7) + 
   labs(
     title = "Distribution of hours when users had a meal"
+  ) + 
+  theme(
+    strip.text = element_text(size=25)
   )
 ```
 
@@ -130,7 +133,8 @@ meals_data %>%
     #axis.ticks.x = element_blank()
     axis.title.y = element_blank(),
     axis.text.y = element_blank(),
-    axis.ticks.y = element_blank()
+    axis.ticks.y = element_blank(),
+    strip.text = element_text(size=25),
   )
 ```
 
@@ -157,6 +161,7 @@ meals_data %>%
     #axis.title.y = element_blank(),
     #axis.text.y = element_blank(),
     #axis.ticks.y = element_blank()
+    strip.text = element_text(size=25),
   )
 ```
 
@@ -183,7 +188,7 @@ meals_data %>%
 ## Per user analysis
 
 ```{r}
-focus_user_id = "1821"
+focus_user_id = "2475"
 ```
 
 ```{r fig.width=18, fig.height=18}
@@ -222,12 +227,16 @@ Talking points:
 
 ### Time effect
 
-```{r}
+```{r fig.width=15}
 meals_data %>% 
-  filter(user_id == focus_user_id) %>%
+  #filter(user_id == focus_user_id) %>%
   ggplot() +
+  facet_wrap(~user_id, ncol = 7) + 
   geom_segment(aes(x = -premeal_bg_delay_minutes, xend = postmeal_bg_delay_minutes, y=premeal_bg, yend=postmeal_bg), alpha = 0.5) + 
-  scale_x_continuous(breaks=c(-15, 0, 60, 120, 180, 240), labels = c("-15min", "0", "1h", "2h", "3h", "4h"), limits = c(-15, 180))
+  scale_x_continuous(breaks=c(-15, 0, 60, 120, 180, 240), labels = c("-15min", "0", "1h", "2h", "3h", "4h"), limits = c(-15, 180)) + 
+  theme(
+    strip.text = element_text(size=25)
+  )
 
 ```
 
@@ -245,12 +254,59 @@ meals_data %>%
   filter(user_id == focus_user_id) %>%
   arrange(desc(calories_eval)) %>%
   #print_df(bg_impact, title, ingredients, calories_eval) %>%
-  display_meals(ncol = 6, nrow = 4, rotate = 0)
+  display_meals(ncol = 6, nrow = 3, rotate = -90)
 ```
 ```{r}
 meals_data %>%
   filter(user_id == focus_user_id) %>%
   arrange(calories_eval) %>%
   #print_df(bg_impact, title, ingredients, calories_eval) %>%
-  display_meals(ncol = 6, nrow = 4, rotate = 0)
+  display_meals(ncol = 6, nrow = 3, rotate = -90)
 ```
+
+
+## Meal nutrients evaluator vs user
+
+```{r}
+meals_data %>%
+  mutate(calories_diff = calories_user - calories_eval) %>%
+  filter(!is.na(calories_diff)) %>%
+  ggplot() +
+  geom_histogram(aes(x = calories_diff), binwidth = 100)
+```
+
+```{r }
+meals_data %>%
+  mutate(
+    calories_diff = calories_user - calories_eval,
+    carbs_diff = carbs_user - carbs_eval,
+    protein_diff = protein_user - protein_eval,
+    fat_diff = fat_user - fat_eval,
+    fiber_diff = fiber_user - fiber_eval
+  ) %>%
+  filter(!is.na(calories_diff) & !is.na(carbs_diff) & !is.na(protein_diff) & !is.na(fat_diff) & !is.na(fiber_diff)) %>%
+  gather(key = "type", value = "diff", carbs_diff, protein_diff, fat_diff, fiber_diff) %>%
+  ggplot() +
+  #facet_wrap(~user_id, ncol = 6, scales = "free_x") + 
+  geom_boxplot(aes(x = reorder(type, diff, median), y = diff)) +
+  coord_flip()
+```
+
+Talking point:
+
+* Slight under-counting of the calories, but not as much as I would expect. High density at 0, suggesting lots of meal the evaluator and user entered exactly the same number of calories, possibly because of 0 calory meal (e.g. water) or known calory meal (e.g. protein bar)
+* Systematic under-counting of carbs, slight over-counting of fiber
+
+## Overtime trends
+
+```{r fig.width=5}
+
+meals_data %>%
+  ggplot() +
+  geom_point(aes(x = eaten_at, y = calories_eval)) +
+  facet_wrap(~user_id, ncol = 7, scales = "free_x") 
+```  
+
+Have the ability of users to estimate nutrients change overtime with the use of the app?
+
+
