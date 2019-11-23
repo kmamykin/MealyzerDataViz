@@ -268,6 +268,10 @@ meals_data %>%
   #print_df(bg_impact, title, ingredients, calories_eval) %>%
   display_meals(ncol = 6, nrow = 3, rotate = -90)
 ```
+
+Talking point:
+* there are a few testing images users made, and they will need to be found and ignored for future analysis.
+
 ```{r}
 meals_data %>%
   filter(user_id == focus_user_id) %>%
@@ -361,10 +365,29 @@ meals_data %>%
   ggplot(aes(x=eaten_at_date, y=sum_by_day))+
   geom_point(size=0.3)+
   geom_smooth(method = "lm")+
-  facet_wrap(~user_id, ncol=7)
+  facet_wrap(~user_id, ncol=7) +
+  labs (
+    title = "Calories trends by user"
+  )
 ```
 
 ```{r}
+meals_data %>%
+  mutate(eaten_at_date = as.Date(eaten_at, tz = "EST")) %>%
+  filter(eaten_at_date <"2019-04-01") %>%
+  group_by(user_id, eaten_at_date) %>%
+  summarise(sum_by_day = sum(carbs_eval)) %>%
+  ggplot(aes(x=eaten_at_date, y=sum_by_day))+
+  geom_point(size=0.3)+
+  geom_smooth(method = "lm")+
+  facet_wrap(~user_id, ncol=7) +
+  labs (
+    title = "Carbs trends by user"
+  )
+```
+
+
+```{r fig.width=4}
 dplyr::summarise(group_by(meals_data, user_id, kind), freq = n()) %>%
   group_by(user_id) %>%
   mutate(prop = freq/sum(freq)) %>%
@@ -378,7 +401,7 @@ dplyr::summarise(group_by(meals_data, user_id, kind), freq = n()) %>%
            theme(legend.title = element_blank(), legend.position="bottom") +
   guides(fill = guide_legend(nrow = 1, reverse=T))
 ```
-```{r}
+```{r fig.width=4}
 meals_data %>%
   select(user_id,carbs_eval, protein_eval,fat_eval,fiber_eval) %>%
   gather(key = "variable", value, -user_id) %>%
@@ -436,7 +459,7 @@ parcoords(
 )
 ```
 
-```{r}
+```{r fig.height=4,fig.width=6}
 meals_data %>%
   select(user_id, kind,carbs_eval, protein_eval,fat_eval,fiber_eval,calories_eval, bg_impact) %>%
   mutate_if(is.numeric, scale) %>%
@@ -444,7 +467,10 @@ meals_data %>%
   gather(key = "variable", value, -user_id,-kind, -ID) %>% 
   ggplot(aes(x=variable,y=value,colour=kind, group=ID))+
   geom_line(alpha=0.5)+facet_wrap(~user_id,ncol=7)+
-  theme(axis.text=element_text(size=5, angle = 90))
+  theme(
+    legend.position="top",
+    axis.text=element_text(size=5, angle = 90)
+  )
 ```
 
 ```{r}
@@ -478,7 +504,7 @@ sleep %>%
 sleep %>%
  filter(level %in% c("deep","light","rem","wake")) %>%
   ggplot(aes(x = seconds)) +
-  geom_histogram(alpha=.7, color="black", fill="steelblue2") +
+  geom_histogram(alpha=.7, color="black", fill="steelblue2", bins = 32) +
   facet_wrap( ~level) +
   xlab("Time Frame in Seconds") + ylab("Count") + 
   ggtitle("Histogram of Time Frames By Sleep Stage") +
@@ -488,7 +514,7 @@ sleep %>%
 ```{r}
 library("ggridges")
 sleep %>%
- filter(level %in% c("deep","light","rem","wake")) %>%
+  filter(level %in% c("deep","light","rem","wake")) %>%
   ggplot(aes(x = seconds, y = level, fill = level)) +
   geom_density_ridges_gradient(scale = 2) + theme_ridges()+
   scale_y_discrete(expand = c(0.3, 0)) +
@@ -626,7 +652,10 @@ parcoords(
     )
   , withD3 = TRUE
 )
-
+# arrange in this order:
+# dateOfSleep, endTime, startTime, minutesAwake, minutesAsleep, efficiency, ang_bg, duration, timeInBed
+# Looks like dateOfSleep, endTime, startTime are the same, so is duration, timeInBed
+# avg_bg is correlated with the duration - which may be a good talking point
 ```
 
 
