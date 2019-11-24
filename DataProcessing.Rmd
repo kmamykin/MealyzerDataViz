@@ -13,6 +13,11 @@ library(parcoords)
 library(dplyr)
 ```
 
+* Qualify dataset (missing data)
+* Interesting questions
+* Interactive viz (Something like Tableau)
+  select variables, selecting filters, selecting smoothers
+
 ## Data Import
 
 
@@ -106,6 +111,9 @@ head(meals_data)
 extracat::visna(meals_data)
 ```
 
+THere were different versions of the app. Some versions of the app asked users to enter nutritional estimation, but some version only asked on the goals, but not nutritional.
+
+
 ### Dataset highlevel view
 
 ```{r fig.width=18}
@@ -121,6 +129,9 @@ meals_data %>%
     strip.text = element_text(size=25)
   )
 ```
+Talking point: eating patterns of people - two humps, three humps, no pattern. If eating twice a day, what meal ater they skipping?
+
+
 
 ```{r fig.width=18}
 premeal_delay_buckets = c("< 15 min", "10 - 60 min", "> 60 min")
@@ -186,6 +197,9 @@ meals_data %>%
   labs( title = "" )
 ```
 
+Talking point: at some version the users were prevented from entering post meal before they are entered premeal, and users were forced to re-enter (backfill) previous meal BG. This led to a lot og outlyers.
+
+
 ```{r fig.height=12, fig.width=6}
 meals_data %>%
   ggplot() +
@@ -195,6 +209,7 @@ meals_data %>%
   labs( title = "" )
 ```
 
+TODO: explain how the data was backfilled, not every user captured post BG in the app, even after reminders. However later on the association between the meal and pre and post BG were re-calculated based on the timestamps and pre/post BG were picked as timestamps around the meal.
 
 
 ## Per user analysis
@@ -231,7 +246,7 @@ meals_data %>%
 ```
 Talking points:
 
-* Correlation between calories_eval and all carbs|fat|protein, but much smaller correlation to fiber
+* Correlation between calories_eval and all carbs|fat|protein, but much smaller correlation to fiber. Fiber is counted as carbs when calculating the calories_calculated. So when evaluators were estimating the calories_eval, they should have been discurding fiber.
 * premeal_bg and postmeal_bg - positively correlated
 * negative correlation between eval_proportion_carbs & eval_proportion_fat
 * interactions between ..._log_ratio varables split the meals into 2 or 3 clusters
@@ -251,6 +266,9 @@ meals_data %>%
   )
 
 ```
+Talking point: some users take insulin. Need to have a data back it up.
+Lots of users that have a flat response, and some users have bug ups and downs.
+
 
 ```{r fig.height=5, fig.width=9}
 display_meals <- function(df, ncol = 6, nrow = 3, rotate = 0) {
@@ -266,7 +284,7 @@ meals_data %>%
   filter(user_id == focus_user_id) %>%
   arrange(desc(calories_eval)) %>%
   #print_df(bg_impact, title, ingredients, calories_eval) %>%
-  display_meals(ncol = 6, nrow = 3, rotate = -90)
+  display_meals(ncol = 6, nrow = 3, rotate = 0)
 ```
 
 Talking point:
@@ -277,19 +295,31 @@ meals_data %>%
   filter(user_id == focus_user_id) %>%
   arrange(calories_eval) %>%
   #print_df(bg_impact, title, ingredients, calories_eval) %>%
-  display_meals(ncol = 6, nrow = 3, rotate = -90)
+  display_meals(ncol = 6, nrow = 3, rotate = 0)
 ```
 
 
 ## Meal nutrients evaluator vs user
 
-```{r}
+```{r fig.width=6}
 meals_data %>%
-  mutate(calories_diff = calories_user - calories_eval) %>%
+  mutate(
+    calories_diff = calories_user - calories_eval,
+    carbs_diff = carbs_user - carbs_eval,
+    protein_diff = protein_user - protein_eval,
+    fat_diff = fat_user - fat_eval,
+    fiber_diff = fiber_user - fiber_eval
+  ) %>%
   filter(!is.na(calories_diff)) %>%
   ggplot() +
-  geom_histogram(aes(x = calories_diff), binwidth = 100)
+  geom_histogram(aes(x = carbs_diff), bins = 30)+
+  facet_wrap(~user_id, ncol = 4)
+
 ```
+Talking points: Aggregate distribution is simmetrical around 0. 
+there is no bias on either side. At averages out per user.
+THis is BIG! no need to do evaluator estimates if usrs are good at that.
+
 
 ```{r }
 meals_data %>%
@@ -315,13 +345,6 @@ Talking point:
 
 ## Overtime trends
 
-```{r fig.width=5}
-
-meals_data %>%
-  ggplot() +
-  geom_point(aes(x = eaten_at, y = calories_eval)) +
-  facet_wrap(~user_id, ncol = 7, scales = "free_x") 
-```  
 
 Have the ability of users to estimate nutrients change overtime with the use of the app?
 
@@ -356,7 +379,7 @@ bg_readings %>%
 ```
 
 
-```{r}
+```{r fig.width=6}
 meals_data %>%
   mutate(eaten_at_date = as.Date(eaten_at, tz = "EST")) %>%
   filter(eaten_at_date <"2019-04-01") %>%
@@ -369,9 +392,11 @@ meals_data %>%
   labs (
     title = "Calories trends by user"
   )
+# TODO: colorcode facets whis positive vs negative trend
 ```
 
-```{r}
+
+```{r fig.width=6}
 meals_data %>%
   mutate(eaten_at_date = as.Date(eaten_at, tz = "EST")) %>%
   filter(eaten_at_date <"2019-04-01") %>%
@@ -385,6 +410,7 @@ meals_data %>%
     title = "Carbs trends by user"
   )
 ```
+Question TODO: have users started to eat less in general or changed the nutritional make up of their meals? Look at nutrient proportions trends, look at grams in meals across all nutrients. IF people are reducing calories, are they redicing the size of meals or change proportions?
 
 
 ```{r fig.width=4}
@@ -401,6 +427,8 @@ dplyr::summarise(group_by(meals_data, user_id, kind), freq = n()) %>%
            theme(legend.title = element_blank(), legend.position="bottom") +
   guides(fill = guide_legend(nrow = 1, reverse=T))
 ```
+Talking point: lots of people eat breakfast, lot o people capture snacks (good study subjects)
+
 ```{r fig.width=4}
 meals_data %>%
   select(user_id,carbs_eval, protein_eval,fat_eval,fiber_eval) %>%
@@ -418,7 +446,11 @@ meals_data %>%
            title = "Proportion of All Meals by Nutrient") + 
            theme(legend.title = element_blank(), legend.position="bottom") +
   guides(fill = guide_legend(nrow = 1, reverse=T))
+  
 ```
+Question: need a better visulization. Protein and carbs are easy to compare across (they are aligned at the ends), but fat and fiber are difficult to compare across users.
+
+
 
 ```{r}
 parcoords(
@@ -437,6 +469,8 @@ parcoords(
   , withD3 = TRUE
 )
 ```
+TODO: look are nutritional profile of each person - distribution of nutrients per meal, e.g. for person X, an aerage breakfast has this distribution of carbs/fat/protein/fiber, and dinner looks like this....
+
 ```{r}
 parcoords(
   meals_data %>% 
@@ -458,6 +492,8 @@ parcoords(
   , withD3 = TRUE
 )
 ```
+
+TODO: THe ultimate question: for a person, what is the cause of the glicemic impact? Can we show how to attribute the change of bg_impact to a sibgle nutrient or a combination.
 
 ```{r fig.height=4,fig.width=6}
 meals_data %>%
@@ -494,6 +530,14 @@ focus_user_id = "1983"
 sleep = read_csv(file.path(raw_data_path, focus_user_id,"sleep.csv"), col_types = cols()) %>%
   mutate(time = as.timestamp(time))
 ```
+
+
+Questions:
+* does the amount of sleep impact the first BG reading in the day (pre-breakfast, important!) (the very first pre-breakfst BG reading is considered fasting and is a true-ish representation of glycemic control (how bad is your diabetis)).
+* Does amount (or quality of sleep) have an impoact on pre-breakfast BG (<- new measure). 
+* Urban mith - the quality/amount of sleep may change how people respond to meals, e.g. for the same nutritional breakdown of a meal BG_impoact will be different.
+
+* Fat and protein mediate the impact of carbohidrate. How to show this (focus on the visualization, data may be lacking the signal)
 
 ```{r}
 sleep %>%
@@ -534,6 +578,9 @@ bg_readings %>%
   facet_wrap(~user_id,ncol=7) +
   theme(axis.text=element_text(size=5, angle = 90))
 ```
+TODO: Plotting pre and post causes a lot of jagginess. Either plot trend of pre BG or a trend of post BG, or a two parallel trendlines.
+Also look at "fasting" bg overtime. Our data is a proxy for the true "fasting" BG in the morning. It hsould be below 110.
+
 
 ```{r}
 bg_readings %>%
