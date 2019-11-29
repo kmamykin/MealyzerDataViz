@@ -1,7 +1,8 @@
----
-title: "DataProcessing"
-output: html_document
----
+# Experiments visualizing data 
+
+
+Content here needs to be transplanted to the other chapters.
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -85,10 +86,6 @@ bg_readings = read_mealyzer_files(raw_data_path, users[["user_id"]], "bg_labeled
     readings_kind = fct_relevel(readings_kind, c("premeal", "postmeal"))
   )
 head(bg_readings)
-```
-```{r}
-# No NA's in the bg_readings file
-extracat::visna(bg_readings)
 ```
 
 
