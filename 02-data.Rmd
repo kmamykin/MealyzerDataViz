@@ -1,2 +1,23 @@
 # Data sources
 
+## Mealyzer application and functionality
+
+## Dataset description
+
+bg readings
+
+meals
+meal details, evaluator nutrients, user nutriends, calculated fields (calculated calories, nutrient proportions)
+
+activities
+
+sleep
+
+meal photos
+
+## Dataset collection artifacts
+
+pre and post meal bg times
+
+evaluator
+

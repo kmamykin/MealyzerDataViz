@@ -1,6 +1,6 @@
 --- 
-title: "YOUR TITLE HERE"
-author: "YOUR NAMES HERE"
+title: "Mealyzer diabetes app study exploratory data visualization"
+author: "Klyment Mamykin, Sunny Lee, Jinrong Cao"
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 ---

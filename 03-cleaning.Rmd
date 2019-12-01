@@ -1,1 +1,20 @@
 # Data transformation
+
+## Anonymized timestamps
+
+All data coming out of this study was anonymized. As a part of anonymization the actual timestamps were replaced with a number of seconds since user's anchor timestamp, which is defined as the time when they took the first recording with the app. Part of the data transformation was to convert timestamps from a number of seconds format to an actual timestams (`POSIXct`) fromat, assumig the same anchor date for all users (`2019-01-01 00:00:00 EST`). The by-product of this transformation was that it aligned all timeseries data to the same starting point, making it easy to compare across users.
+
+## Other calculations
+
+Assitional calculated fields were introduced:
+
+* `user_id` converted from numeric to character type
+* `eaten_at` converted to normalized timestamp
+* `kind` converted to a factor
+* `premeal_bg_time` converted to normalized timestamp
+* `postmeal_bg_time`converted to normalized timestamp
+* `premeal_bg_delay_minutes` calculated number of minutes before premeal BG is taken and the meal
+* `postmeal_bg_delay_minutes` calculated number of minutes after the meal when postmeal BG was taken
+* `bg_impact` calculated difference between `postmeal_bg` and `premeal_bg`
+* `bg_impact_slope` ratio of `bg_impact` over the duration in minutes between post-meal and pre-meal times. Higher `bg_impact_slope` means faster BG increase abter the meal
+
