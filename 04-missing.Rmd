@@ -1,1 +1,33 @@
 # Missing values
+
+
+```{r}
+extracat::visna(meals_data)
+```
+
+
+THere were different versions of the app. Some versions of the app asked users to enter nutritional estimation, but some version only asked on the goals, but not nutritional.
+
+
+```{r fig.height=12, fig.width=6}
+meals_data %>%
+  ggplot() +
+  geom_boxplot(aes(x = user_id, y = premeal_bg_delay_minutes), varwidth = TRUE) + 
+  scale_y_continuous(breaks=c(0, 15, 30, 45, 60), labels = c("0", "15min", "30min", "45min", "1h"), limits = c(0, 60)) + 
+  coord_flip() +
+  labs( title = "" )
+```
+
+Talking point: at some version the users were prevented from entering post meal before they are entered premeal, and users were forced to re-enter (backfill) previous meal BG. This led to a lot og outlyers.
+
+
+```{r fig.height=12, fig.width=6}
+meals_data %>%
+  ggplot() +
+  geom_boxplot(aes(x = user_id, y = postmeal_bg_delay_minutes), varwidth = TRUE) + 
+  scale_y_continuous(breaks=c(0, 60, 120, 180, 240), labels = c("0", "1h", "2h", "3h", "4h"), limits = c(0, 1000)) + 
+  coord_flip() +
+  labs( title = "" )
+```
+
+TODO: explain how the data was backfilled, not every user captured post BG in the app, even after reminders. However later on the association between the meal and pre and post BG were re-calculated based on the timestamps and pre/post BG were picked as timestamps around the meal.

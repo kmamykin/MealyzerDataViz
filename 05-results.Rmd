@@ -1,1 +1,294 @@
 # Results
+
+## Consistent meal times vs grazers
+
+```{r fig.width=5}
+meals_data %>%
+  mutate(eaten_at_hour = hour(eaten_at)) %>%
+  ggplot() +
+  geom_histogram(aes(x=eaten_at_hour), bins = 24) +
+  facet_wrap(~user_id, ncol = 7) + 
+  labs(
+    title = "Distribution of hours when users had a meal"
+  ) + 
+  theme(
+    #strip.text = element_text(size=25)
+  )
+```
+Talking point: eating patterns of people - two humps, three humps, no pattern. If eating twice a day, what meal ater they skipping?
+
+
+## Meal kind analysis
+
+```{r fig.width=4}
+dplyr::summarise(group_by(meals_data, user_id, kind), freq = n()) %>%
+  group_by(user_id) %>%
+  mutate(prop = freq/sum(freq)) %>%
+  ungroup() %>%
+  ggplot(aes(x = user_id, y = prop, fill = forcats::fct_rev(kind))) +
+      geom_bar(stat = "identity") + 
+      coord_flip() + 
+      labs(x = "User ID",
+           y = "Proportion",
+           title = "Proportion of All Meals by Meal Kind") + 
+           theme(legend.title = element_blank(), legend.position="bottom") +
+  guides(fill = guide_legend(nrow = 1, reverse=T))
+```
+
+Talking point: lots of people eat breakfast, lot o people capture snacks (good study subjects)
+
+```{r fig.width=4}
+meals_data %>%
+  select(user_id,carbs_eval, protein_eval,fat_eval,fiber_eval) %>%
+  gather(key = "variable", value, -user_id) %>%
+  group_by(user_id, variable) %>%
+  summarise(total=sum(value, na.rm = T)) %>%
+  group_by(user_id) %>%
+  mutate(prop = total/sum(total)) %>%
+  ungroup() %>%
+  ggplot(aes(x = user_id, y = prop, fill = forcats::fct_rev(variable))) +
+      geom_bar(stat = "identity") + 
+      coord_flip() + 
+      labs(x = "User ID",
+           y = "Proportion",
+           title = "Proportion of All Meals by Nutrient") + 
+           theme(legend.title = element_blank(), legend.position="bottom") +
+  guides(fill = guide_legend(nrow = 1, reverse=T))
+  
+```
+
+
+Question: need a better visulization. Protein and carbs are easy to compare across (they are aligned at the ends), but fat and fiber are difficult to compare across users.
+
+
+## Per user analysis
+
+### Correlation between variables
+
+```{r}
+focus_user_id = "2475"
+```
+
+```{r fig.width=18, fig.height=18}
+library(lattice) #sploms
+
+meals_data %>%
+  filter(user_id == focus_user_id) %>%
+  mutate(
+    protein_fat=eval_proportion_protein-eval_proportion_fat, 
+    protein_carb=eval_proportion_protein-eval_proportion_carbs, 
+    carb_fat=eval_proportion_carbs-eval_proportion_fat) %>%
+  select(calories_eval, carbs_eval, fat_eval, protein_eval, fiber_eval, premeal_bg, postmeal_bg, bg_impact, protein_fat, protein_carb, carb_fat) %>%
+  splom()
+```
+
+
+
+```{r fig.width=18, fig.height=18}
+library(lattice) #sploms
+
+meals_data %>%
+  filter(user_id == focus_user_id) %>%
+  mutate(
+    protein_fat_log_ratio=log(eval_proportion_protein/(eval_proportion_fat+0.0000001)), 
+    protein_carb_log_ratio=log(eval_proportion_protein/(eval_proportion_carbs+0.0000001)), 
+    carb_fat_log_ratio=log(eval_proportion_carbs/(eval_proportion_fat+0.0000001))
+  ) %>%
+  select(eval_calories_computed, eval_proportion_carbs, eval_proportion_fat, eval_proportion_protein, premeal_bg, postmeal_bg, bg_impact, protein_fat_log_ratio, protein_carb_log_ratio, carb_fat_log_ratio) %>%
+  splom()
+```
+
+
+Talking points:
+
+* Correlation between calories_eval and all carbs|fat|protein, but much smaller correlation to fiber. Fiber is counted as carbs when calculating the calories_calculated. So when evaluators were estimating the calories_eval, they should have been discurding fiber.
+* premeal_bg and postmeal_bg - positively correlated
+* negative correlation between eval_proportion_carbs & eval_proportion_fat
+* interactions between ..._log_ratio varables split the meals into 2 or 3 clusters
+
+
+### Time effect
+
+### Meal BG impact visualization
+
+```{r fig.width=15}
+meals_data %>% 
+  #filter(user_id == focus_user_id) %>%
+  ggplot() +
+  facet_wrap(~user_id, ncol = 7) + 
+  geom_segment(aes(x = -premeal_bg_delay_minutes, xend = postmeal_bg_delay_minutes, y=premeal_bg, yend=postmeal_bg), alpha = 0.5) + 
+  scale_x_continuous(breaks=c(-15, 0, 60, 120, 180, 240), labels = c("-15min", "0", "1h", "2h", "3h", "4h"), limits = c(-15, 180)) + 
+  theme(
+    strip.text = element_text(size=25)
+  )
+
+```
+
+
+Talking point: some users take insulin. Need to have a data back it up.
+Lots of users that have a flat response, and some users have big ups and downs.
+
+# Images 
+
+```{r fig.height=5, fig.width=9}
+display_meals <- function(df, ncol = 6, nrow = 3, rotate = 0) {
+  meals = df[1:(ncol*nrow), ] %>% select(user_id, meal_id)
+  filenames = paste0(normalizePath("~/Dropbox/MealyzerData"), "/", meals[["user_id"]], "/images/medium/", meals[["meal_id"]], ".jpg")
+  #print(filenames)
+  data_uris = sapply(filenames, knitr::image_uri)
+  images = tibble(src = data_uris)
+  r2d3(data=images, script = "display_meals.js", container = "div", options=list(ncol=ncol, nrow=nrow, rotate=rotate))
+}
+
+meals_data %>%
+  filter(user_id == focus_user_id) %>%
+  arrange(desc(calories_eval)) %>%
+  #print_df(bg_impact, title, ingredients, calories_eval) %>%
+  display_meals(ncol = 6, nrow = 3, rotate = 0)
+```
+
+
+```{r}
+meals_data %>%
+  filter(user_id == focus_user_id) %>%
+  arrange(calories_eval) %>%
+  #print_df(bg_impact, title, ingredients, calories_eval) %>%
+  display_meals(ncol = 6, nrow = 3, rotate = 0)
+```
+
+
+Talking point:
+* there are a few testing images users made, and they will need to be found and ignored for future analysis.
+
+
+## Meal nutrients evaluator vs user
+
+```{r fig.width=6}
+meals_data %>%
+  mutate(
+    calories_diff = calories_user - calories_eval,
+    carbs_diff = carbs_user - carbs_eval,
+    protein_diff = protein_user - protein_eval,
+    fat_diff = fat_user - fat_eval,
+    fiber_diff = fiber_user - fiber_eval
+  ) %>%
+  filter(!is.na(calories_diff)) %>%
+  ggplot() +
+  geom_histogram(aes(x = carbs_diff), bins = 30)+
+  facet_wrap(~user_id, ncol = 4)
+
+```
+
+
+
+Talking points: Aggregate distribution is simmetrical around 0. 
+there is no bias on either side. At averages out per user.
+THis is BIG! no need to do evaluator estimates if usrs are good at that.
+
+
+```{r }
+meals_data %>%
+  mutate(
+    calories_diff = calories_user - calories_eval,
+    carbs_diff = carbs_user - carbs_eval,
+    protein_diff = protein_user - protein_eval,
+    fat_diff = fat_user - fat_eval,
+    fiber_diff = fiber_user - fiber_eval
+  ) %>%
+  filter(!is.na(calories_diff) & !is.na(carbs_diff) & !is.na(protein_diff) & !is.na(fat_diff) & !is.na(fiber_diff)) %>%
+  gather(key = "type", value = "diff", carbs_diff, protein_diff, fat_diff, fiber_diff) %>%
+  ggplot() +
+  #facet_wrap(~user_id, ncol = 6, scales = "free_x") + 
+  geom_boxplot(aes(x = reorder(type, diff, median), y = diff)) +
+  coord_flip()
+```
+
+
+Talking point:
+
+* Slight under-counting of the calories, but not as much as I would expect. High density at 0, suggesting lots of meal the evaluator and user entered exactly the same number of calories, possibly because of 0 calory meal (e.g. water) or known calory meal (e.g. protein bar)
+* Systematic under-counting of carbs, slight over-counting of fiber
+
+
+## Overtime trends
+
+
+Have the ability of users to estimate nutrients change overtime with the use of the app?
+
+Question TODO: have users started to eat less in general or changed the nutritional make up of their meals? Look at nutrient proportions trends, look at grams in meals across all nutrients. IF people are reducing calories, are they redicing the size of meals or change proportions?
+
+
+```{r fig.width=6}
+meals_data %>%
+  mutate(eaten_at_date = as.Date(eaten_at, tz = "EST")) %>%
+  filter(eaten_at_date <"2019-04-01") %>%
+  group_by(user_id, eaten_at_date) %>%
+  summarise(sum_by_day = sum(calories_eval)) %>%
+  ggplot(aes(x=eaten_at_date, y=sum_by_day))+
+  geom_point(size=0.3)+
+  geom_smooth(method = "lm")+
+  facet_wrap(~user_id, ncol=7) +
+  labs (
+    title = "Calories trends by user"
+  )
+# TODO: colorcode facets whis positive vs negative trend
+```
+
+
+```{r fig.width=6}
+meals_data %>%
+  mutate(eaten_at_date = as.Date(eaten_at, tz = "EST")) %>%
+  filter(eaten_at_date <"2019-04-01") %>%
+  group_by(user_id, eaten_at_date) %>%
+  summarise(sum_by_day = sum(carbs_eval)) %>%
+  ggplot(aes(x=eaten_at_date, y=sum_by_day))+
+  geom_point(size=0.3)+
+  geom_smooth(method = "lm")+
+  facet_wrap(~user_id, ncol=7) +
+  labs (
+    title = "Carbs trends by user"
+  )
+```
+
+
+```{r}
+bg_readings %>%
+  filter(time <"2019-05-01 00:00:00") %>%
+  ggplot(aes(x = time, y = bg)) +
+  geom_line() +
+  facet_wrap(~user_id,ncol=7) +
+  theme(axis.text=element_text(size=5, angle = 90))
+```
+TODO: Plotting pre and post causes a lot of jagginess. Either plot trend of pre BG or a trend of post BG, or a two parallel trendlines.
+Also look at "fasting" bg overtime. Our data is a proxy for the true "fasting" BG in the morning. It hsould be below 110.
+
+
+```{r}
+bg_readings %>%
+  #mutate(time = round_date(time, '1 hours')) %>%
+  mutate(time = format(as.POSIXct(time,format="%H:%M:%S"),"%H")) %>%
+  group_by(user_id, time) %>%
+  summarise(avg_bg = mean(bg)) %>%
+  ggplot(aes(x=time, y=avg_bg))+
+  geom_point(size=0.3)+
+  facet_wrap(~user_id, ncol=7) +
+  labs(x="Hour", y="Average BG Level")+
+  ggtitle("Average BG Level by Hour") +
+  theme(plot.title = element_text(face = "bold")) +
+  theme(axis.text=element_text(size=5, angle = 90))
+```
+
+## Sleep
+
+```{r}
+sleep = read_csv(file.path(raw_data_path, "1983", "sleep.csv"), col_types = cols()) %>%
+  mutate(time = as.timestamp(time))
+```
+
+
+Questions:
+* does the amount of sleep impact the first BG reading in the day (pre-breakfast, important!) (the very first pre-breakfst BG reading is considered fasting and is a true-ish representation of glycemic control (how bad is your diabetis)).
+* Does amount (or quality of sleep) have an impoact on pre-breakfast BG (<- new measure). 
+* Urban mith - the quality/amount of sleep may change how people respond to meals, e.g. for the same nutritional breakdown of a meal BG_impoact will be different.
+
+* Fat and protein mediate the impact of carbohidrate. How to show this (focus on the visualization, data may be lacking the signal)

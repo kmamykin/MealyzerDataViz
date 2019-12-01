@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 3 Data transformation | YOUR TITLE HERE</title>
-  <meta name="description" content="Chapter 3 Data transformation | YOUR TITLE HERE" />
+  <title>Chapter 3 Data transformation | Mealyzer diabetes app study exploratory data visualization</title>
+  <meta name="description" content="Chapter 3 Data transformation | Mealyzer diabetes app study exploratory data visualization" />
   <meta name="generator" content="bookdown 0.16 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 3 Data transformation | YOUR TITLE HERE" />
+  <meta property="og:title" content="Chapter 3 Data transformation | Mealyzer diabetes app study exploratory data visualization" />
   <meta property="og:type" content="book" />
   
   
@@ -16,15 +16,15 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 3 Data transformation | YOUR TITLE HERE" />
+  <meta name="twitter:title" content="Chapter 3 Data transformation | Mealyzer diabetes app study exploratory data visualization" />
   
   
   
 
-<meta name="author" content="YOUR NAMES HERE" />
+<meta name="author" content="Klyment Mamykin, Sunny Lee, Jinrong Cao" />
 
 
-<meta name="date" content="2019-11-29" />
+<meta name="date" content="2019-12-01" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -140,25 +140,39 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <li class="divider"></li>
 <li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
-<li class="chapter" data-level="2" data-path="data-sources.html"><a href="data-sources.html"><i class="fa fa-check"></i><b>2</b> Data sources</a></li>
-<li class="chapter" data-level="3" data-path="data-transformation.html"><a href="data-transformation.html"><i class="fa fa-check"></i><b>3</b> Data transformation</a></li>
+<li class="chapter" data-level="2" data-path="data-sources.html"><a href="data-sources.html"><i class="fa fa-check"></i><b>2</b> Data sources</a><ul>
+<li class="chapter" data-level="2.1" data-path="data-sources.html"><a href="data-sources.html#mealyzer-application-and-functionality"><i class="fa fa-check"></i><b>2.1</b> Mealyzer application and functionality</a></li>
+<li class="chapter" data-level="2.2" data-path="data-sources.html"><a href="data-sources.html#dataset-description"><i class="fa fa-check"></i><b>2.2</b> Dataset description</a></li>
+<li class="chapter" data-level="2.3" data-path="data-sources.html"><a href="data-sources.html#dataset-collection-artifacts"><i class="fa fa-check"></i><b>2.3</b> Dataset collection artifacts</a></li>
+<li class="chapter" data-level="2.4" data-path="data-sources.html"><a href="data-sources.html#data-import"><i class="fa fa-check"></i><b>2.4</b> Data Import</a><ul>
+<li class="chapter" data-level="2.4.1" data-path="data-sources.html"><a href="data-sources.html#selecting-users-for-the-analysis"><i class="fa fa-check"></i><b>2.4.1</b> Selecting users for the analysis</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="data-transformation.html"><a href="data-transformation.html"><i class="fa fa-check"></i><b>3</b> Data transformation</a><ul>
+<li class="chapter" data-level="3.1" data-path="data-transformation.html"><a href="data-transformation.html#anonymized-timestamps"><i class="fa fa-check"></i><b>3.1</b> Anonymized timestamps</a></li>
+<li class="chapter" data-level="3.2" data-path="data-transformation.html"><a href="data-transformation.html#other-calculations"><i class="fa fa-check"></i><b>3.2</b> Other calculations</a></li>
+</ul></li>
 <li class="chapter" data-level="4" data-path="missing-values.html"><a href="missing-values.html"><i class="fa fa-check"></i><b>4</b> Missing values</a></li>
-<li class="chapter" data-level="5" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>5</b> Results</a></li>
-<li class="chapter" data-level="6" data-path="interactive-component.html"><a href="interactive-component.html"><i class="fa fa-check"></i><b>6</b> Interactive component</a></li>
-<li class="chapter" data-level="7" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>7</b> Conclusion</a></li>
-<li class="chapter" data-level="8" data-path="experiments-visualizing-data.html"><a href="experiments-visualizing-data.html"><i class="fa fa-check"></i><b>8</b> Experiments visualizing data</a><ul>
-<li class="chapter" data-level="8.1" data-path="experiments-visualizing-data.html"><a href="experiments-visualizing-data.html#data-import"><i class="fa fa-check"></i><b>8.1</b> Data Import</a><ul>
-<li class="chapter" data-level="8.1.1" data-path="experiments-visualizing-data.html"><a href="experiments-visualizing-data.html#selecting-users-for-the-analysis"><i class="fa fa-check"></i><b>8.1.1</b> Selecting users for the analysis</a></li>
-<li class="chapter" data-level="8.1.2" data-path="experiments-visualizing-data.html"><a href="experiments-visualizing-data.html#dataset-highlevel-view"><i class="fa fa-check"></i><b>8.1.2</b> Dataset highlevel view</a></li>
+<li class="chapter" data-level="5" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>5</b> Results</a><ul>
+<li class="chapter" data-level="5.1" data-path="results.html"><a href="results.html#consistent-meal-times-vs-grazers"><i class="fa fa-check"></i><b>5.1</b> Consistent meal times vs grazers</a></li>
+<li class="chapter" data-level="5.2" data-path="results.html"><a href="results.html#meal-kind-analysis"><i class="fa fa-check"></i><b>5.2</b> Meal kind analysis</a></li>
+<li class="chapter" data-level="5.3" data-path="results.html"><a href="results.html#per-user-analysis"><i class="fa fa-check"></i><b>5.3</b> Per user analysis</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="results.html"><a href="results.html#correlation-between-variables"><i class="fa fa-check"></i><b>5.3.1</b> Correlation between variables</a></li>
+<li class="chapter" data-level="5.3.2" data-path="results.html"><a href="results.html#time-effect"><i class="fa fa-check"></i><b>5.3.2</b> Time effect</a></li>
+<li class="chapter" data-level="5.3.3" data-path="results.html"><a href="results.html#meal-bg-impact-visualization"><i class="fa fa-check"></i><b>5.3.3</b> Meal BG impact visualization</a></li>
 </ul></li>
-<li class="chapter" data-level="8.2" data-path="experiments-visualizing-data.html"><a href="experiments-visualizing-data.html#per-user-analysis"><i class="fa fa-check"></i><b>8.2</b> Per user analysis</a><ul>
-<li class="chapter" data-level="8.2.1" data-path="experiments-visualizing-data.html"><a href="experiments-visualizing-data.html#time-effect"><i class="fa fa-check"></i><b>8.2.1</b> Time effect</a></li>
 </ul></li>
-<li class="chapter" data-level="8.3" data-path="experiments-visualizing-data.html"><a href="experiments-visualizing-data.html#meal-nutrients-evaluator-vs-user"><i class="fa fa-check"></i><b>8.3</b> Meal nutrients evaluator vs user</a></li>
-<li class="chapter" data-level="8.4" data-path="experiments-visualizing-data.html"><a href="experiments-visualizing-data.html#overtime-trends"><i class="fa fa-check"></i><b>8.4</b> Overtime trends</a><ul>
-<li class="chapter" data-level="8.4.1" data-path="experiments-visualizing-data.html"><a href="experiments-visualizing-data.html#plotting-activeness-vs.bg-level"><i class="fa fa-check"></i><b>8.4.1</b> Plotting activeness vs. bg level</a></li>
-<li class="chapter" data-level="8.4.2" data-path="experiments-visualizing-data.html"><a href="experiments-visualizing-data.html#plotting-prepost-meal-bg-faceting-on-user_id"><i class="fa fa-check"></i><b>8.4.2</b> Plotting pre/post meal bg ,faceting on user_id</a></li>
+<li class="chapter" data-level="6" data-path="images.html"><a href="images.html"><i class="fa fa-check"></i><b>6</b> Images</a><ul>
+<li class="chapter" data-level="6.1" data-path="images.html"><a href="images.html#meal-nutrients-evaluator-vs-user"><i class="fa fa-check"></i><b>6.1</b> Meal nutrients evaluator vs user</a></li>
+<li class="chapter" data-level="6.2" data-path="images.html"><a href="images.html#overtime-trends"><i class="fa fa-check"></i><b>6.2</b> Overtime trends</a></li>
+<li class="chapter" data-level="6.3" data-path="images.html"><a href="images.html#sleep"><i class="fa fa-check"></i><b>6.3</b> Sleep</a></li>
 </ul></li>
+<li class="chapter" data-level="7" data-path="interactive-component.html"><a href="interactive-component.html"><i class="fa fa-check"></i><b>7</b> Interactive component</a></li>
+<li class="chapter" data-level="8" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>8</b> Conclusion</a></li>
+<li class="chapter" data-level="9" data-path="experiments-visualizing-data.html"><a href="experiments-visualizing-data.html"><i class="fa fa-check"></i><b>9</b> Experiments visualizing data</a><ul>
+<li class="chapter" data-level="9.0.1" data-path="experiments-visualizing-data.html"><a href="experiments-visualizing-data.html#dataset-highlevel-view"><i class="fa fa-check"></i><b>9.0.1</b> Dataset highlevel view</a></li>
+<li class="chapter" data-level="9.0.2" data-path="experiments-visualizing-data.html"><a href="experiments-visualizing-data.html#plotting-activeness-vs.bg-level"><i class="fa fa-check"></i><b>9.0.2</b> Plotting activeness vs. bg level</a></li>
+<li class="chapter" data-level="9.0.3" data-path="experiments-visualizing-data.html"><a href="experiments-visualizing-data.html#plotting-prepost-meal-bg-faceting-on-user_id"><i class="fa fa-check"></i><b>9.0.3</b> Plotting pre/post meal bg ,faceting on user_id</a></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -171,7 +185,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">YOUR TITLE HERE</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Mealyzer diabetes app study exploratory data visualization</a>
           </h1>
         </div>
 
@@ -181,7 +195,26 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="data-transformation" class="section level1">
 <h1><span class="header-section-number">Chapter 3</span> Data transformation</h1>
+<div id="anonymized-timestamps" class="section level2">
+<h2><span class="header-section-number">3.1</span> Anonymized timestamps</h2>
+<p>All data coming out of this study was anonymized. As a part of anonymization the actual timestamps were replaced with a number of seconds since user’s anchor timestamp, which is defined as the time when they took the first recording with the app. Part of the data transformation was to convert timestamps from a number of seconds format to an actual timestams (<code>POSIXct</code>) fromat, assumig the same anchor date for all users (<code>2019-01-01 00:00:00 EST</code>). The by-product of this transformation was that it aligned all timeseries data to the same starting point, making it easy to compare across users.</p>
+</div>
+<div id="other-calculations" class="section level2">
+<h2><span class="header-section-number">3.2</span> Other calculations</h2>
+<p>Assitional calculated fields were introduced:</p>
+<ul>
+<li><code>user_id</code> converted from numeric to character type</li>
+<li><code>eaten_at</code> converted to normalized timestamp</li>
+<li><code>kind</code> converted to a factor</li>
+<li><code>premeal_bg_time</code> converted to normalized timestamp</li>
+<li><code>postmeal_bg_time</code>converted to normalized timestamp</li>
+<li><code>premeal_bg_delay_minutes</code> calculated number of minutes before premeal BG is taken and the meal</li>
+<li><code>postmeal_bg_delay_minutes</code> calculated number of minutes after the meal when postmeal BG was taken</li>
+<li><code>bg_impact</code> calculated difference between <code>postmeal_bg</code> and <code>premeal_bg</code></li>
+<li><code>bg_impact_slope</code> ratio of <code>bg_impact</code> over the duration in minutes between post-meal and pre-meal times. Higher <code>bg_impact_slope</code> means faster BG increase abter the meal</li>
+</ul>
 
+</div>
 </div>
             </section>
 
