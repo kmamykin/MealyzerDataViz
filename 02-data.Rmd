@@ -38,7 +38,7 @@ library(dplyr)
 ```{r}
 raw_data_path = "~/Dropbox/MealyzerData"
 users_raw = read_csv(file.path(raw_data_path, "mealyzer_data_overview.csv"), col_types = cols())
-head(users_raw)
+glimpse(users_raw)
 ```
 
 
@@ -70,9 +70,11 @@ bg_readings_raw = read_mealyzer_files(raw_data_path, users[["user_id"]], "bg_lab
   meal_id = col_double(),
   readings_kind = col_character()
 ))
+glimpse(bg_readings_raw)
 ```
 
 
 ```{r}
 meals_data_raw = read_mealyzer_files(raw_data_path, users[["user_id"]], "mealyzer_data.csv", add_user_id = FALSE, col_types = cols()) 
+glimpse(meals_data_raw)
 ```
