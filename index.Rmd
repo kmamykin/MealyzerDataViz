@@ -7,3 +7,8 @@ site: bookdown::bookdown_site
 
 # Introduction
 
+How the data was obtained
+
+What the application do
+
+The goal of this vizualization project (initial look at the data)
