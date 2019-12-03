@@ -63,7 +63,7 @@ read_mealyzer_files <- function(data_dir, user_ids, file_name, add_user_id, col_
 ```
 
 ```{r}
-bg_readings_raw = read_mealyzer_files(raw_data_path, users[["user_id"]], "bg_labeled.csv", add_user_id = TRUE, col_types = cols(
+bg_readings_raw = read_mealyzer_files(raw_data_path, users_raw[["user_id"]], "bg_labeled.csv", add_user_id = TRUE, col_types = cols(
   time = col_double(),
   bg = col_double(),
   meals_kind = col_character(),
@@ -75,6 +75,6 @@ glimpse(bg_readings_raw)
 
 
 ```{r}
-meals_data_raw = read_mealyzer_files(raw_data_path, users[["user_id"]], "mealyzer_data.csv", add_user_id = FALSE, col_types = cols()) 
+meals_data_raw = read_mealyzer_files(raw_data_path, users_raw[["user_id"]], "mealyzer_data.csv", add_user_id = FALSE, col_types = cols()) 
 glimpse(meals_data_raw)
 ```
