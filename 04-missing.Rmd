@@ -16,10 +16,17 @@ users %>%
   visdat::vis_dat()
 ```
 
+Number of complete users with all data present (including fitbit data and complete meals):
+```{r}
+users %>%
+  filter(has_sleep & has_activities_steps & has_activities_calories & has_activities_distance & !is.na(complete_meals)) %>%
+  count()
+```
+
 ## Meals data availability
 
 ```{r fig.width=6}
-visdat::vis_dat(meals_data)
+visdat::vis_dat(meals_data_raw)
 ```
 
 ```{r fig.height=3}
@@ -40,17 +47,50 @@ print(selected_users[["user_id"]])
 Limit the final meals dataset with filtered users
 
 ```{r}
-meals_data = meals_data %>% filter(user_id %in% selected_users[["user_id"]])
+selected_users_meals_data = meals_data %>% 
+  filter(user_id %in% selected_users[["user_id"]])
 ```
 
-## Missing values in meals_data
 
+## Imputing post-meal BG
+
+Its evident that a lot of records are missing postmeal BG records, probably indicating that the users did not record another BG reading in the app when a 2h notification arrived. However, the value of postmeal_bg and postmeal_bg_time can be imputed, considering that in some cases users ate a meal and recorded a BG reading with it before 2h elapsed. And sometimes the next meal premeal BG reading can be considered as the postmeal BG reading. 
+
+```{r}
+selected_users_meals_data %>%
+  mutate(premeal_bg_exist = ifelse(is.na(premeal_bg), 0, 1), postmeal_bg_exist = ifelse(is.na(postmeal_bg), 0, 1)) %>%
+  group_by(user_id) %>%
+  summarise(premeal_bg_count = sum(premeal_bg_exist), postmeal_bg_count = sum(postmeal_bg_exist)) %>%
+  ungroup() %>%
+  arrange(desc(postmeal_bg_count))
+```
+
+
+```{r}
+aa = meals_data_raw %>%
+  arrange(user_id, eaten_at) %>%
+  mutate(
+    imputed_postmeal_bg_time = lead(premeal_bg_time), 
+    imputed_postmeal_bg = lead(premeal_bg)
+  ) %>%
+  mutate(
+    postmeal_bg_time = as.POSIXct(ifelse(is.na(postmeal_bg_time), imputed_postmeal_bg_time, postmeal_bg_time), origin = "1970-01-01"), 
+    postmeal_bg = ifelse(is.na(postmeal_bg), imputed_postmeal_bg, postmeal_bg)
+  ) %>%
+  filter(premeal_bg_time <= eaten_at & eaten_at <= postmeal_bg_time ) # this is an invalid condition
+```
+
+```{r fig.width=6}
+visdat::vis_dat(aa)
+```
+
+## Analyzing pre and post meal BG time intervals 
 
 THere were different versions of the app. Some versions of the app asked users to enter nutritional estimation, but some version only asked on the goals, but not nutritional.
 
 
 ```{r fig.height=12, fig.width=6}
-meals_data %>%
+selected_users_meals_data %>%
   filter(premeal_bg_delay_minutes > 0 & premeal_bg_delay_minutes < 60) %>%
   ggplot() +
   geom_boxplot(aes(x = user_id, y = premeal_bg_delay_minutes), varwidth = TRUE) + 
@@ -63,7 +103,7 @@ Talking point: at some version the users were prevented from entering post meal 
 
 
 ```{r fig.height=12, fig.width=6}
-meals_data %>%
+selected_users_meals_data %>%
   ggplot() +
   geom_boxplot(aes(x = user_id, y = postmeal_bg_delay_minutes), varwidth = TRUE) + 
   scale_y_continuous(breaks=c(0, 60, 120, 180, 240), labels = c("0", "1h", "2h", "3h", "4h"), limits = c(0, 1000)) + 
@@ -73,9 +113,3 @@ meals_data %>%
 
 TODO: explain how the data was backfilled, not every user captured post BG in the app, even after reminders. However later on the association between the meal and pre and post BG were re-calculated based on the timestamps and pre/post BG were picked as timestamps around the meal.
 
-
-## Imputing post-meal BG
-
-```{r}
-
-```
