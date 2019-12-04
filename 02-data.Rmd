@@ -37,13 +37,13 @@ library(dplyr)
 
 ```{r}
 raw_data_path = "~/Dropbox/MealyzerData"
-users_raw = read_csv(file.path(raw_data_path, "mealyzer_data_overview.csv"), col_types = cols())
-glimpse(users_raw)
+users.raw = read_csv(file.path(raw_data_path, "mealyzer_data_overview.csv"), col_types = cols())
+glimpse(users.raw)
 ```
 
 
 ```{r}
-read_mealyzer_files <- function(data_dir, user_ids, file_name, add_user_id, col_types) {
+read.mealyzer_files <- function(data_dir, user_ids, file_name, add_user_id, col_types) {
   result <- c()
   for (user_id in user_ids) {
     
@@ -63,18 +63,18 @@ read_mealyzer_files <- function(data_dir, user_ids, file_name, add_user_id, col_
 ```
 
 ```{r}
-bg_readings_raw = read_mealyzer_files(raw_data_path, users_raw[["user_id"]], "bg_labeled.csv", add_user_id = TRUE, col_types = cols(
+bg_readings.raw = read.mealyzer_files(raw_data_path, users.raw[["user_id"]], "bg_labeled.csv", add_user_id = TRUE, col_types = cols(
   time = col_double(),
   bg = col_double(),
   meals_kind = col_character(),
   meal_id = col_double(),
   readings_kind = col_character()
 ))
-glimpse(bg_readings_raw)
+glimpse(bg_readings.raw)
 ```
 
 
 ```{r}
-meals_data_raw = read_mealyzer_files(raw_data_path, users_raw[["user_id"]], "mealyzer_data.csv", add_user_id = FALSE, col_types = cols()) 
-glimpse(meals_data_raw)
+meals.raw = read.mealyzer_files(raw_data_path, users.raw[["user_id"]], "mealyzer_data.csv", add_user_id = FALSE, col_types = cols()) 
+glimpse(meals.raw)
 ```

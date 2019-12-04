@@ -5,7 +5,7 @@
 Not every user appears to have every dataset available. While BG recordings and meals are recorded for all selected users, not all of them have meal images available, and not all have Fitbit data (activities and sleep) available.
 
 ```{r}
-users %>%
+users.all %>%
   # Fake false values with NAs to visualize it as missing
   mutate(
     has_sleep = ifelse(has_sleep, has_sleep, NA),
@@ -18,7 +18,7 @@ users %>%
 
 Number of complete users with all data present (including fitbit data and complete meals):
 ```{r}
-users %>%
+users.all %>%
   filter(has_sleep & has_activities_steps & has_activities_calories & has_activities_distance & !is.na(complete_meals)) %>%
   count()
 ```
@@ -26,11 +26,11 @@ users %>%
 ## Meals data availability
 
 ```{r fig.width=6}
-visdat::vis_dat(meals_data_raw)
+visdat::vis_dat(meals.all)
 ```
 
 ```{r fig.height=3}
-extracat::visna(meals_data)
+extracat::visna(meals.raw)
 ```
 
 
@@ -39,17 +39,11 @@ extracat::visna(meals_data)
 Not all users used the application in the same capacity, and some recorded very few meals. For the further analysis we select only those users that recorded at least 14 meals (threshold picked such that 28 users were selected for easy facetting in a grid)
 
 ```{r}
-selected_users = users %>%
+users.selected = users.all %>%
   filter(complete_meals > 14)
-print(selected_users[["user_id"]])
+print(users.selected[["user_id"]])
 ```
 
-Limit the final meals dataset with filtered users
-
-```{r}
-selected_users_meals_data = meals_data %>% 
-  filter(user_id %in% selected_users[["user_id"]])
-```
 
 
 ## Imputing post-meal BG
@@ -57,31 +51,46 @@ selected_users_meals_data = meals_data %>%
 Its evident that a lot of records are missing postmeal BG records, probably indicating that the users did not record another BG reading in the app when a 2h notification arrived. However, the value of postmeal_bg and postmeal_bg_time can be imputed, considering that in some cases users ate a meal and recorded a BG reading with it before 2h elapsed. And sometimes the next meal premeal BG reading can be considered as the postmeal BG reading. 
 
 ```{r}
-selected_users_meals_data %>%
+meals.all %>%
+  filter(user_id %in% users.selected[["user_id"]]) %>%
   mutate(premeal_bg_exist = ifelse(is.na(premeal_bg), 0, 1), postmeal_bg_exist = ifelse(is.na(postmeal_bg), 0, 1)) %>%
   group_by(user_id) %>%
-  summarise(premeal_bg_count = sum(premeal_bg_exist), postmeal_bg_count = sum(postmeal_bg_exist)) %>%
+  summarise(all_meals = sum(premeal_bg_exist), Present = sum(postmeal_bg_exist)) %>%
   ungroup() %>%
-  arrange(desc(postmeal_bg_count))
+  mutate(Missing = all_meals - Present) %>%
+  arrange(desc(all_meals)) %>%
+  gather(key = "type", value = "Freq", -all_meals, -user_id) %>%
+  ggplot() +
+  geom_col(aes(x = fct_reorder(user_id, all_meals), y = Freq, fill = fct_relevel(type, "Present", "Missing")), position = position_stack(reverse = TRUE)) +
+  coord_flip() + 
+  labs(
+    title = "Meals with missing postmeal BG by user",
+    x = "Users",
+    y = "Counts",
+    fill = "Postmeal BG"
+  ) +
+  theme(legend.position = "right")
 ```
 
 
 ```{r}
-aa = meals_data_raw %>%
+meals.imputed = meals.all %>%
   arrange(user_id, eaten_at) %>%
   mutate(
-    imputed_postmeal_bg_time = lead(premeal_bg_time), 
-    imputed_postmeal_bg = lead(premeal_bg)
+    postmeal_bg_time = coalesce(postmeal_bg_time, lead(premeal_bg_time)), 
+    postmeal_bg = coalesce(postmeal_bg, lead(premeal_bg))
   ) %>%
   mutate(
-    postmeal_bg_time = as.POSIXct(ifelse(is.na(postmeal_bg_time), imputed_postmeal_bg_time, postmeal_bg_time), origin = "1970-01-01"), 
-    postmeal_bg = ifelse(is.na(postmeal_bg), imputed_postmeal_bg, postmeal_bg)
+    premeal_bg_delay_minutes = as.double(difftime(eaten_at, premeal_bg_time, units = "mins")),
+    postmeal_bg_delay_minutes = as.double(difftime(postmeal_bg_time, eaten_at, units = "mins")),
+    bg_impact = postmeal_bg - premeal_bg,
+    bg_impact_slope = bg_impact / (premeal_bg_delay_minutes + postmeal_bg_delay_minutes)
   ) %>%
-  filter(premeal_bg_time <= eaten_at & eaten_at <= postmeal_bg_time ) # this is an invalid condition
+  filter(premeal_bg_delay_minutes >= 0 & postmeal_bg_delay_minutes >= 0 ) # keep only positive delays
 ```
 
 ```{r fig.width=6}
-visdat::vis_dat(aa)
+visdat::vis_dat(meals.imputed)
 ```
 
 ## Analyzing pre and post meal BG time intervals 
@@ -89,27 +98,58 @@ visdat::vis_dat(aa)
 THere were different versions of the app. Some versions of the app asked users to enter nutritional estimation, but some version only asked on the goals, but not nutritional.
 
 
-```{r fig.height=12, fig.width=6}
-selected_users_meals_data %>%
-  filter(premeal_bg_delay_minutes > 0 & premeal_bg_delay_minutes < 60) %>%
+```{r fig.height=2}
+g1 = meals.imputed %>%
+  filter(user_id %in% users.selected[["user_id"]]) %>%
+  filter(premeal_bg_delay_minutes >= 0 & premeal_bg_delay_minutes <= 60) %>%
   ggplot() +
-  geom_boxplot(aes(x = user_id, y = premeal_bg_delay_minutes), varwidth = TRUE) + 
-  scale_y_continuous(breaks=c(0, 15, 30, 45, 60), labels = c("0", "15min", "30min", "45min", "1h"), limits = c(0, 60)) + 
+  geom_boxplot(aes(y = -premeal_bg_delay_minutes)) + 
+  scale_y_continuous(breaks=c(0, -15, -30, -45, -60), labels = c("0", "15m", "30m", "45m", "1h"), limits = c(-60, 0), expand = expand_scale(mult = c(0.1, 0))) + 
   coord_flip() +
-  labs( title = "" )
+  labs( 
+    y = "Premeal"
+  ) + 
+  theme(
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+  )
+
+g2 = meals.imputed %>%
+  filter(user_id %in% users.selected[["user_id"]]) %>%
+  filter(postmeal_bg_delay_minutes >= 0 & postmeal_bg_delay_minutes <= 1000) %>%
+  ggplot() +
+  geom_boxplot(aes( y = postmeal_bg_delay_minutes), varwidth = TRUE) + 
+  scale_y_continuous(breaks=c(0, 60, 120, 180, 240, 300), labels = c("0", "1h", "2h", "3h", "4h", "5h"), limits = c(0, 1000), expand = expand_scale(mult = c(0, .05))) + 
+  coord_flip() +
+  labs( 
+    y = "Postmeal"
+  ) + 
+  theme(
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+  )
+
+gridExtra::grid.arrange(
+  g1, g2, widths = c(2, 6), heights = c(1,1),
+  top = "Pre and Post meal delays for BG"
+)
 ```
 
 Talking point: at some version the users were prevented from entering post meal before they are entered premeal, and users were forced to re-enter (backfill) previous meal BG. This led to a lot og outlyers.
 
 
-```{r fig.height=12, fig.width=6}
-selected_users_meals_data %>%
-  ggplot() +
-  geom_boxplot(aes(x = user_id, y = postmeal_bg_delay_minutes), varwidth = TRUE) + 
-  scale_y_continuous(breaks=c(0, 60, 120, 180, 240), labels = c("0", "1h", "2h", "3h", "4h"), limits = c(0, 1000)) + 
-  coord_flip() +
-  labs( title = "" )
-```
-
 TODO: explain how the data was backfilled, not every user captured post BG in the app, even after reminders. However later on the association between the meal and pre and post BG were re-calculated based on the timestamps and pre/post BG were picked as timestamps around the meal.
+
+## Final clean meals dataset
+
+Limit the final meals dataset with filtered users
+
+```{r}
+meals.selected = meals.imputed %>%
+  filter(user_id %in% users.selected[["user_id"]]) %>%
+  filter(premeal_bg_delay_minutes >= 0 & premeal_bg_delay_minutes <= 60) %>% # Limit premeal bg delay to 1h
+  filter(postmeal_bg_delay_minutes >= 0 & postmeal_bg_delay_minutes <= 240) # Limit postmeal bg delay to 4h 
+```
 

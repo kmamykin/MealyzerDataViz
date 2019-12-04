@@ -27,7 +27,7 @@ user_file_exists <- function(ids, filename) {
   sapply(ids, function(id) file.exists(file.path(raw_data_path, id, filename)))
 }
 
-users = users_raw %>%
+users.all = users.raw %>%
   mutate(
     user_id = as.character(user_id),
     app = as.factor(app),
@@ -37,7 +37,7 @@ users = users_raw %>%
     has_activities_distance = user_file_exists(user_id, "activities-distance.csv"),
     has_activities_steps = user_file_exists(user_id, "activities-steps.csv")
   )
-glimpse(users)
+glimpse(users.all)
 ```
 
 ```{r}
@@ -57,28 +57,24 @@ print_df <- function(df, ...) {
 ```
 
 ```{r}
-bg_readings = bg_readings_raw %>%
+bg_readings.all = bg_readings.raw %>%
   mutate(
     user_id = as.character(user_id),
     time = as.timestamp(time), 
     meals_kind = as.meals_kind(meals_kind),
     readings_kind = fct_relevel(readings_kind, c("premeal", "postmeal"))
   )
-glimpse(bg_readings)
+glimpse(bg_readings.all)
 ```
 
 ```{r}
-meals_data = meals_data_raw %>%
+meals.all = meals.raw %>%
   mutate(
     user_id = as.character(user_id),
     eaten_at = as.timestamp(eaten_at),
     kind = as.meals_kind(kind),
     premeal_bg_time = as.timestamp(premeal_bg_time),
-    postmeal_bg_time = as.timestamp(postmeal_bg_time),
-    premeal_bg_delay_minutes = as.double(difftime(eaten_at, premeal_bg_time, units = "mins")),
-    postmeal_bg_delay_minutes = as.double(difftime(postmeal_bg_time, eaten_at, units = "mins")),
-    bg_impact = postmeal_bg - premeal_bg,
-    bg_impact_slope = bg_impact / (premeal_bg_delay_minutes + postmeal_bg_delay_minutes)
+    postmeal_bg_time = as.timestamp(postmeal_bg_time)
   )
-glimpse(meals_data)
+glimpse(meals.all)
 ```
