@@ -11,6 +11,7 @@ library(forcats)
 library(r2d3)
 library(parcoords)
 library(dplyr)
+library(GGally)
 ```
 
 ## Data Import
@@ -325,6 +326,7 @@ dplyr::summarise(group_by(meals_data, user_id, kind), freq = n()) %>%
   guides(fill = guide_legend(nrow = 1, reverse=T))
 ```
 ```{r}
+# Proportion of Meals by Nutrient - Expert Evaluation
 meals_data %>%
   select(user_id,carbs_eval, protein_eval,fat_eval,fiber_eval) %>%
   gather(key = "variable", value, -user_id) %>%
@@ -338,10 +340,29 @@ meals_data %>%
       coord_flip() + 
       labs(x = "User ID",
            y = "Proportion",
-           title = "Proportion of All Meals by Nutrient") + 
+           title = "Proportion of All Meals by Nutrient - Expert Evaluation") + 
+           theme(legend.title = element_blank(), legend.position="bottom") +
+  guides(fill = guide_legend(nrow = 1, reverse=T))
+
+# Proportion of Meals by Nutrient - Self Evaluation
+meals_data %>%
+  select(user_id,carbs_user, protein_user,fat_user,fiber_user) %>%
+  gather(key = "variable", value, -user_id) %>%
+  group_by(user_id, variable) %>%
+  summarise(total=sum(value, na.rm = T)) %>%
+  group_by(user_id) %>%
+  mutate(prop = total/sum(total)) %>%
+  ungroup() %>%
+  ggplot(aes(x = user_id, y = prop, fill = forcats::fct_rev(variable))) +
+      geom_bar(stat = "identity") + 
+      coord_flip() + 
+      labs(x = "User ID",
+           y = "Proportion",
+           title = "Proportion of All Meals by Nutrient - Self Evaluation") + 
            theme(legend.title = element_blank(), legend.position="bottom") +
   guides(fill = guide_legend(nrow = 1, reverse=T))
 ```
+
 
 ```{r}
 parcoords(
@@ -392,7 +413,6 @@ meals_data %>%
   geom_line(alpha=0.5)+facet_wrap(~user_id,ncol=7)+
   theme(axis.text=element_text(size=5, angle = 90))
 ```
-
 ```{r}
 meals_data %>%
   select(user_id, kind,carbs_eval, protein_eval,fat_eval,fiber_eval, bg_impact) %>%
@@ -409,6 +429,11 @@ meals_data %>%
   facet_wrap(~user_id,ncol=7)
 ```
 
+
+```{r}
+sleep = read_mealyzer_files(raw_data_path,users[["user_id"]],"sleep.csv", add_user_id = FALSE, col_types = cols())
+```
+
 ```{r}
 focus_user_id = "1983"
 sleep = read_csv(file.path(raw_data_path, focus_user_id,"sleep.csv"), col_types = cols()) %>%
@@ -421,36 +446,11 @@ sleep %>%
   geom_point(aes(x=time, y= seconds,color=factor(level)), size=0.5)
 ```
 ```{r}
-sleep %>%
- filter(level %in% c("deep","light","rem","wake")) %>%
-  ggplot(aes(x = seconds)) +
-  geom_histogram(alpha=.7, color="black", fill="steelblue2") +
-  facet_wrap( ~level) +
-  xlab("Time Frame in Seconds") + ylab("Count") + 
-  ggtitle("Histogram of Time Frames By Sleep Stage") +
-  theme(plot.title = element_text(face = "bold"))
-```
-
-```{r}
-library("ggridges")
-sleep %>%
- filter(level %in% c("deep","light","rem","wake")) %>%
-  ggplot(aes(x = seconds, y = level, fill = level)) +
-  geom_density_ridges_gradient(scale = 2) + theme_ridges()+
-  scale_y_discrete(expand = c(0.3, 0)) +
-  scale_x_continuous(expand = c(0.01, 0))+
-  labs(x="Time Frames", y="Sleep Stage")+
-  ggtitle("Density Curves of Time Frames by Sleep Stage")+
-  theme(plot.title = element_text(hjust = 0.6)) +
-  guides(fill = guide_legend(reverse=T))
-
-```
-
-```{r}
+# BG level overview for all users
 bg_readings %>%
   filter(time <"2019-05-01 00:00:00") %>%
   ggplot(aes(x = time, y = bg)) +
-  geom_line() +
+  geom_line(size=0.1) +
   facet_wrap(~user_id,ncol=7) +
   theme(axis.text=element_text(size=5, angle = 90))
 ```
@@ -493,7 +493,7 @@ activities %>%
   group_by(key) %>%
   mutate(index = round(100*value/value[1], 2)) %>% 
   ungroup() %>%
-  ggplot(aes(date, index, col=key)) + geom_line()
+  ggplot(aes(date, index, col=key)) + geom_line()  
 
 # once scaled, we see that the data for distance and steps completely overlaps, suggesting that one is a linear function of another.  
 ```
@@ -521,19 +521,19 @@ activities %>%
   group_by(key) %>%
   mutate(index = round(100*value/value[1], 2)) %>% 
   ungroup() %>%
-  ggplot(aes(date, index, col=key)) + geom_line()
+  ggplot(aes(date, index, col=key)) + geom_line() +
+  ggtitle("Average BG Level vs. Calories Burnt for User #1983")
 
 # We see that there are missing values for average BG, which is normal since bg level and calories burnt are measured by two different devices/apps.
-# Based on the data we have here, we see that avg_bg has a nagative relationship with calories burnt, where higher avg_bg usually is associated with lower calories burnt that day.
+# Based on the data we have here, we see that avg_bg has a negative relationship with calories burnt, where higher avg_bg usually is associated with lower calories burnt that day.
 ```
 
 
 
 ```{r}
 #user 1983's avg_bg vs. minutesasleep by day
-
-sleep_overview = read.csv("~/Dropbox/MealyzerData/1983/sleep_overview.csv")
-sleep_overview %>%
+sleep1983 = read.csv("~/Dropbox/MealyzerData/1983/sleep_overview.csv")
+sleep1983 %>%
   mutate(date=date(as.timestamp(dateOfSleep))) %>%
   arrange(date) %>% # to perform correct scaling, must have date in ascending order
   group_by(date) %>%
@@ -545,14 +545,14 @@ sleep_overview %>%
   group_by(key) %>%
   mutate(index = round(100*value/value[1], 2)) %>% 
   ungroup() %>%
-  ggplot(aes(date, index, col=key)) + geom_line()
-
+  ggplot(aes(date, index, col=key)) + geom_line() +
+  theme(plot.title = element_text(face = "bold")) 
 ```
 
 ```{r}
 # user 1983's parcoords 
 parcoords(
-  sleep_overview %>% 
+  sleep1983 %>% 
     select(-minutesToFallAsleep) %>%
     mutate(date=date(as.timestamp(dateOfSleep))) %>%
     group_by(date) %>%
@@ -573,6 +573,351 @@ parcoords(
   , withD3 = TRUE
 )
 
+ds =sleep1983 %>% 
+    select(-minutesToFallAsleep) %>%
+    mutate(date=date(as.timestamp(dateOfSleep))) %>%
+    group_by(date) %>%
+    mutate(minutesAsleep = sum(minutesAsleep)) %>%
+    merge(user1983, by="date") %>%
+    ungroup() %>%
+    select(-minutesAfterWakeup, -date, - user_id) 
+
+ggparcoord(ds, scale = "uniminmax",alpha = 0.3) +
+  ggtitle("Parallel Coordinates for User #1983, uniminmax scaled") + 
+  theme(plot.title = element_text(face = "bold")) 
 ```
+
+```{r}
+# User 1983's pre breakfast bg reading vs. amount sleep
+bg1983 = bg_readings %>%
+  mutate(date=date(time)) %>%
+  filter(user_id==1983 & meals_kind=="breakfast" & readings_kind=="premeal")
+
+sleep1983 %>%
+  #mutate(date=as.timestamp(dateOfSleep)) %>% # different time of sleep recorded, makes a difference? 
+  mutate(date=date(as.timestamp(dateOfSleep))) %>%
+  arrange(date) %>% # to perform correct scaling, must have date in ascending order
+  group_by(date) %>%
+  mutate(minutesAsleep = sum(minutesAsleep)) %>%
+  full_join(bg1983, by="date") %>% #merge?
+  select(date, minutesAsleep, bg) %>%
+  drop_na() %>%
+  unique() %>%
+  ggplot(aes(x=minutesAsleep,y=bg)) + geom_point() + geom_smooth(method=lm, se=FALSE) + 
+  ggtitle("User 1983's pre breakfast bg reading vs. amount sleep") 
+
+sleep1983 %>%
+  mutate(date=date(as.timestamp(dateOfSleep))) %>%
+  arrange(date) %>% # to perform correct scaling, must have date in ascending order
+  group_by(date) %>%
+  full_join(bg1983, by="date") %>% #merge?
+  select(date, efficiency, bg) %>%
+  drop_na() %>%
+  unique() %>%
+  ggplot(aes(x=efficiency,y=bg)) + geom_point() + geom_smooth(method=lm, se=FALSE) + 
+  ggtitle("User 1983's pre breakfast bg reading vs. sleep efficiency") 
+
+sleep1983 %>%
+  mutate(date=date(as.timestamp(dateOfSleep))) %>%
+  arrange(date) %>% # to perform correct scaling, must have date in ascending order
+  group_by(date) %>%
+  mutate(minutesAsleep = sum(minutesAsleep)) %>%
+  full_join(user1983, by="date") %>% #merge?
+  select(date, minutesAsleep, avg_bg) %>%
+  drop_na() %>%
+  unique() %>%
+  ggplot(aes(x=minutesAsleep,y=avg_bg)) + geom_point() + geom_smooth(method=lm, se=FALSE) + 
+  ggtitle("User 1983's avg_bg reading vs. amount sleep by day") 
+
+meal1983 = meals_data %>%
+  mutate(date=date(eaten_at)) %>%
+  group_by(user_id, date) %>%
+  mutate(bgimpact=sum(bg_impact)) %>%
+  select(user_id,date,bgimpact) %>%
+  unique() %>%
+  drop_na() %>%
+  filter(user_id==1983)
+
+sleep1983 %>%
+  mutate(date=date(as.timestamp(dateOfSleep))) %>%
+  arrange(date) %>% # to perform correct scaling, must have date in ascending order
+  group_by(date) %>%
+  mutate(minutesAsleep = sum(minutesAsleep)) %>%
+  full_join(meal1983, by="date") %>% #merge?
+  select(date, minutesAsleep, bgimpact) %>%
+  drop_na() %>%
+  unique() %>%
+  ggplot(aes(x=minutesAsleep,y=bgimpact)) + geom_point() + geom_smooth(method=lm, se=FALSE) + 
+  ggtitle("User 1983's bg impact vs. amount sleep by day") 
+```
+
+```{r}
+bg1665 = bg_readings %>%
+  mutate(date=date(time)) %>%
+  filter(user_id==1665 & meals_kind=="breakfast" & readings_kind=="premeal")
+
+#user 1665's bg vs. minutesasleep by day
+sleep1665 = read.csv("~/Dropbox/MealyzerData/1665/sleep_overview.csv")
+sleep1665 %>%
+  #mutate(date=as.timestamp(dateOfSleep)) %>% # different time of sleep recorded, makes a difference? 
+  mutate(date=date(as.timestamp(dateOfSleep))) %>%
+  arrange(date) %>% # to perform correct scaling, must have date in ascending order
+  group_by(date) %>%
+  mutate(minutesAsleep = sum(minutesAsleep)) %>%
+  full_join(bg1665, by="date") %>% #merge?
+  select(date, minutesAsleep, bg) %>%
+  drop_na() %>%
+  unique() %>%
+  ggplot(aes(x=minutesAsleep,y=bg)) + geom_point() + geom_smooth(method=lm, se=FALSE) + 
+  ggtitle("User 1665's pre breakfast bg reading vs. amount sleep") 
+
+sleep1665 %>%
+  mutate(date=date(as.timestamp(dateOfSleep))) %>%
+  arrange(date) %>% # to perform correct scaling, must have date in ascending order
+  group_by(date) %>%
+  full_join(bg1665, by="date") %>% #merge?
+  select(date, efficiency, bg) %>%
+  drop_na() %>%
+  unique() %>%
+  ggplot(aes(x=efficiency,y=bg)) + geom_point() + geom_smooth(method=lm, se=FALSE) + 
+  ggtitle("User 1665's pre breakfast bg reading vs. sleep efficiency") 
+
+user1665 = bg_readings %>%
+  mutate(date=date(time)) %>%
+  group_by(user_id, date) %>%
+  mutate(avg_bg=mean(bg)) %>%
+  select(user_id,date,avg_bg) %>%
+  unique() %>%
+  filter(user_id==1665)
+
+#user 1665's avg_bg vs. minutesasleep by day
+sleep1665 %>%
+  mutate(date=date(as.timestamp(dateOfSleep))) %>%
+  arrange(date) %>% # to perform correct scaling, must have date in ascending order
+  group_by(date) %>%
+  mutate(minutesAsleep = sum(minutesAsleep)) %>%
+  full_join(user1665, by="date") %>% #merge?
+  select(date, minutesAsleep, avg_bg) %>%
+  drop_na() %>%
+  unique() %>%
+  ggplot(aes(x=minutesAsleep,y=avg_bg)) + geom_point() + geom_smooth(method=lm, se=FALSE) + 
+  ggtitle("User 1665's avg_bg reading vs. amount sleep by day") 
+
+meal1665 = meals_data %>%
+  mutate(date=date(eaten_at)) %>%
+  group_by(user_id, date) %>%
+  mutate(bgimpact=sum(bg_impact)) %>%
+  select(user_id,date,bgimpact) %>%
+  unique() %>%
+  drop_na() %>%
+  filter(user_id==1665)
+
+sleep1665 %>%
+  mutate(date=date(as.timestamp(dateOfSleep))) %>%
+  arrange(date) %>% # to perform correct scaling, must have date in ascending order
+  group_by(date) %>%
+  mutate(minutesAsleep = sum(minutesAsleep)) %>%
+  full_join(meal1665, by="date") %>% #merge?
+  select(date, minutesAsleep, bgimpact) %>%
+  drop_na() %>%
+  unique() %>%
+  ggplot(aes(x=minutesAsleep,y=bgimpact)) + geom_point() + geom_smooth(method=lm, se=FALSE) + 
+  ggtitle("User 1665's bg impact vs. amount sleep by day") 
+```
+
+```{r}
+bg1883 = bg_readings %>%
+  mutate(date=date(time)) %>%
+  filter(user_id==1883 & meals_kind=="breakfast" & readings_kind=="premeal")
+
+#user 1883's bg vs. minutesasleep by day
+sleep1883 = read.csv("~/Dropbox/MealyzerData/1883/sleep_overview.csv")
+sleep1883 %>%
+  #mutate(date=as.timestamp(dateOfSleep)) %>% # different time of sleep recorded, makes a difference? 
+  mutate(date=date(as.timestamp(dateOfSleep))) %>%
+  arrange(date) %>% # to perform correct scaling, must have date in ascending order
+  group_by(date) %>%
+  mutate(minutesAsleep = sum(minutesAsleep)) %>%
+  full_join(bg1883, by="date") %>% #merge?
+  select(date, minutesAsleep, bg) %>%
+  drop_na() %>%
+  unique() %>%
+  ggplot(aes(x=minutesAsleep,y=bg)) + geom_point() + geom_smooth(method=lm, se=FALSE) + 
+  ggtitle("User 1883's pre breakfast bg reading vs. amount sleep") 
+
+user1883 = bg_readings %>%
+  mutate(date=date(time)) %>%
+  group_by(user_id, date) %>%
+  mutate(avg_bg=mean(bg)) %>%
+  select(user_id,date,avg_bg) %>%
+  unique() %>%
+  filter(user_id==1883)
+
+#user 1883's avg_bg vs. minutesasleep by day
+sleep1883 %>%
+  mutate(date=date(as.timestamp(dateOfSleep))) %>%
+  arrange(date) %>% # to perform correct scaling, must have date in ascending order
+  group_by(date) %>%
+  mutate(minutesAsleep = sum(minutesAsleep)) %>%
+  full_join(user1883, by="date") %>% #merge?
+  select(date, minutesAsleep, avg_bg) %>%
+  drop_na() %>%
+  unique() %>%
+  ggplot(aes(x=minutesAsleep,y=avg_bg)) + geom_point() + geom_smooth(method=lm, se=FALSE) + 
+  ggtitle("User 1883's avg_bg reading vs. amount sleep by day") 
+
+meal1883 = meals_data %>%
+  mutate(date=date(eaten_at)) %>%
+  group_by(user_id, date) %>%
+  mutate(bgimpact=sum(bg_impact)) %>%
+  select(user_id,date,bgimpact) %>%
+  unique() %>%
+  drop_na() %>%
+  filter(user_id==1883)
+
+sleep1883 %>%
+  mutate(date=date(as.timestamp(dateOfSleep))) %>%
+  arrange(date) %>% # to perform correct scaling, must have date in ascending order
+  group_by(date) %>%
+  mutate(minutesAsleep = sum(minutesAsleep)) %>%
+  full_join(meal1883, by="date") %>% #merge?
+  select(date, minutesAsleep, bgimpact) %>%
+  drop_na() %>%
+  unique() %>%
+  ggplot(aes(x=minutesAsleep,y=bgimpact)) + geom_point() + geom_smooth(method=lm, se=FALSE) + 
+  ggtitle("User 1883's bg impact vs. amount sleep by day") 
+```
+
+```{r}
+bg1809 = bg_readings %>%
+  mutate(date=date(time)) %>%
+  filter(user_id==1809 & meals_kind=="breakfast" & readings_kind=="premeal")
+
+#user 1809's bg vs. minutesasleep by day
+sleep1809 = read.csv("~/Dropbox/MealyzerData/1809/sleep_overview.csv")
+sleep1809 %>%
+  #mutate(date=as.timestamp(dateOfSleep)) %>% # different time of sleep recorded, makes a difference? 
+  mutate(date=date(as.timestamp(dateOfSleep))) %>%
+  arrange(date) %>% # to perform correct scaling, must have date in ascending order
+  group_by(date) %>%
+  mutate(minutesAsleep = sum(minutesAsleep)) %>%
+  full_join(bg1809, by="date") %>% #merge?
+  select(date, minutesAsleep, bg) %>%
+  drop_na() %>%
+  unique() %>%
+  ggplot(aes(x=minutesAsleep,y=bg)) + geom_point() + geom_smooth(method=lm, se=FALSE) + 
+  ggtitle("User 1809's pre breakfast bg reading vs. amount sleep") 
+
+user1809 = bg_readings %>%
+  mutate(date=date(time)) %>%
+  group_by(user_id, date) %>%
+  mutate(avg_bg=mean(bg)) %>%
+  select(user_id,date,avg_bg) %>%
+  unique() %>%
+  filter(user_id==1809)
+
+#user 1809's avg_bg vs. minutesasleep by day
+sleep1809 %>%
+  mutate(date=date(as.timestamp(dateOfSleep))) %>%
+  arrange(date) %>% # to perform correct scaling, must have date in ascending order
+  group_by(date) %>%
+  mutate(minutesAsleep = sum(minutesAsleep)) %>%
+  full_join(user1809, by="date") %>% #merge?
+  select(date, minutesAsleep, avg_bg) %>%
+  drop_na() %>%
+  unique() %>%
+  ggplot(aes(x=minutesAsleep,y=avg_bg)) + geom_point() + geom_smooth(method=lm, se=FALSE) + 
+  ggtitle("User 1809's avg_bg reading vs. amount sleep by day") 
+
+meal1809 = meals_data %>%
+  mutate(date=date(eaten_at)) %>%
+  group_by(user_id, date) %>%
+  mutate(bgimpact=sum(bg_impact)) %>%
+  select(user_id,date,bgimpact) %>%
+  unique() %>%
+  drop_na() %>%
+  filter(user_id==1809)
+
+sleep1809 %>%
+  mutate(date=date(as.timestamp(dateOfSleep))) %>%
+  arrange(date) %>% # to perform correct scaling, must have date in ascending order
+  group_by(date) %>%
+  mutate(minutesAsleep = sum(minutesAsleep)) %>%
+  full_join(meal1809, by="date") %>% #merge?
+  select(date, minutesAsleep, bgimpact) %>%
+  drop_na() %>%
+  unique() %>%
+  ggplot(aes(x=minutesAsleep,y=bgimpact)) + geom_point() + geom_smooth(method=lm, se=FALSE) + 
+  ggtitle("User 1809's bg impact vs. amount sleep by day") 
+```
+
+
+```{r}
+bg1821 = bg_readings %>%
+  mutate(date=date(time)) %>%
+  filter(user_id==1821 & meals_kind=="breakfast" & readings_kind=="premeal")
+
+#user 1821's bg vs. minutesasleep by day
+sleep1821 = read.csv("~/Dropbox/MealyzerData/1821/sleep_overview.csv")
+sleep1821 %>%
+  #mutate(date=as.timestamp(dateOfSleep)) %>% # different time of sleep recorded, makes a difference? 
+  mutate(date=date(as.timestamp(dateOfSleep))) %>%
+  arrange(date) %>% # to perform correct scaling, must have date in ascending order
+  group_by(date) %>%
+  mutate(minutesAsleep = sum(minutesAsleep)) %>%
+  full_join(bg1821, by="date") %>% #merge?
+  select(date, minutesAsleep, bg) %>%
+  drop_na() %>%
+  unique() %>%
+  ggplot(aes(x=minutesAsleep,y=bg)) + geom_point() + geom_smooth(method=lm, se=FALSE) + 
+  ggtitle("User 1821's pre breakfast bg reading vs. amount sleep") 
+
+user1821 = bg_readings %>%
+  mutate(date=date(time)) %>%
+  group_by(user_id, date) %>%
+  mutate(avg_bg=mean(bg)) %>%
+  select(user_id,date,avg_bg) %>%
+  unique() %>%
+  filter(user_id==1821)
+
+#user 1821's avg_bg vs. minutesasleep by day
+sleep1821 %>%
+  mutate(date=date(as.timestamp(dateOfSleep))) %>%
+  arrange(date) %>% # to perform correct scaling, must have date in ascending order
+  group_by(date) %>%
+  mutate(minutesAsleep = sum(minutesAsleep)) %>%
+  full_join(user1821, by="date") %>% #merge?
+  select(date, minutesAsleep, avg_bg) %>%
+  drop_na() %>%
+  unique() %>%
+  ggplot(aes(x=minutesAsleep,y=avg_bg)) + geom_point() + geom_smooth(method=lm, se=FALSE) + 
+  ggtitle("User 1821's avg_bg reading vs. amount sleep by day") 
+
+meal1821 = meals_data %>%
+  mutate(date=date(eaten_at)) %>%
+  group_by(user_id, date) %>%
+  mutate(bgimpact=sum(bg_impact)) %>%
+  select(user_id,date,bgimpact) %>%
+  unique() %>%
+  drop_na() %>%
+  filter(user_id==1821)
+
+sleep1821 %>%
+  mutate(date=date(as.timestamp(dateOfSleep))) %>%
+  arrange(date) %>% # to perform correct scaling, must have date in ascending order
+  group_by(date) %>%
+  mutate(minutesAsleep = sum(minutesAsleep)) %>%
+  full_join(meal1821, by="date") %>% #merge?
+  select(date, minutesAsleep, bgimpact) %>%
+  drop_na() %>%
+  unique() %>%
+  ggplot(aes(x=minutesAsleep,y=bgimpact)) + geom_point() + geom_smooth(method=lm, se=FALSE) + 
+  ggtitle("User 1821's bg impact vs. amount sleep by day") 
+```
+
+
+
+
+
 
 
