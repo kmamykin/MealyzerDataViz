@@ -3,7 +3,7 @@
 ## Consistent meal times vs grazers
 
 ```{r fig.width=5}
-meals_data %>%
+meals.selected %>%
   mutate(eaten_at_hour = hour(eaten_at)) %>%
   ggplot() +
   geom_histogram(aes(x=eaten_at_hour), bins = 24) +
@@ -21,7 +21,7 @@ Talking point: eating patterns of people - two humps, three humps, no pattern. I
 ## Meal kind analysis
 
 ```{r fig.width=4}
-dplyr::summarise(group_by(meals_data, user_id, kind), freq = n()) %>%
+dplyr::summarise(group_by(meals.selected, user_id, kind), freq = n()) %>%
   group_by(user_id) %>%
   mutate(prop = freq/sum(freq)) %>%
   ungroup() %>%
@@ -38,7 +38,7 @@ dplyr::summarise(group_by(meals_data, user_id, kind), freq = n()) %>%
 Talking point: lots of people eat breakfast, lot o people capture snacks (good study subjects)
 
 ```{r fig.width=4}
-meals_data %>%
+meals.selected %>%
   select(user_id,carbs_eval, protein_eval,fat_eval,fiber_eval) %>%
   gather(key = "variable", value, -user_id) %>%
   group_by(user_id, variable) %>%
@@ -70,24 +70,20 @@ focus_user_id = "2475"
 ```
 
 ```{r fig.width=18, fig.height=18}
-library(lattice) #sploms
-
-meals_data %>%
+meals.selected %>%
   filter(user_id == focus_user_id) %>%
   mutate(
     protein_fat=eval_proportion_protein-eval_proportion_fat, 
     protein_carb=eval_proportion_protein-eval_proportion_carbs, 
     carb_fat=eval_proportion_carbs-eval_proportion_fat) %>%
   select(calories_eval, carbs_eval, fat_eval, protein_eval, fiber_eval, premeal_bg, postmeal_bg, bg_impact, protein_fat, protein_carb, carb_fat) %>%
-  splom()
+  lattice::splom()
 ```
 
 
 
 ```{r fig.width=18, fig.height=18}
-library(lattice) #sploms
-
-meals_data %>%
+meals.selected %>%
   filter(user_id == focus_user_id) %>%
   mutate(
     protein_fat_log_ratio=log(eval_proportion_protein/(eval_proportion_fat+0.0000001)), 
@@ -95,7 +91,7 @@ meals_data %>%
     carb_fat_log_ratio=log(eval_proportion_carbs/(eval_proportion_fat+0.0000001))
   ) %>%
   select(eval_calories_computed, eval_proportion_carbs, eval_proportion_fat, eval_proportion_protein, premeal_bg, postmeal_bg, bg_impact, protein_fat_log_ratio, protein_carb_log_ratio, carb_fat_log_ratio) %>%
-  splom()
+  lattice::splom()
 ```
 
 
@@ -112,7 +108,7 @@ Talking points:
 ### Meal BG impact visualization
 
 ```{r fig.width=15}
-meals_data %>% 
+meals.selected %>% 
   #filter(user_id == focus_user_id) %>%
   ggplot() +
   facet_wrap(~user_id, ncol = 7) + 
@@ -140,7 +136,7 @@ display_meals <- function(df, ncol = 6, nrow = 3, rotate = 0) {
   r2d3(data=images, script = "display_meals.js", container = "div", options=list(ncol=ncol, nrow=nrow, rotate=rotate))
 }
 
-meals_data %>%
+meals.selected %>%
   filter(user_id == focus_user_id) %>%
   arrange(desc(calories_eval)) %>%
   #print_df(bg_impact, title, ingredients, calories_eval) %>%
@@ -149,7 +145,7 @@ meals_data %>%
 
 
 ```{r}
-meals_data %>%
+meals.selected %>%
   filter(user_id == focus_user_id) %>%
   arrange(calories_eval) %>%
   #print_df(bg_impact, title, ingredients, calories_eval) %>%
@@ -164,7 +160,7 @@ Talking point:
 ## Meal nutrients evaluator vs user
 
 ```{r fig.width=6}
-meals_data %>%
+meals.imputed %>%
   mutate(
     calories_diff = calories_user - calories_eval,
     carbs_diff = carbs_user - carbs_eval,
@@ -187,7 +183,7 @@ THis is BIG! no need to do evaluator estimates if usrs are good at that.
 
 
 ```{r }
-meals_data %>%
+meals.imputed %>%
   mutate(
     calories_diff = calories_user - calories_eval,
     carbs_diff = carbs_user - carbs_eval,
@@ -219,7 +215,7 @@ Question TODO: have users started to eat less in general or changed the nutritio
 
 
 ```{r fig.width=6}
-meals_data %>%
+meals.selected %>%
   mutate(eaten_at_date = as.Date(eaten_at, tz = "EST")) %>%
   filter(eaten_at_date <"2019-04-01") %>%
   group_by(user_id, eaten_at_date) %>%
@@ -236,7 +232,7 @@ meals_data %>%
 
 
 ```{r fig.width=6}
-meals_data %>%
+meals.selected %>%
   mutate(eaten_at_date = as.Date(eaten_at, tz = "EST")) %>%
   filter(eaten_at_date <"2019-04-01") %>%
   group_by(user_id, eaten_at_date) %>%
@@ -252,7 +248,8 @@ meals_data %>%
 
 
 ```{r}
-bg_readings %>%
+bg_readings.all %>%
+  filter(user_id %in% users.selected[['user_id']]) %>%
   filter(time <"2019-05-01 00:00:00") %>%
   ggplot(aes(x = time, y = bg)) +
   geom_line() +
@@ -264,7 +261,8 @@ Also look at "fasting" bg overtime. Our data is a proxy for the true "fasting" B
 
 
 ```{r}
-bg_readings %>%
+bg_readings.all %>%
+  filter(user_id %in% users.selected[['user_id']]) %>%
   #mutate(time = round_date(time, '1 hours')) %>%
   mutate(time = format(as.POSIXct(time,format="%H:%M:%S"),"%H")) %>%
   group_by(user_id, time) %>%
