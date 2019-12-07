@@ -12,3 +12,5 @@ How the data was obtained
 What the application do
 
 The goal of this vizualization project (initial look at the data)
+
+A lot of plots use facets to highlight patterns and differences between users. Almost like sparklines these faceted plots allow to glimpse individual user stats but mainly focus on the contrast and comparison between users. To facilitate comparison across plots the user facets are consistently sorted on the user_id so that the same user consistently appers in the same position on all plots.

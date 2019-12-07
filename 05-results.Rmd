@@ -51,26 +51,38 @@ meals.selected %>%
 
 User 2254 (classified as "grazer") does indeed eat a lot of snacks, which is consistent with the distribution of her times of meals. The "two meals" users like 2942 and 2800 are eating breakfast and lunch, but not dinner, and user 2948 is a bit of a mistery. The times of the meals are clearly centered around just two key times, but meal kind distribution contains breakfast, lunch and dinner.
 
-It's good to see that breakfast is prominantly featured in almost all users. Another observation is that some users eat a lot of snacks, and some users do not.
+It's good to see that breakfast is prominantly featured in almost all users. 
+
+Another observation is that some users eat a lot of snacks, and some users do not.
 
 
 ```{r fig.width=4}
 meals.selected %>%
-  select(user_id,carbs_eval, protein_eval,fat_eval,fiber_eval) %>%
-  gather(key = "variable", value, -user_id) %>%
-  group_by(user_id, variable) %>%
-  summarise(total=sum(value, na.rm = T)) %>%
-  group_by(user_id) %>%
+  filter(!is.na(calories_eval)) %>%
+  select(user_fct, kind, Carbs = carbs_eval, Protein = protein_eval, Fat = fat_eval, Fiber = fiber_eval) %>%
+  gather(key = "Nutrient", value, -user_fct, -kind) %>%
+  group_by(user_fct, Nutrient) %>%
+  summarise(total=sum(value)) %>%
+  group_by(user_fct) %>%
   mutate(prop = total/sum(total)) %>%
   ungroup() %>%
-  ggplot(aes(x = user_id, y = prop, fill = forcats::fct_rev(variable))) +
-      geom_bar(stat = "identity") + 
-      coord_flip() + 
-      labs(x = "User ID",
-           y = "Proportion",
-           title = "Proportion of All Meals by Nutrient") + 
-           theme(legend.title = element_blank(), legend.position="bottom") +
-  guides(fill = guide_legend(nrow = 1, reverse=T))
+  mutate(Nutrient = fct_relevel(Nutrient, "Carbs", "Protein", "Fat", "Fiber")) %>% 
+  ggplot() +
+  geom_bar(aes(x = Nutrient, y = prop, fill = Nutrient), stat = "identity") + 
+  facet_wrap(~user_fct, ncol = 6) + 
+  labs(
+    x = "Nutrient",
+    y = "Proportion",
+    title = "Proportion of Nutrients"
+  ) + 
+  guides(fill = guide_legend(nrow = 1)) +
+  theme(
+    legend.title = element_blank(), 
+    legend.position="bottom",
+    axis.title.x = element_blank(),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank()
+  )
   
 ```
 
