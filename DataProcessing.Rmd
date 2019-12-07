@@ -84,7 +84,7 @@ head(bg_readings)
 ```
 ```{r}
 # No NA's in the bg_readings file
-extracat::visna(bg_readings)
+#extracat::visna(bg_readings)
 ```
 
 
@@ -285,29 +285,108 @@ bg_readings %>%
 ```
 
 
-### Plotting pre/post meal bg ,faceting on user_id
+### Plotting pre/post meal bg, without faceting
 
 ```{r}
-bg_readings %>%
-  group_by(meal_id) %>%
-  mutate(premeal = first(bg), postmeal =last(bg)) %>%
-  select(user_id, meals_kind, premeal, postmeal) %>%
-  distinct() %>%
-  ggplot(aes(x=premeal, y=postmeal)) +
-  geom_point(size = 0.2, aes(colour=meals_kind)) +
-  facet_wrap(~user_id, ncol = 7)
+meals_data %>%
+  select(user_id, meal_id, kind, premeal_bg, postmeal_bg) %>%
+  drop_na() %>%
+  ggplot(aes(x=premeal_bg, y=postmeal_bg, col=kind)) + geom_point(size=0.3) + geom_abline(intercept = 0, slope = 1, alpha=0.3)
+```
+
+### Plotting pre/post meal bg, faceting on user_id
+
+```{r}
+meals_data %>%
+  select(user_id, meal_id, kind, premeal_bg, postmeal_bg) %>%
+  drop_na() %>%
+  ggplot(aes(x=premeal_bg, y=postmeal_bg, col=kind)) + geom_point(size=0.3) + geom_abline(intercept = 0, slope = 1, alpha=0.3) +
+  facet_wrap(~user_id, ncol=7)  
+```
+
+From the above charts we see the patterns of premeal and postmeal bg level for each user, and the color shows the kind of meals for the specific meal. When we see linear trends, we interpret it as the user has similar bg level even after meals. 
+
+### Plotting pre/post meal bg, with trends based on meal kinds, faceting on user_id
+
+```{r}
+meals_data %>%
+  select(user_id, meal_id, kind, premeal_bg, postmeal_bg) %>%
+  drop_na() %>%
+  ggplot(aes(x=premeal_bg, y=postmeal_bg, col=kind)) + geom_point(size=0.3) + geom_smooth(method=lm, se=FALSE) +
+  facet_wrap(~user_id, ncol=7)  
 ```
 
 
+### The average BG impact for each meal kind, faceting on user_id
+
+```{r}
+#  filter(user_id==88 && meals_kind == "breakfast") 
+#  filter(user_id==1883) %> summarise(n())
+
+meals_data %>%
+  filter(eaten_at < "2019-04-01") %>%
+  select(user_id, meal_id, kind, bg_impact) %>%
+  drop_na() %>%
+  group_by(user_id, kind) %>%
+  filter(length(bg_impact)>5) %>%
+# summarise(h=length(bg_impact))
+  summarise(avgimpact=sum(bg_impact)/length(bg_impact)) %>%
+  ggplot(aes(x=kind,y=avgimpact)) + geom_col() +
+  facet_wrap(~user_id, ncol=7) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+#bg_readings %>%
+# filter(user_id==56 && meal_id==602) non exist in bg_readings
+#  filter(user_id==1665 & meal_id==2399)
+
+meals_data %>%
+  filter(eaten_at < "2019-04-01") %>%
+  select(user_id, meal_id, kind, bg_impact) %>%
+  drop_na() %>% #getting rid of the ones without bg impact 
+  filter(user_id==1665 & kind == "breakfast")
+```
+
+### Plotting pre/post meal bg, we look at breakfast only, faceting on user_id
+
+```{r}
+meals_data %>%
+  select(user_id, meal_id, kind, premeal_bg, postmeal_bg) %>%
+  drop_na() %>%
+  filter(kind =="breakfast") %>%
+  ggplot(aes(x=premeal_bg, y=postmeal_bg, col=kind)) + geom_point(size=0.3) + geom_smooth(method=lm, se=FALSE, color="grey") +
+  facet_wrap(~user_id, ncol=7)
+```
+
+
+### Total Calories Intake by Day
 ```{r}
 meals_data %>%
   mutate(eaten_at_date = as.Date(eaten_at, tz = "EST")) %>%
   filter(eaten_at_date <"2019-04-01") %>%
+  group_by(user_id,kind) %>%
+  #filter(length(meal_id)>5) %>%
   group_by(user_id, eaten_at_date) %>%
   summarise(sum_by_day = sum(calories_eval)) %>%
   ggplot(aes(x=eaten_at_date, y=sum_by_day))+
   geom_point(size=0.3)+
-  geom_smooth(method = "lm")+
+  geom_smooth(method = "lm", size=0.8)+
+  facet_wrap(~user_id, ncol=7)
+```
+
+### Calories by Meal
+```{r}
+meals_data %>%
+  mutate(eaten_at_date = as.Date(eaten_at, tz = "EST")) %>%
+  filter(eaten_at_date <"2019-04-01") %>%
+  group_by(user_id,kind) %>%
+  #filter(user_id==1883) %>%
+  #summarise(n())
+  filter(length(meal_id)>5) %>%
+  #group_by(user_id, eaten_at_date,kind) %>%
+  #summarise(sum_by_day = sum(calories_eval)) %>%
+  ggplot(aes(x=eaten_at_date, y=calories_eval, col=kind))+
+  geom_point(size=0.3)+
+  geom_smooth(method = "lm",se= F, size=0.8)+
   facet_wrap(~user_id, ncol=7)
 ```
 
@@ -328,6 +407,8 @@ dplyr::summarise(group_by(meals_data, user_id, kind), freq = n()) %>%
 ```{r}
 # Proportion of Meals by Nutrient - Expert Evaluation
 meals_data %>%
+  #filter(kind %in% c("dinner","breakfast")) %>%
+  #filter(eaten_at < "2019-01-10") %>%
   select(user_id,carbs_eval, protein_eval,fat_eval,fiber_eval) %>%
   gather(key = "variable", value, -user_id) %>%
   group_by(user_id, variable) %>%
@@ -430,27 +511,14 @@ meals_data %>%
 ```
 
 
-```{r}
-sleep = read_mealyzer_files(raw_data_path,users[["user_id"]],"sleep.csv", add_user_id = FALSE, col_types = cols())
-```
 
-```{r}
-focus_user_id = "1983"
-sleep = read_csv(file.path(raw_data_path, focus_user_id,"sleep.csv"), col_types = cols()) %>%
-  mutate(time = as.timestamp(time))
-```
-
-```{r}
-sleep %>%
-  ggplot() +
-  geom_point(aes(x=time, y= seconds,color=factor(level)), size=0.5)
-```
 ```{r}
 # BG level overview for all users
 bg_readings %>%
-  filter(time <"2019-05-01 00:00:00") %>%
-  ggplot(aes(x = time, y = bg)) +
-  geom_line(size=0.1) +
+  filter(time <"2019-04-01") %>%
+  ggplot(aes(x=time, y=bg, color=factor(meals_kind)))+
+  geom_point(size = 0.05)+
+  geom_smooth(method = "lm", se=F, size=0.8)+
   facet_wrap(~user_id,ncol=7) +
   theme(axis.text=element_text(size=5, angle = 90))
 ```
@@ -459,10 +527,10 @@ bg_readings %>%
 bg_readings %>%
   #mutate(time = round_date(time, '1 hours')) %>%
   mutate(time = format(as.POSIXct(time,format="%H:%M:%S"),"%H")) %>%
-  group_by(user_id, time) %>%
+  group_by(user_id, time, readings_kind) %>%
   summarise(avg_bg = mean(bg)) %>%
-  ggplot(aes(x=time, y=avg_bg))+
-  geom_point(size=0.3)+
+  ggplot(aes(x=time, y=avg_bg, color=factor(readings_kind)))+
+  geom_point(size = 0.3)+
   facet_wrap(~user_id, ncol=7) +
   labs(x="Hour", y="Average BG Level")+
   ggtitle("Average BG Level by Hour") +
