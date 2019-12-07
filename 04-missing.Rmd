@@ -6,7 +6,7 @@ Not every user appears to have every dataset available. While BG recordings and 
 
 ```{r}
 users.all %>%
-  # Fake false values with NAs to visualize it as missing
+  # Fake false data availability flags with NAs to visualize it as missing
   mutate(
     has_sleep = ifelse(has_sleep, has_sleep, NA),
     has_activities_calories = ifelse(has_activities_calories, has_activities_calories, NA),
@@ -16,12 +16,14 @@ users.all %>%
   visdat::vis_dat()
 ```
 
-Number of complete users with all data present (including fitbit data and complete meals):
 ```{r}
 users.all %>%
   filter(has_sleep & has_activities_steps & has_activities_calories & has_activities_distance & !is.na(complete_meals)) %>%
   count()
 ```
+
+We have only 7 users with all data present (including complete meals anbd fitbit data), and that is not even taking into account the number of quality meals for those users. The consequence of this sparse data availability is that for different analysis we would need to use different slices of the overall data and different sets of users. When analyzing data for a particular user, the user selection matters a lot.
+
 
 ## Meals data availability
 
@@ -29,14 +31,23 @@ users.all %>%
 visdat::vis_dat(meals.all)
 ```
 
+There are several patterns of missing values that can be seen from this plot.
+
+`platemate_id` is almost universally missing from all meals.
+
+`premeal_bg` and `premeal_bg_time` are 100% present. The application did not allow recording a meal without also recording BG reading taken shortly before the meal. 
+
+`postmeal_bg` and `postmeal_bg_time` on the other hand are not recorded for all meals. This is because despite of the applications sending notifications to the users 2h after the meal reminding to record a postmeal BG, users dodn't do it for every meal. Further we show a breakdown of "compliance" for taking postmeal BG, and a way to impute the missing values.
+
+Some relatively small percentage of meal are missing the "eval" (evaluator's) fields on the nutritional meal breakdown (e.g. `calories_eval`, `eval_calories_computed`, `eval_proportion_carbs`...). 
+
+The "user" nutritional breakdown values are mostly missing (fields like `calories_user`, `user_calories_computed`, `user_proportion_carbs`...). 
+
 ```{r fig.height=3}
 extracat::visna(meals.raw)
 ```
 
-
-## Imputing post-meal BG
-
-Its evident that a lot of records are missing postmeal BG records, probably indicating that the users did not record another BG reading in the app when a 2h notification arrived. However, the value of postmeal_bg and postmeal_bg_time can be imputed, considering that in some cases users ate a meal and recorded a BG reading with it before 2h elapsed. And sometimes the next meal premeal BG reading can be considered as the postmeal BG reading. 
+## Visualizing user compliance on recording postmeal BG
 
 ```{r fig.width=3,fig.asp=1.5}
 meals.all %>%
@@ -59,6 +70,14 @@ meals.all %>%
   theme(legend.position = "right")
 ```
 
+There does not seem to be any patterns in this visualization beyond staing that some users were diligent and recorded most of the postmeals BG, some totally ignored it, and the majority of users are somewhere in between.
+
+## Imputing post-meal BG
+
+As shown before, a lot of meals are missing postmeal BG records, indicating that the users did not record another BG reading around 2h mark as instructed. However, the value of postmeal_bg and postmeal_bg_time can be imputed, considering that in some cases users ate the next meal and recorded a BG reading with it. We impute missing postmeal values with the next meal premeal values. 
+
+
+
 
 ```{r}
 meals.imputed = meals.all %>%
@@ -73,8 +92,18 @@ meals.imputed = meals.all %>%
     bg_impact = postmeal_bg - premeal_bg,
     bg_impact_slope = bg_impact / (premeal_bg_delay_minutes + postmeal_bg_delay_minutes)
   ) %>%
-  filter(premeal_bg_delay_minutes >= 0 & postmeal_bg_delay_minutes >= 0 ) # keep only positive delays
+  # keep only positive delays, this filters out boundary meals when user_id changes in the dataset and getting the next record meal will be incorrect.
+  filter(!is.na(premeal_bg_delay_minutes) & premeal_bg_delay_minutes >= 0 & !is.na(postmeal_bg_delay_minutes) & postmeal_bg_delay_minutes >= 0 ) 
 ```
+
+After imputing `postmeal_bg` and `postmeal_bg_time` several new metrics were calculated:
+
+* `premeal_bg_delay_minutes` calculated number of minutes before premeal BG is taken and the meal
+* `postmeal_bg_delay_minutes` calculated number of minutes after the meal when postmeal BG was taken
+* `bg_impact` calculated difference between `postmeal_bg` and `premeal_bg`
+* `bg_impact_slope` ratio of `bg_impact` over the duration in minutes between post-meal and pre-meal times. Higher `bg_impact_slope` means faster BG increase abter the meal
+
+
 
 ```{r fig.width=6}
 visdat::vis_dat(meals.imputed)
