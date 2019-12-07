@@ -34,25 +34,12 @@ extracat::visna(meals.raw)
 ```
 
 
-### Selecting users for the analysis
-
-Not all users used the application in the same capacity, and some recorded very few meals. For the further analysis we select only those users that recorded at least 14 meals (threshold picked such that 28 users were selected for easy facetting in a grid)
-
-```{r}
-users.selected = users.all %>%
-  filter(complete_meals > 14)
-print(users.selected[["user_id"]])
-```
-
-
-
 ## Imputing post-meal BG
 
 Its evident that a lot of records are missing postmeal BG records, probably indicating that the users did not record another BG reading in the app when a 2h notification arrived. However, the value of postmeal_bg and postmeal_bg_time can be imputed, considering that in some cases users ate a meal and recorded a BG reading with it before 2h elapsed. And sometimes the next meal premeal BG reading can be considered as the postmeal BG reading. 
 
-```{r}
+```{r fig.width=3,fig.asp=1.5}
 meals.all %>%
-  filter(user_id %in% users.selected[["user_id"]]) %>%
   mutate(premeal_bg_exist = ifelse(is.na(premeal_bg), 0, 1), postmeal_bg_exist = ifelse(is.na(postmeal_bg), 0, 1)) %>%
   group_by(user_id) %>%
   summarise(all_meals = sum(premeal_bg_exist), Present = sum(postmeal_bg_exist)) %>%
@@ -100,14 +87,14 @@ THere were different versions of the app. Some versions of the app asked users t
 
 ```{r fig.height=2}
 g1 = meals.imputed %>%
-  filter(user_id %in% users.selected[["user_id"]]) %>%
+  #filter(user_id %in% users.selected[["user_id"]]) %>%
   filter(premeal_bg_delay_minutes >= 0 & premeal_bg_delay_minutes <= 60) %>%
   ggplot() +
   geom_boxplot(aes(y = -premeal_bg_delay_minutes)) + 
   scale_y_continuous(breaks=c(0, -15, -30, -45, -60), labels = c("0", "15m", "30m", "45m", "1h"), limits = c(-60, 0), expand = expand_scale(mult = c(0.1, 0))) + 
   coord_flip() +
   labs( 
-    y = "Premeal"
+    y = "Premeal delay"
   ) + 
   theme(
     axis.title.y = element_blank(),
@@ -123,7 +110,7 @@ g2 = meals.imputed %>%
   scale_y_continuous(breaks=c(0, 60, 120, 180, 240, 300), labels = c("0", "1h", "2h", "3h", "4h", "5h"), limits = c(0, 1000), expand = expand_scale(mult = c(0, .05))) + 
   coord_flip() +
   labs( 
-    y = "Postmeal"
+    y = "Postmeal delay"
   ) + 
   theme(
     axis.title.y = element_blank(),
@@ -132,9 +119,11 @@ g2 = meals.imputed %>%
   )
 
 gridExtra::grid.arrange(
-  g1, g2, widths = c(2, 6), heights = c(1,1),
+  g1, g2, nrow = 2,
+  heights = c(1, 1),
   top = "Pre and Post meal delays for BG"
 )
+
 ```
 
 Talking point: at some version the users were prevented from entering post meal before they are entered premeal, and users were forced to re-enter (backfill) previous meal BG. This led to a lot og outlyers.
@@ -142,14 +131,33 @@ Talking point: at some version the users were prevented from entering post meal 
 
 TODO: explain how the data was backfilled, not every user captured post BG in the app, even after reminders. However later on the association between the meal and pre and post BG were re-calculated based on the timestamps and pre/post BG were picked as timestamps around the meal.
 
+### Selecting users for the analysis
+
+Not all users used the application in the same capacity, and some recorded very few meals. For the further analysis we select only those users that recorded at least 14 meals (threshold picked such that 28 users were selected for easy facetting in a grid)
+
+```{r}
+selected_user_ids = meals.imputed  %>%
+  filter(premeal_bg_delay_minutes >= 0 & premeal_bg_delay_minutes <= 60) %>% # Limit premeal bg delay to 1h
+  filter(postmeal_bg_delay_minutes >= 0 & postmeal_bg_delay_minutes <= 240) %>% # Limit postmeal bg delay to 4h 
+  group_by(user_id) %>%
+  summarise(Freq = n()) %>%
+  ungroup() %>%
+  arrange(desc(Freq)) %>%
+  top_n(24, Freq)
+selected_user_ids = selected_user_ids[['user_id']]
+print(selected_user_ids)
+```
+
 ## Final clean meals dataset
 
 Limit the final meals dataset with filtered users
 
 ```{r}
 meals.selected = meals.imputed %>%
-  filter(user_id %in% users.selected[["user_id"]]) %>%
+  filter(user_id %in% selected_user_ids) %>%
   filter(premeal_bg_delay_minutes >= 0 & premeal_bg_delay_minutes <= 60) %>% # Limit premeal bg delay to 1h
   filter(postmeal_bg_delay_minutes >= 0 & postmeal_bg_delay_minutes <= 240) # Limit postmeal bg delay to 4h 
 ```
+
+
 

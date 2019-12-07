@@ -111,7 +111,7 @@ Talking points:
 meals.selected %>% 
   #filter(user_id == focus_user_id) %>%
   ggplot() +
-  facet_wrap(~user_id, ncol = 7) + 
+  facet_wrap(~user_id, ncol = 6) + 
   geom_segment(aes(x = -premeal_bg_delay_minutes, xend = postmeal_bg_delay_minutes, y=premeal_bg, yend=postmeal_bg), alpha = 0.5) + 
   scale_x_continuous(breaks=c(-15, 0, 60, 120, 180, 240), labels = c("-15min", "0", "1h", "2h", "3h", "4h"), limits = c(-15, 180)) + 
   theme(
