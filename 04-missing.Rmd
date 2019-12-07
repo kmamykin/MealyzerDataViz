@@ -178,21 +178,21 @@ The postmeal BG delays have a median around 2h 15min, due the fact that the app 
 Not all users used the application in the same capacity, and some recorded very few meals. For the further analysis we select only those users that recorded at least 14 meals (threshold picked such that 28 users were selected for easy facetting in a grid)
 
 ```{r}
-selected_user_ids = meals.imputed  %>%
+users.selected = meals.imputed  %>%
   filter(premeal_bg_delay_minutes > 0 & premeal_bg_delay_minutes <= 60) %>% # Limit premeal bg delay to 1h
   filter(postmeal_bg_delay_minutes > 0 & postmeal_bg_delay_minutes <= 240) %>% # Limit postmeal bg delay to 4h 
   group_by(user_id) %>%
   summarise(Freq = n()) %>%
   ungroup() %>%
   arrange(desc(Freq)) %>%
-  top_n(24, Freq) # 24 chosed to fit in a 6x4 facet grid
-selected_user_ids = selected_user_ids[['user_id']]
+  head(24) # 24 chosed to fit in a 6x4 facet grid
+selected_user_ids = users.selected[['user_id']]
 print(selected_user_ids)
 ```
 
-## Final clean meals dataset
+## Final selected meals subset for BG impact analysis
 
-Limit the final meals dataset with filtered users
+We limit the list of all meals with imputed values to only those users with the most meals and where pre and post meal delays are withing acceptable range (1h for premeal delay and 4h for postmeal delay).
 
 ```{r}
 meals.selected = meals.imputed %>%

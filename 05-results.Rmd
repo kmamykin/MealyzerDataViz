@@ -7,16 +7,20 @@ meals.selected %>%
   mutate(eaten_at_hour = hour(eaten_at)) %>%
   ggplot() +
   geom_histogram(aes(x=eaten_at_hour), bins = 24) +
-  facet_wrap(~user_id, ncol = 7) + 
+  facet_wrap(~user_fct, ncol = 6) + 
   labs(
-    title = "Distribution of hours when users had a meal"
+    title = "Time of day when users had a meal",
+    x = "Hour of day",
+    y = "Number of meals"
   ) + 
   theme(
     #strip.text = element_text(size=25)
   )
 ```
-Talking point: eating patterns of people - two humps, three humps, no pattern. If eating twice a day, what meal ater they skipping?
 
+Interesting to node the different pattern that can be seen. The are users (like 2004, 2262, 2392, 24, 2475, 2890, 56, 57, 58) who have a well defined 3 humps pattern. THose users tend to eat their 3 meals of the day at regular times. The users 2942, 2948, 2800 have a defined 2 hump pattern, eating only 2 meals a day. And then there are "grazers" like users 2254, 2536 who seem to be eating either all the time or with no consistent times.
+
+TODO: If eating twice a day, what meal ater they skipping?
 
 ## Meal kind analysis
 
