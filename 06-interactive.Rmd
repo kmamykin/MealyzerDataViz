@@ -31,15 +31,11 @@ opts_chunk$set(echo = FALSE, comment="", warning = FALSE, message = FALSE, tidy.
 ```
 
 
-
-
 ```{r}
 # Data Import
 raw_data_path = "~/Dropbox/MealyzerData"
 mealyser_data_overview = read_csv(file.path(raw_data_path, "mealyzer_data_overview.csv"), col_types = cols())
 ```
-
-
 
 
 ```{r}
@@ -114,12 +110,10 @@ meals_data = read_mealyzer_files(raw_data_path, users[["user_id"]], "mealyzer_da
 ```
 
 
-
 ```{r constants}
 users <- mealyser_data_overview %>%
   filter(complete_meals > 14)
 user_list <- as.character(users[["user_id"]])
-
 meal_kind <- as.character(unique(meals_data[["kind"]]))
 ```
 
@@ -133,26 +127,28 @@ We are analyzing data from a proprietary application which allows users to recor
 Click on the tabs to see different reports.
 
 
-Nutrient Proportion
+Nutrient Overview
 ===================================
 
 
-Row {data-height=500}
+Row {data-width=100}
 -------------------------------------
 
 ```{r respondents}
 inputPanel(
   selectInput(inputId="user_id_tab", label = "Select Users:", choices = user_list, selected = user_list, multiple = TRUE),
   selectInput(inputId="meal_kind_tab", label = "Select Meal Type:", choices = meal_kind, selected = meal_kind, multiple = TRUE), 
-  dateRangeInput(inputId="date_range_tab", label= "Select Date Range:", start = "2019-01-01", end = "2019-06-01", min = "2019-01-01",
+  dateRangeInput(inputId="date_range_tab", label= "Select Date Range:", start = "2019-01-01", end = "2019-04-01", min = "2019-01-01",
   max = "2019-06-01", format = "yyyy-mm-dd", startview = "month",
   weekstart = 0, language = "en", separator = " to ", width = NULL,
   autoclose = TRUE)
 )
 ```
 
-## Column 1
 
+Row {data-width=400}
+-------------------------------------
+### Chart 1
 ```{r}
 renderPlot({
   # Proportion of Meals by Nutrient - Expert Evaluation
@@ -172,7 +168,7 @@ renderPlot({
         coord_flip() + 
         labs(x = "User ID",
              y = "Proportion",
-             title = "Proportion of All Meals by Nutrient - Expert Evaluation") + 
+             title = "Proportion of Meals by Nutrient - Expert Evaluation") + 
              theme(plot.title = element_text(face = "bold"), legend.title = element_blank(), legend.position="bottom") +
     guides(fill = guide_legend(nrow = 1, reverse=T))
 })
@@ -180,7 +176,7 @@ renderPlot({
 ```
 
 
-## Column 2
+### Chart 2
 ```{r}
 renderPlot({
   # Proportion of Meals by Nutrient - Self Evaluation
@@ -200,81 +196,329 @@ renderPlot({
         coord_flip() + 
         labs(x = "User ID",
              y = "Proportion",
-             title = "Proportion of All Meals by Nutrient - Self Evaluation") + 
+             title = "Proportion of Meals by Nutrient - Self Evaluation") + 
              theme(plot.title = element_text(face = "bold"), legend.title = element_blank(), legend.position="bottom") +
     guides(fill = guide_legend(nrow = 1, reverse=T))
 })
 
 ```
 
-
-Daily Intake of Calories
-===================================
-
-
-Row {data-height=500}
+Row {data-width=500}
 -------------------------------------
-
+### Chart 3
 ```{r}
-inputPanel(
-  selectInput(inputId="meal_kind_tab2", label = "Select Meal Type:", choices = meal_kind, selected = meal_kind, multiple = TRUE), 
-  dateRangeInput(inputId="date_range_tab2", label= "Select Date Range:", start = "2019-01-01", end = "2019-06-01", min = "2019-01-01",
-  max = "2019-06-01", format = "yyyy-mm-dd", startview = "month",
-  weekstart = 0, language = "en", separator = " to ", width = NULL,
-  autoclose = TRUE)
-)
-
 renderPlot({
   meals_data %>%
-    filter(kind %in% input$meal_kind_tab2) %>%
-    filter(eaten_at >= input$date_range_tab2[1] & eaten_at <= input$date_range_tab2[2]) %>%
-    mutate(eaten_at_date = as.Date(eaten_at, tz = "EST")) %>%
-    group_by(user_id, eaten_at_date) %>%
-    summarise(sum_by_day = sum(calories_eval)) %>%
-    ggplot(aes(x=eaten_at_date, y=sum_by_day))+
-    geom_point(size=0.3)+
-    geom_smooth(method = "lm")+
+    filter(user_id %in% input$user_id_tab) %>%
+    filter(kind %in% input$meal_kind_tab) %>%
+    filter(eaten_at >= input$date_range_tab[1] & eaten_at <= input$date_range_tab[2]) %>%
+    mutate(date = as.Date(eaten_at, tz = "EST")) %>%
+    select(user_id, date, carbs_eval, protein_eval, fat_eval, fiber_eval) %>%
+    drop_na() %>%
+    gather(key = key, value = value, -user_id, -date) %>%
+    mutate(key = fct_rev(factor(key))) %>%
+    filter(value < 100)  %>%
+    ggplot(aes(x = date, y = value, col=key)) + 
+    geom_point(size=0.3) + geom_smooth(method=lm, se=FALSE) +
     facet_wrap(~user_id, ncol=7) +
-    labs(x = "Date",
-               y = "Calories Intake",
-               title = "Total Calories Intake by Day") +
-    theme(plot.title = element_text(face = "bold"))
+    labs(x = "Date",y = "Weights", title = "Weights of Food Intake by Nutrient Over Time") +
+    theme(plot.title = element_text(face = "bold"), legend.title = element_blank()) +
+    guides(colour = guide_legend(reverse=T))
 })
+
 ```
 
 
-Blood Glucose Levels by Hour
+
+Blood Glucose Overview
 ===================================
 
 
-Row {data-height=500}
+Row {data-width=100}
 -------------------------------------
 ```{r}
 inputPanel(
   selectInput(inputId="meal_kind_tab3", label = "Select Meal Type:", choices = meal_kind, selected = meal_kind, multiple = TRUE), 
-  dateRangeInput(inputId="date_range_tab3", label= "Select Date Range:", start = "2019-01-01", end = "2019-06-01", min = "2019-01-01",
+  dateRangeInput(inputId="date_range_tab3", label= "Select Date Range:", start = "2019-01-01", end = "2019-04-01", min = "2019-01-01",
   max = "2019-06-01", format = "yyyy-mm-dd", startview = "month",
   weekstart = 0, language = "en", separator = " to ", width = NULL,
   autoclose = TRUE)
 )
+```
 
+Row {data-width=500}
+-------------------------------------
+### Chart 1
+```{r}
 renderPlot({
-  bg_readings %>%
-    filter(meals_kind %in% input$meal_kind_tab3) %>%
-    filter(time >= input$date_range_tab3[1] & time <= input$date_range_tab3[2]) %>%
-    #mutate(time = round_date(time, '1 hours')) %>%
-    mutate(time = format(as.POSIXct(time,format="%H:%M:%S"),"%H")) %>%
-    group_by(user_id, time) %>%
-    summarise(avg_bg = mean(bg)) %>%
-    ggplot(aes(x=time, y=avg_bg))+
-    geom_point(size=1)+
-    facet_wrap(~user_id, ncol=7) +
-    labs(x="Hour", y="Average BG Level")+
-    ggtitle("Average BG Level by Hour") +
-    theme(plot.title = element_text(face = "bold")) +
-    theme(axis.text=element_text(size=5, angle = 90))
+  meals_data %>%
+    filter(kind %in% input$meal_kind_tab3) %>%
+    filter(eaten_at >= input$date_range_tab3[1] & eaten_at <= input$date_range_tab3[2]) %>%
+    mutate(date = as.Date(eaten_at, tz = "EST")) %>%
+    select(user_id, date, kind, premeal_bg, postmeal_bg) %>%
+    group_by(user_id, date) %>%
+    summarise(avgpremealbg = mean(premeal_bg), avgpostmealbg = mean(postmeal_bg)) %>%
+    gather(key = key, value = value, -user_id, -date) %>%
+    ggplot(aes(x = date, y = value, col=key)) + geom_point(size=0.2) + geom_smooth(method=lm, se=FALSE) +
+    facet_wrap(~user_id,ncol=14) +
+    labs(x="Date", y="Average BG Level")+
+    ggtitle("Average Premeal and Postmeal BG Level by Day") +
+    theme(plot.title = element_text(face = "bold"), legend.title = element_blank(), legend.position="bottom")
+})
+```
+
+### Chart 2
+```{r}
+renderPlot({
+  meals_data %>%
+  filter(kind %in% input$meal_kind_tab3) %>%
+  filter(eaten_at >= input$date_range_tab3[1] & eaten_at <= input$date_range_tab3[2]) %>%
+  mutate(hour = hour(as.POSIXct(eaten_at,format="%H:%M:%S"))) %>%
+  select(user_id, hour, kind, premeal_bg, postmeal_bg) %>%
+  group_by(user_id, hour) %>%
+  summarise(avgpremealbg = mean(premeal_bg), avgpostmealbg = mean(postmeal_bg)) %>%
+  gather(key = key, value = value, -user_id, -hour) %>%
+  ggplot(aes(x = hour, y = value, col=key)) + geom_point(size=0.5) + geom_smooth(method=lm, se=FALSE) +
+  facet_wrap(~user_id,ncol=14) +
+  labs(x="Hour", y="Average BG Level")+
+  ggtitle("Average Premeal and Postmeal BG Level by Hour") +
+  theme(plot.title = element_text(face = "bold"), legend.title = element_blank(), legend.position="bottom")
+  
 })
 
 ```
 
+Analyze by Date
+===================================
 
+
+Row {data-width=200}
+-------------------------------------
+
+```{r}
+inputPanel(
+  selectInput(inputId="user_id_tab4", label = "Select Users:", choices = user_list, selected = c("24","1809","2890","2254"), multiple = TRUE),
+  selectInput(inputId="meal_kind_tab4", label = "Select Meal Type:", choices = meal_kind, selected = c("breakfast","lunch","dinner"), multiple = TRUE), 
+  dateRangeInput(inputId="date_range_tab4", label= "Select Date Range:", start = "2019-01-01", end = "2019-04-01", min = "2019-01-01",
+  max = "2019-06-01", format = "yyyy-mm-dd", startview = "month",
+  weekstart = 0, language = "en", separator = " to ", width = NULL,
+  autoclose = TRUE)
+)
+```
+
+## Column 1
+### Chart 1
+```{r}
+renderPlot({
+meals_data %>%
+  filter(user_id %in% input$user_id_tab4) %>%
+  filter(kind %in% input$meal_kind_tab4) %>%
+  filter(eaten_at >= input$date_range_tab4[1] & eaten_at <= input$date_range_tab4[2]) %>%
+  mutate(date = as.Date(eaten_at, tz = "EST")) %>%
+  select(user_id, date, kind, premeal_bg, postmeal_bg) %>%
+  group_by(user_id, date) %>%
+  summarise(avgpremealbg = mean(premeal_bg), avgpostmealbg = mean(postmeal_bg)) %>%
+  gather(key = key, value = value, -user_id, -date) %>%
+  ggplot(aes(x = date, y = value, col=key)) + geom_point(size=1) + 
+  geom_smooth(method=lm, se=FALSE) +
+  facet_wrap(~user_id,ncol=4) +
+  labs(x="Date", y="Average BG Level")+
+  ggtitle("Avg Premeal and Postmeal BG Level") +
+  theme(plot.title = element_text(face = "bold"), legend.title = element_blank(), legend.position="bottom") 
+})
+```
+
+### Chart 2
+```{r}
+renderPlot({
+  meals_data %>%
+    filter(user_id %in% input$user_id_tab4) %>%
+    filter(kind %in% input$meal_kind_tab4) %>%
+    filter(eaten_at >= input$date_range_tab4[1] & eaten_at <= input$date_range_tab4[2]) %>%
+    mutate(date = as.Date(eaten_at, tz = "EST")) %>%
+    select(user_id, date, carbs_eval, protein_eval, fat_eval, fiber_eval) %>%
+    drop_na() %>%
+    gather(key = key, value = value, -user_id, -date) %>%
+    mutate(key = fct_rev(factor(key))) %>%
+    filter(value < 100)  %>%
+    ggplot(aes(x = date, y = value, col=key)) + 
+    geom_point(size=0.2) + geom_smooth(method=lm, se=FALSE) +
+    facet_wrap(~user_id, ncol=4) +
+    labs(x = "Date",y = "Weights", title = "Weights of Food Intake by Nutrient") +
+    theme(plot.title = element_text(face = "bold"), legend.title = element_blank(), legend.position="bottom")  +
+     guides(colour = guide_legend(reverse=T))
+})
+
+
+#renderPlot({
+# The average BG impact for each meal kind, faceting on user_id
+#meals_data %>%
+#  filter(user_id %in% input$user_id_tab4) %>%
+#  filter(kind %in% input$meal_kind_tab4) %>%
+#  filter(eaten_at >= input$date_range_tab4[1] & eaten_at <= input$date_range_tab4[2]) %>%
+#  select(user_id, kind, bg_impact, calories_eval, eaten_at) %>%
+#  drop_na() %>%
+#  group_by(user_id, kind) %>%
+#  filter(length(bg_impact)>5) %>%
+#  summarise(avgimpact=sum(bg_impact)/length(bg_impact)) %>%
+#  ggplot(aes(x=kind,y=avgimpact)) + geom_col() +
+#  facet_wrap(~user_id, ncol=2) +
+#  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+#  labs(x = "Meal Kind", y = "Average BG Impact",
+#           title = "Average BG Impact by Meal")+
+#  theme(plot.title = element_text(face = "bold"))
+#})
+```
+
+
+## Column 2
+### Chart 3
+```{r}
+renderPlot({
+  meals_data %>%
+    filter(user_id %in% input$user_id_tab4) %>%
+    filter(kind %in% input$meal_kind_tab4) %>%
+    filter(eaten_at >= input$date_range_tab4[1] & eaten_at <= input$date_range_tab4[2]) %>%
+    mutate(eaten_at_date = as.Date(eaten_at, tz = "EST")) %>%
+    select(user_id, eaten_at_date, calories_eval, bg_impact, kind) %>%
+    drop_na() %>%
+    group_by(user_id,kind) %>%
+    #filter(length(bg_impact)>5) %>%
+    ggplot(aes(x=eaten_at_date, y=calories_eval, col=kind))+
+    geom_point(size=0.7)+
+    geom_smooth(method = "lm",se= F)+
+    facet_wrap(~user_id, ncol=4) + 
+    labs(x="Date", y="Calories")+
+    ggtitle("Calories Intake by Meal") +
+    theme(plot.title = element_text(face = "bold"), legend.title = element_blank(), legend.position="bottom")
+})
+```
+
+### Chart 4
+```{r}
+renderPlot({
+  # Proportion of Meals by Nutrient - Expert Evaluation
+  meals_data %>%
+    filter(user_id %in% input$user_id_tab4) %>%
+    filter(kind %in% input$meal_kind_tab4) %>%
+    filter(eaten_at >= input$date_range_tab4[1] & eaten_at <= input$date_range_tab4[2]) %>%
+    select(user_id,carbs_eval, protein_eval,fat_eval,fiber_eval) %>%
+    gather(key = "variable", value, -user_id) %>%
+    group_by(user_id, variable) %>%
+    summarise(total=sum(value, na.rm = T)) %>%
+    group_by(user_id) %>%
+    mutate(prop = total/sum(total)) %>%
+    ungroup() %>%
+    ggplot(aes(x = user_id, y = prop, fill = forcats::fct_rev(variable))) +
+        geom_bar(stat = "identity") + 
+        coord_flip() + 
+        labs(x = "User ID",
+             y = "Proportion",
+             title = "Proportion of Meals by Nutrient - Expert Evaluation") + 
+             theme(plot.title = element_text(face = "bold"), legend.title = element_blank(), legend.position="bottom") +
+    guides(fill = guide_legend(nrow = 1, reverse=T))
+})
+```
+
+
+Analyze by Hour
+===================================
+
+
+Row {data-width=200}
+-------------------------------------
+```{r}
+inputPanel(
+  selectInput(inputId="user_id_tab5", label = "Select Users:", choices = user_list, selected = c("24","2262","1821","1883"), multiple = TRUE),
+  selectInput(inputId="meal_kind_tab5", label = "Select Meal Type:", choices = meal_kind, selected = c("breakfast","lunch","dinner","morning_snack","after_dinner_snack"), multiple = TRUE), 
+  dateRangeInput(inputId="date_range_tab5", label= "Select Date Range:", start = "2019-01-01", end = "2019-04-01", min = "2019-01-01",
+  max = "2019-06-01", format = "yyyy-mm-dd", startview = "month",
+  weekstart = 0, language = "en", separator = " to ", width = NULL,
+  autoclose = TRUE)
+)
+```
+
+## Column 1
+### Chart 1
+```{r}
+renderPlot({
+  meals_data %>%
+    filter(user_id %in% input$user_id_tab5) %>%
+    filter(kind %in% input$meal_kind_tab5) %>%
+    filter(eaten_at >= input$date_range_tab5[1] & eaten_at <= input$date_range_tab5[2]) %>%
+    mutate(hour = hour(as.POSIXct(eaten_at,format="%H:%M:%S"))) %>%
+    select(user_id, hour, kind, premeal_bg, postmeal_bg) %>%
+    group_by(user_id, hour) %>%
+    summarise(avgpremealbg = mean(premeal_bg), avgpostmealbg = mean(postmeal_bg)) %>%
+    gather(key = key, value = value, -user_id, -hour) %>%
+    ggplot(aes(x = hour, y = value, col=key)) + geom_point(size=2) + 
+    geom_smooth(method=lm, se=FALSE) +
+    facet_wrap(~user_id,ncol=4) +
+    labs(x="Hour", y="Average BG Level")+
+    ggtitle("Average Premeal and Postmeal BG Level by Hour") +
+    theme(plot.title = element_text(face = "bold"), legend.title = element_blank())
+})
+```
+
+### Chart 2
+```{r}
+renderPlot({
+  meals_data %>%
+    filter(user_id %in% input$user_id_tab5) %>%
+    filter(kind %in% input$meal_kind_tab5) %>%
+    filter(eaten_at >= input$date_range_tab5[1] & eaten_at <= input$date_range_tab5[2]) %>%
+    mutate(hour = hour(as.POSIXct(eaten_at,format="%H:%M:%S"))) %>%
+    group_by(user_id, hour, kind) %>%
+    summarise(avg_bgimpact = mean(bg_impact)) %>% 
+    drop_na() %>%
+    ggplot(aes(x=hour, y=avg_bgimpact, col=kind)) + geom_point(size=2) +
+    geom_line(position = 'identity') +
+    facet_wrap(~user_id, ncol=4) +
+    labs(x="Hour", y="Average BG Impact")+
+    ggtitle("Average BG Impact by Hour") +
+    theme(plot.title = element_text(face = "bold"), legend.title = element_blank())
+})
+```
+
+### Chart 3
+```{r}
+renderPlot({
+  meals_data %>%
+    filter(user_id %in% input$user_id_tab5) %>%
+    filter(kind %in% input$meal_kind_tab5) %>%
+    filter(eaten_at >= input$date_range_tab5[1] & eaten_at <= input$date_range_tab5[2]) %>%
+    mutate(hour = hour(as.POSIXct(eaten_at,format="%H:%M:%S"))) %>%
+    group_by(user_id, hour, kind) %>%
+    summarise(calories = mean(calories_eval, na.rm = T)) %>%
+    drop_na() %>%
+    ggplot(aes(x=hour, y=calories, col=kind)) + geom_point(size=2) +
+    geom_line(position = 'identity') +
+    facet_wrap(~user_id, ncol=4) +
+    labs(x="Hour", y="Calories")+
+    ggtitle("Average Calories Intake by Hour") +
+    theme(plot.title = element_text(face = "bold"), legend.title = element_blank())
+})
+```
+
+### Chart 4
+```{r}
+renderPlot({
+  meals_data %>%
+    filter(user_id %in% input$user_id_tab5) %>%
+    filter(kind %in% input$meal_kind_tab5) %>%
+    filter(eaten_at >= input$date_range_tab5[1] & eaten_at <= input$date_range_tab5[2]) %>%
+    mutate(hour = hour(as.POSIXct(eaten_at,format="%H:%M:%S"))) %>%
+    select(user_id, hour, carbs_eval, protein_eval, fat_eval, fiber_eval) %>%
+    drop_na() %>%
+    gather(key = key, value = value, -user_id, -hour) %>%
+    mutate(key = fct_rev(factor(key))) %>%
+    group_by(user_id, hour, key) %>%
+    summarise(avg_nutrient = mean(value))  %>%
+    ggplot(aes(x = hour, y = avg_nutrient, col=key)) + 
+    geom_point(size=2) + geom_smooth(method=lm, se=FALSE) +
+    facet_wrap(~user_id, ncol=4) +
+    labs(x = "Hour",y = "Weights", title = "Weights of Food Intake by Hour") +
+    theme(plot.title = element_text(face = "bold"), legend.title = element_blank()) +
+    guides(colour = guide_legend(reverse=T))
+})
+```
