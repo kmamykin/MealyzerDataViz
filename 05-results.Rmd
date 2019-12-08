@@ -1,12 +1,14 @@
 # Results
 
+Below are some of the visualizations selected to highlight some point about the data visualized. Not all visualizations we tried were insightful or had any talking points and therefor not included in this report main results section.
+
 ## Consistent meal times vs grazers
 
 ```{r fig.width=5}
 meals.selected %>%
   mutate(eaten_at_hour = hour(eaten_at)) %>%
   ggplot() +
-  geom_histogram(aes(x=eaten_at_hour), bins = 24) +
+  geom_histogram(aes(x=eaten_at_hour), bins = 24, fill = "#4285FF") +
   facet_wrap(~user_fct, ncol = 6) + 
   labs(
     title = "Time of day when users had a meal",
@@ -20,7 +22,7 @@ meals.selected %>%
 
 Interesting to node the different pattern that can be seen. The are users (like 2004, 2262, 2392, 24, 2475, 2890, 56, 57, 58) who have a well defined 3 humps pattern. THose users tend to eat their 3 meals of the day at regular times. The users 2942, 2948, 2800 have a defined 2 hump pattern, eating only 2 meals a day. And then there are "grazers" like users 2254, 2536 who seem to be eating either all the time or with no consistent times.
 
-TODO: If eating twice a day, what meal are they skipping?
+For those "two meals" user, what meal of the day are they skipping? Lets analyze the meal kinds per user.
 
 ## Meal kind analysis
 
@@ -55,6 +57,7 @@ It's good to see that breakfast is prominantly featured in almost all users.
 
 Another observation is that some users eat a lot of snacks, and some users do not.
 
+## Meal nutrients analysis
 
 ```{r fig.width=4}
 meals.selected %>%
@@ -73,7 +76,7 @@ meals.selected %>%
   labs(
     x = "Nutrient",
     y = "Proportion",
-    title = "Proportion of Nutrients"
+    title = "Proportion of nutrients across all meals"
   ) + 
   guides(fill = guide_legend(nrow = 1)) +
   theme(
@@ -86,17 +89,81 @@ meals.selected %>%
   
 ```
 
+Interesting to note that in almost all users the carbs is the biggest contributor to the diet, then protein, then fat and then fiber. Users that buck that trend are 57, 1884, 2948. 
 
-Question: need a better visulization. Protein and carbs are easy to compare across (they are aligned at the ends), but fat and fiber are difficult to compare across users.
+TODO: Add proportions of nutrients per meal kind by user
 
+
+## Meal BG impact visualization
+
+This is somewhat un-usual plot, where each line segment represents one meal a user had colored with the meal kind (breakfast, dinner, etc.). The line segment starts at the time (relative to the meal time) and BG of premeal measurement, and ends at the time/BG of the postmeal measurement. The steeper slope of the line indicates higher BG impact of a meal. The red horizontal line shows the warning leavel of 180mg/dL for postmeal BG.
+
+```{r fig.width=4}
+meals.selected %>% 
+  ggplot() +
+  geom_segment(aes(x = -premeal_bg_delay_minutes, xend = postmeal_bg_delay_minutes, y=premeal_bg, yend=postmeal_bg, color = kind), show.legend = FALSE, alpha = 0.2) + 
+  # draw rect purely so that the legend appears as a solid rect, for a line with low alpha which makes it hard to discern
+  # draw the rects outside of visible X limits set for the X axis.
+  geom_rect(aes(xmin = -1000-premeal_bg_delay_minutes, xmax = -1000+postmeal_bg_delay_minutes, ymin=premeal_bg, ymax=postmeal_bg, fill = kind)) + 
+  geom_hline(aes(yintercept=180), color="red", show.legend = FALSE, alpha = 0.5) +
+  scale_x_continuous(breaks=c(-30, 0, 60, 120, 180, 240), labels = c("", "0", "1h", "2h", "3h", "4h"), limits = c(-30, 240)) + 
+  facet_wrap(~user_fct, ncol = 6) + 
+  labs(
+    x = "Time since meal",
+    y = "BG",
+    title = "BG impact of meals per user",
+    caption = "Red horizontal line indicates warning postmeal BG levele of 180mg/dL"
+  ) + 
+  guides(color = guide_legend(nrow = 1), fill = guide_legend(nrow = 1)) +
+  theme(
+    legend.title = element_blank(), 
+    legend.position="bottom",
+  )
+```
+
+Interestingly, most of users manage diabetes well, have a flat response to meals and barely exceeding the warning line of 180 mg/dL. Some users (namely 2254, 1809, 2262) have big ups and downs, and in case of user 1809 BG stays above the 180 level all the time.
+
+User 2312 seems to consistently start the day with very low BG in the 50-60 range, and breakfast moves BG in the 100-150 range. This behaviour and impact is very consistent.
+
+User 1821 recorded a lot of dinners (also visible on "Proportion of meals" plot), and the impact of dinners is managed well, with a bump of around 50 BG points per dinner.
+
+User 2942 seems to consistently have breakfasts with an impact of about 25-30 BG points and then lunch that seems to actually lower the BG in postmeal recording. That may indicate that the user takes insulin to manage diabetes. 
+
+# Meal images 
+
+Here we explore the images of meals for user 2254. The first set of images show meals that has the biggest impact over shortest timeframe (`bg_impact_slope`), and the second set show the meals that had smallest (even negative) imapct on BG.
+
+```{r fig.height=5, fig.width=9}
+display_meals <- function(df, ncol = 6, nrow = 3, rotate = 0) {
+  meals = df[1:(ncol*nrow), ] %>% select(user_id, meal_id)
+  filenames = paste0(normalizePath("~/Dropbox/MealyzerData"), "/", meals[["user_id"]], "/images/medium/", meals[["meal_id"]], ".jpg")
+  data_uris = sapply(filenames, knitr::image_uri)
+  images = tibble(src = data_uris)
+  r2d3(data=images, script = "display_meals.js", container = "div", options=list(ncol=ncol, nrow=nrow, rotate=rotate))
+}
+
+meals.selected %>%
+  filter(user_id == "2254") %>%
+  arrange(desc(bg_impact_slope)) %>%
+  display_meals(ncol = 6, nrow = 3, rotate = -90)
+```
+
+
+```{r}
+meals.selected %>%
+  filter(user_id == "2254") %>%
+  arrange(bg_impact_slope) %>%
+  display_meals(ncol = 6, nrow = 3, rotate = -90)
+```
+
+Unsurprisinly the lowest BG impact images are all pictures of water/drinks.
 
 ## Per user analysis
 
+### Time effect
+
 ### Correlation between variables
 
-```{r}
-focus_user_id = "2475"
-```
 
 ```{r fig.width=18, fig.height=18}
 meals.selected %>%
@@ -108,8 +175,6 @@ meals.selected %>%
   select(calories_eval, carbs_eval, fat_eval, protein_eval, fiber_eval, premeal_bg, postmeal_bg, bg_impact, protein_fat, protein_carb, carb_fat) %>%
   lattice::splom()
 ```
-
-
 
 ```{r fig.width=18, fig.height=18}
 meals.selected %>%
@@ -130,61 +195,6 @@ Talking points:
 * premeal_bg and postmeal_bg - positively correlated
 * negative correlation between eval_proportion_carbs & eval_proportion_fat
 * interactions between ..._log_ratio varables split the meals into 2 or 3 clusters
-
-
-### Time effect
-
-### Meal BG impact visualization
-
-```{r fig.width=15}
-meals.selected %>% 
-  #filter(user_id == focus_user_id) %>%
-  ggplot() +
-  facet_wrap(~user_id, ncol = 6) + 
-  geom_segment(aes(x = -premeal_bg_delay_minutes, xend = postmeal_bg_delay_minutes, y=premeal_bg, yend=postmeal_bg), alpha = 0.5) + 
-  scale_x_continuous(breaks=c(-15, 0, 60, 120, 180, 240), labels = c("-15min", "0", "1h", "2h", "3h", "4h"), limits = c(-15, 180)) + 
-  theme(
-    strip.text = element_text(size=25)
-  )
-
-```
-
-
-Talking point: some users take insulin. Need to have a data back it up.
-Lots of users that have a flat response, and some users have big ups and downs.
-
-# Images 
-
-```{r fig.height=5, fig.width=9}
-display_meals <- function(df, ncol = 6, nrow = 3, rotate = 0) {
-  meals = df[1:(ncol*nrow), ] %>% select(user_id, meal_id)
-  filenames = paste0(normalizePath("~/Dropbox/MealyzerData"), "/", meals[["user_id"]], "/images/medium/", meals[["meal_id"]], ".jpg")
-  #print(filenames)
-  data_uris = sapply(filenames, knitr::image_uri)
-  images = tibble(src = data_uris)
-  r2d3(data=images, script = "display_meals.js", container = "div", options=list(ncol=ncol, nrow=nrow, rotate=rotate))
-}
-
-meals.selected %>%
-  filter(user_id == focus_user_id) %>%
-  arrange(desc(calories_eval)) %>%
-  #print_df(bg_impact, title, ingredients, calories_eval) %>%
-  display_meals(ncol = 6, nrow = 3, rotate = 0)
-```
-
-
-```{r}
-meals.selected %>%
-  filter(user_id == focus_user_id) %>%
-  arrange(calories_eval) %>%
-  #print_df(bg_impact, title, ingredients, calories_eval) %>%
-  display_meals(ncol = 6, nrow = 3, rotate = 0)
-```
-
-
-Talking point:
-* there are a few testing images users made, and they will need to be found and ignored for future analysis.
-
 
 ## Meal nutrients evaluator vs user
 
