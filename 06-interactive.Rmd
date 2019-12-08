@@ -216,13 +216,14 @@ renderPlot({
     select(user_id, date, carbs_eval, protein_eval, fat_eval, fiber_eval) %>%
     drop_na() %>%
     gather(key = key, value = value, -user_id, -date) %>%
+    mutate(key = fct_rev(factor(key))) %>%
     filter(value < 100)  %>%
     ggplot(aes(x = date, y = value, col=key)) + 
     geom_point(size=0.3) + geom_smooth(method=lm, se=FALSE) +
     facet_wrap(~user_id, ncol=7) +
     labs(x = "Date",y = "Weights", title = "Weights of Food Intake by Nutrient Over Time") +
-    theme(plot.title = element_text(face = "bold")) +
-    guides(fill = guide_legend(nrow = 1, reverse=T))
+    theme(plot.title = element_text(face = "bold"), legend.title = element_blank()) +
+    guides(colour = guide_legend(reverse=T))
 })
 
 ```
@@ -338,12 +339,14 @@ renderPlot({
     select(user_id, date, carbs_eval, protein_eval, fat_eval, fiber_eval) %>%
     drop_na() %>%
     gather(key = key, value = value, -user_id, -date) %>%
+    mutate(key = fct_rev(factor(key))) %>%
     filter(value < 100)  %>%
     ggplot(aes(x = date, y = value, col=key)) + 
     geom_point(size=0.2) + geom_smooth(method=lm, se=FALSE) +
     facet_wrap(~user_id, ncol=4) +
     labs(x = "Date",y = "Weights", title = "Weights of Food Intake by Nutrient") +
-    theme(plot.title = element_text(face = "bold"), legend.title = element_blank(), legend.position="bottom") 
+    theme(plot.title = element_text(face = "bold"), legend.title = element_blank(), legend.position="bottom")  +
+     guides(colour = guide_legend(reverse=T))
 })
 
 
@@ -508,12 +511,14 @@ renderPlot({
     select(user_id, hour, carbs_eval, protein_eval, fat_eval, fiber_eval) %>%
     drop_na() %>%
     gather(key = key, value = value, -user_id, -hour) %>%
+    mutate(key = fct_rev(factor(key))) %>%
     group_by(user_id, hour, key) %>%
     summarise(avg_nutrient = mean(value))  %>%
     ggplot(aes(x = hour, y = avg_nutrient, col=key)) + 
     geom_point(size=2) + geom_smooth(method=lm, se=FALSE) +
     facet_wrap(~user_id, ncol=4) +
     labs(x = "Hour",y = "Weights", title = "Weights of Food Intake by Hour") +
-    theme(plot.title = element_text(face = "bold"), legend.title = element_blank())
+    theme(plot.title = element_text(face = "bold"), legend.title = element_blank()) +
+    guides(colour = guide_legend(reverse=T))
 })
 ```
