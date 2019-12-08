@@ -16,6 +16,8 @@ user_file_exists <- function(ids, filename) {
 users.all = users.raw %>%
   mutate(
     user_id = as.character(user_id),
+    user_number = as.integer(user_id),
+    user_fct = fct_reorder(user_id, user_number),
     app = as.factor(app),
     has_meal_images = user_directory_exists(user_id, "images"),
     has_sleep = user_file_exists(user_id, "sleep.csv"),
@@ -51,7 +53,11 @@ as.meals_kind <- function(values) {
 }
 
 print_df <- function(df, ...) {
-  print(df %>% select(...))
+  if (length(...) > 0) {
+    print(df %>% select(...))
+  } else {
+    print(df)
+  }
   return(df)
 }
 ```
@@ -60,6 +66,8 @@ print_df <- function(df, ...) {
 bg_readings.all = bg_readings.raw %>%
   mutate(
     user_id = as.character(user_id),
+    user_number = as.integer(user_id),
+    user_fct = fct_reorder(user_id, user_number),
     time = as.timestamp(time), 
     meals_kind = as.meals_kind(meals_kind),
     readings_kind = fct_relevel(readings_kind, c("premeal", "postmeal"))
@@ -71,6 +79,8 @@ glimpse(bg_readings.all)
 meals.all = meals.raw %>%
   mutate(
     user_id = as.character(user_id),
+    user_number = as.integer(user_id),
+    user_fct = fct_reorder(user_id, user_number),
     eaten_at = as.timestamp(eaten_at),
     kind = as.meals_kind(kind),
     premeal_bg_time = as.timestamp(premeal_bg_time),

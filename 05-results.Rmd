@@ -7,53 +7,82 @@ meals.selected %>%
   mutate(eaten_at_hour = hour(eaten_at)) %>%
   ggplot() +
   geom_histogram(aes(x=eaten_at_hour), bins = 24) +
-  facet_wrap(~user_id, ncol = 7) + 
+  facet_wrap(~user_fct, ncol = 6) + 
   labs(
-    title = "Distribution of hours when users had a meal"
+    title = "Time of day when users had a meal",
+    x = "Hour of day",
+    y = "Number of meals"
   ) + 
   theme(
     #strip.text = element_text(size=25)
   )
 ```
-Talking point: eating patterns of people - two humps, three humps, no pattern. If eating twice a day, what meal ater they skipping?
 
+Interesting to node the different pattern that can be seen. The are users (like 2004, 2262, 2392, 24, 2475, 2890, 56, 57, 58) who have a well defined 3 humps pattern. THose users tend to eat their 3 meals of the day at regular times. The users 2942, 2948, 2800 have a defined 2 hump pattern, eating only 2 meals a day. And then there are "grazers" like users 2254, 2536 who seem to be eating either all the time or with no consistent times.
+
+TODO: If eating twice a day, what meal are they skipping?
 
 ## Meal kind analysis
 
 ```{r fig.width=4}
-dplyr::summarise(group_by(meals.selected, user_id, kind), freq = n()) %>%
-  group_by(user_id) %>%
+meals.selected %>%
+  group_by(user_fct, kind) %>%
+  summarise(freq = n()) %>%
+  group_by(user_fct) %>%
   mutate(prop = freq/sum(freq)) %>%
   ungroup() %>%
-  ggplot(aes(x = user_id, y = prop, fill = forcats::fct_rev(kind))) +
-      geom_bar(stat = "identity") + 
-      coord_flip() + 
-      labs(x = "User ID",
-           y = "Proportion",
-           title = "Proportion of All Meals by Meal Kind") + 
-           theme(legend.title = element_blank(), legend.position="bottom") +
-  guides(fill = guide_legend(nrow = 1, reverse=T))
+  ggplot() +
+  geom_bar(aes(x = kind, y = prop, fill = kind), stat = "identity") + 
+  facet_wrap(~user_fct, ncol = 6) + 
+  labs(
+    x = "Kind of meal",
+    y = "Proportion",
+    title = "Proportion of Meals"
+  ) + 
+  guides(fill = guide_legend(nrow = 1)) +
+  theme(
+    legend.title = element_blank(), 
+    legend.position="bottom",
+    axis.title.x = element_blank(),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank()
+  )
 ```
 
-Talking point: lots of people eat breakfast, lot o people capture snacks (good study subjects)
+User 2254 (classified as "grazer") does indeed eat a lot of snacks, which is consistent with the distribution of her times of meals. The "two meals" users like 2942 and 2800 are eating breakfast and lunch, but not dinner, and user 2948 is a bit of a mistery. The times of the meals are clearly centered around just two key times, but meal kind distribution contains breakfast, lunch and dinner.
+
+It's good to see that breakfast is prominantly featured in almost all users. 
+
+Another observation is that some users eat a lot of snacks, and some users do not.
+
 
 ```{r fig.width=4}
 meals.selected %>%
-  select(user_id,carbs_eval, protein_eval,fat_eval,fiber_eval) %>%
-  gather(key = "variable", value, -user_id) %>%
-  group_by(user_id, variable) %>%
-  summarise(total=sum(value, na.rm = T)) %>%
-  group_by(user_id) %>%
+  filter(!is.na(calories_eval)) %>%
+  select(user_fct, kind, Carbs = carbs_eval, Protein = protein_eval, Fat = fat_eval, Fiber = fiber_eval) %>%
+  gather(key = "Nutrient", value, -user_fct, -kind) %>%
+  group_by(user_fct, Nutrient) %>%
+  summarise(total=sum(value)) %>%
+  group_by(user_fct) %>%
   mutate(prop = total/sum(total)) %>%
   ungroup() %>%
-  ggplot(aes(x = user_id, y = prop, fill = forcats::fct_rev(variable))) +
-      geom_bar(stat = "identity") + 
-      coord_flip() + 
-      labs(x = "User ID",
-           y = "Proportion",
-           title = "Proportion of All Meals by Nutrient") + 
-           theme(legend.title = element_blank(), legend.position="bottom") +
-  guides(fill = guide_legend(nrow = 1, reverse=T))
+  mutate(Nutrient = fct_relevel(Nutrient, "Carbs", "Protein", "Fat", "Fiber")) %>% 
+  ggplot() +
+  geom_bar(aes(x = Nutrient, y = prop, fill = Nutrient), stat = "identity") + 
+  facet_wrap(~user_fct, ncol = 6) + 
+  labs(
+    x = "Nutrient",
+    y = "Proportion",
+    title = "Proportion of Nutrients"
+  ) + 
+  guides(fill = guide_legend(nrow = 1)) +
+  theme(
+    legend.title = element_blank(), 
+    legend.position="bottom",
+    axis.title.x = element_blank(),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank()
+  )
   
 ```
 
