@@ -1,0 +1,58 @@
+# Appendix
+
+
+```{r fig.width=4}
+meals.selected %>%
+  mutate(eaten_at_date = as.Date(eaten_at, tz = "EST")) %>%
+  filter(eaten_at_date <"2019-04-01" & !is.na(carbs_eval)) %>%
+  group_by(user_fct, eaten_at_date) %>%
+  summarise(sum_by_day = sum(carbs_eval)) %>%
+  ggplot(aes(x=eaten_at_date, y=sum_by_day))+
+  geom_point(size=0.1)+
+  geom_smooth(method = "lm")+
+  facet_wrap(~user_fct, ncol=6) +
+  labs (
+    title = "Total carbs consumed trends by user",
+    x = "Time",
+    y = "Carbs"
+  ) + 
+  theme(
+    axis.text.x = element_text(angle = 90)
+  )
+```
+
+
+```{r fig.width=4}
+meals.selected %>%
+  mutate(eaten_at_date = as.Date(eaten_at, tz = "EST")) %>%
+  filter(eaten_at_date <"2019-04-01" & !is.na(calories_eval)) %>%
+  group_by(user_fct, eaten_at_date) %>%
+  summarise(
+    sum_carbs = sum(carbs_eval), 
+    sum_protein = sum(protein_eval), 
+    sum_fat = sum(fat_eval), 
+    sum_fiber = sum(fiber_eval),
+    total = sum_carbs+sum_protein+sum_fat+sum_fiber,
+    Carbs=sum_carbs/total,
+    Protein=sum_protein/total,
+    Fat=sum_fat/total,
+    Fiber=sum_fiber/total
+  ) %>%
+  gather(key = "Nutrient", value = "Proportion", Carbs, Protein, Fat, Fiber) %>%
+  #print_df() %>%
+  ggplot()+
+  geom_point(aes(x=eaten_at_date, y=Proportion, color = Nutrient), size=0.1) +
+  geom_smooth(aes(x=eaten_at_date, y=Proportion, color = Nutrient), method = "lm") +
+  facet_wrap(~user_fct, ncol=6) +
+  labs (
+    title = "Nutrient proportions trends by user",
+    x = "Time",
+    y = "Proportion"
+  ) + 
+  guides(color = guide_legend(nrow = 1), fill = guide_legend(nrow = 1)) +
+  theme(
+    axis.text.x = element_text(angle = 90),
+    legend.title = element_blank(), 
+    legend.position="bottom",
+  )
+```
