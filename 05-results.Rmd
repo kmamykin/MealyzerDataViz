@@ -1,10 +1,14 @@
 # Results
 
-Below are some of the visualizations selected to highlight some point about the data visualized. Not all visualizations we tried were insightful or had any talking points and therefor not included in this report main results section.
+Below are some of the visualizations selected to highlight interesting insights about the data. Not all visualizations we tried were insightful or had any talking points and those are not included in themain results section. Some of those plots ended up in the appendix section.
 
-## Consistent meal times vs grazers
+We heavily utilized facets to highlight patterns and differences between users. These faceted plots allow just a glimpse of individual user stats but mainly focus on the contrast and comparison between users. In order to facilitate comparison of same user across different plots we maintained consistent placement of users on the facet grid, so that the same user consistently appers in the same position on all faceted plots.
 
-```{r fig.width=5}
+Analyzing combinied data for multiple users did not yield any interesting insights, as the dataset contains few users and user bevaviours are different enough that in aggregate the interesting patterns get lost.
+
+## Looking at the time of the meals
+
+```{r fig.width=4}
 meals.selected %>%
   mutate(eaten_at_hour = hour(eaten_at)) %>%
   ggplot() +
@@ -96,16 +100,16 @@ TODO: Add proportions of nutrients per meal kind by user
 
 ## Meal BG impact visualization
 
-This is somewhat un-usual plot, where each line segment represents one meal a user had colored with the meal kind (breakfast, dinner, etc.). The line segment starts at the time (relative to the meal time) and BG of premeal measurement, and ends at the time/BG of the postmeal measurement. The steeper slope of the line indicates higher BG impact of a meal. The red horizontal line shows the warning leavel of 180mg/dL for postmeal BG.
+This is somewhat un-usual plot, where each line segment represents one meal a user had colored with the meal kind (breakfast, dinner, etc.). The line segment starts at the time (relative to the meal time) and BG of premeal measurement, and ends at the time/BG of the postmeal measurement. The steeper slope of the line indicates higher BG impact of a meal. The red horizontal line shows the diagnostic threshold level of 200mg/dL for postmeal BG to diagnose diabetes.
 
 ```{r fig.width=4}
 meals.selected %>% 
   ggplot() +
   geom_segment(aes(x = -premeal_bg_delay_minutes, xend = postmeal_bg_delay_minutes, y=premeal_bg, yend=postmeal_bg, color = kind), show.legend = FALSE, alpha = 0.2) + 
-  # draw rect purely so that the legend appears as a solid rect, for a line with low alpha which makes it hard to discern
+  # draw rect purely so that the legend appears as a solid rect, for a line with low alpha which makes it hard to see colors.
   # draw the rects outside of visible X limits set for the X axis.
   geom_rect(aes(xmin = -1000-premeal_bg_delay_minutes, xmax = -1000+postmeal_bg_delay_minutes, ymin=premeal_bg, ymax=postmeal_bg, fill = kind)) + 
-  geom_hline(aes(yintercept=180), color="red", show.legend = FALSE, alpha = 0.5) +
+  geom_hline(aes(yintercept=200), color="red", show.legend = FALSE, alpha = 0.5) +
   scale_x_continuous(breaks=c(-30, 0, 60, 120, 180, 240), labels = c("", "0", "1h", "2h", "3h", "4h"), limits = c(-30, 240)) + 
   facet_wrap(~user_fct, ncol = 6) + 
   labs(
@@ -121,13 +125,69 @@ meals.selected %>%
   )
 ```
 
-Interestingly, most of users manage diabetes well, have a flat response to meals and barely exceeding the warning line of 180 mg/dL. Some users (namely 2254, 1809, 2262) have big ups and downs, and in case of user 1809 BG stays above the 180 level all the time.
+Interestingly, most of users manage diabetes well, have a flat response to meals and barely exceeding the warning threshold of 200 mg/dL. Some users (namely 2254, 1809, 2262) have big ups and downs, and in case of user 1809 BG stays above the 200 level all the time.
 
 User 2312 seems to consistently start the day with very low BG in the 50-60 range, and breakfast moves BG in the 100-150 range. This behaviour and impact is very consistent.
 
 User 1821 recorded a lot of dinners (also visible on "Proportion of meals" plot), and the impact of dinners is managed well, with a bump of around 50 BG points per dinner.
 
 User 2942 seems to consistently have breakfasts with an impact of about 25-30 BG points and then lunch that seems to actually lower the BG in postmeal recording. That may indicate that the user takes insulin to manage diabetes. 
+
+## Trends in calories
+
+```{r fig.width=4}
+meals.selected %>%
+  mutate(eaten_at_date = as.Date(eaten_at, tz = "EST")) %>%
+  filter(eaten_at_date <"2019-04-01" & !is.na(calories_eval)) %>%
+  group_by(user_fct, eaten_at_date) %>%
+  summarise(sum_by_day = sum(eval_calories_computed)) %>%
+  ggplot(aes(x=eaten_at_date, y=sum_by_day))+
+  geom_point(size=0.1) +
+  geom_smooth(method = "lm", na.rm=TRUE, size=0.5) +
+  facet_wrap(~user_fct, ncol=6) +
+  labs (
+    title = "Trend of daily calories consumed by user",
+    x = "Time",
+    y = "Calories"
+  ) + 
+  theme(
+    axis.text.x = element_text(angle = 90)
+  )
+# TODO: colorcode facets whis positive vs negative trend
+```
+
+At a glance it looks like most of the users either maintained or decreased the number of calories they consume per day. Notable exception is user 2890, whose calories consumption increased. What is concerning about this plot is that for most users the daily calories consumption is well below 2000 calories/day. One explanation is that users didn't record all meals in a day.
+
+Plotting daily amount of carbs consumed (carbs is the most important nutrient to manage for diabetics) by users show the same trends as the calories and is skipped (See appendix)
+
+## Trend in fasting BG
+
+```{r fig.width=4}
+meals.selected %>%
+  mutate(eaten_at_date = as.Date(eaten_at, tz = "EST")) %>%
+  filter(eaten_at_date <"2019-04-01" & !is.na(premeal_bg)) %>%
+  filter(kind == 'breakfast') %>%
+  group_by(user_fct, eaten_at_date) %>%
+  summarise(fasting_bg = first(premeal_bg)) %>%
+  ggplot(aes(x=eaten_at_date, y=fasting_bg))+
+  geom_point(size=0.1) +
+  geom_smooth(method = "lm", na.rm=TRUE, size=0.5) +
+  geom_hline(aes(yintercept=125), color="red", show.legend = FALSE, alpha = 0.5) +
+  facet_wrap(~user_fct, ncol=6) +
+  labs (
+    title = "Trend of fasting BG by user",
+    x = "Time",
+    y = "Fasting BG"
+  ) + 
+  theme(
+    axis.text.x = element_text(angle = 90)
+  )
+# TODO: colorcode facets whis positive vs negative trend
+```
+
+The fasting BG is defined as the first BG measurement after 8h of fasting, normally after sleep in the morning before breakfast. This plot shows the trend of fasting BG by user with a trend line (in blue) and a threshold (in red). The official guidelines to the fasting BG are: below 100 is considered normal (not shown on the plot), 100-125 is pre-diabetes, above 125 leads to a disgosis with diabetes.
+
+For most of the users the trend line looks flat and at or below the threshold level. User 1809 shows a large drop in fasting BG, which would be promising, but unfortunately only few (5) datapoint exist for that user.
 
 ## Meal images 
 
@@ -158,89 +218,10 @@ meals.selected %>%
 
 Unsurprisinly the lowest BG impact images are all pictures of water/drinks.
 
-## Trends in calories and nutrients
 
-Question TODO: have users started to eat less in general or changed the nutritional make up of their meals? Look at nutrient proportions trends, look at grams in meals across all nutrients. IF people are reducing calories, are they redicing the size of meals or change proportions?
-
-
-```{r fig.width=4}
-meals.selected %>%
-  mutate(eaten_at_date = as.Date(eaten_at, tz = "EST")) %>%
-  filter(eaten_at_date <"2019-04-01" & !is.na(calories_eval)) %>%
-  group_by(user_fct, eaten_at_date) %>%
-  summarise(sum_by_day = sum(eval_calories_computed)) %>%
-  ggplot(aes(x=eaten_at_date, y=sum_by_day))+
-  geom_point(size=0.1) +
-  geom_smooth(method = "lm", na.rm=TRUE, size=0.5) +
-  facet_wrap(~user_fct, ncol=6) +
-  labs (
-    title = "Trends of total calories consumed by user",
-    x = "Time",
-    y = "Calories"
-  ) + 
-  theme(
-    axis.text.x = element_text(angle = 90)
-  )
-# TODO: colorcode facets whis positive vs negative trend
-```
-
-At a glance it looks like most of the users either maintained or decreased the number of calories they consume per day. Notable exception is user 2890, whose calories consumption increased. What is concerning about this plot is that for most users the daily calories consumption is well below 2000 calories/day. One explanation is that users didn't record all meals in a day.
-
-Plotting daily amount of carbs consumed (carbs is the most important nutrient to manage for diabetics) by users show the same trends as the calories and is skipped (See appendix)
-
-
-```{r fig.width=4}
-meals.selected %>%
-  mutate(eaten_at_date = as.Date(eaten_at, tz = "EST")) %>%
-  filter(eaten_at_date <"2019-04-01" & !is.na(premeal_bg)) %>%
-  filter(kind == 'breakfast') %>%
-  group_by(user_fct, eaten_at_date) %>%
-  summarise(fasting_bg = first(premeal_bg)) %>%
-  ggplot(aes(x=eaten_at_date, y=fasting_bg))+
-  geom_point(size=0.1) +
-  geom_smooth(method = "lm", na.rm=TRUE, size=0.5) +
-  facet_wrap(~user_fct, ncol=6) +
-  labs (
-    title = "Trends of fasting BG by user",
-    x = "Time",
-    y = "Fasting BG"
-  ) + 
-  theme(
-    axis.text.x = element_text(angle = 90)
-  )
-# TODO: colorcode facets whis positive vs negative trend
-```
-
-
-
-```{r}
-bg_readings.all %>%
-  filter(user_id %in% users.selected[['user_id']]) %>%
-  filter(time <"2019-05-01 00:00:00") %>%
-  ggplot(aes(x = time, y = bg)) +
-  geom_line() +
-  facet_wrap(~user_id,ncol=7) +
-  theme(axis.text=element_text(size=5, angle = 90))
-```
 TODO: Plotting pre and post causes a lot of jagginess. Either plot trend of pre BG or a trend of post BG, or a two parallel trendlines.
 Also look at "fasting" bg overtime. Our data is a proxy for the true "fasting" BG in the morning. It hsould be below 110.
 
-
-```{r}
-bg_readings.all %>%
-  filter(user_id %in% users.selected[['user_id']]) %>%
-  #mutate(time = round_date(time, '1 hours')) %>%
-  mutate(time = format(as.POSIXct(time,format="%H:%M:%S"),"%H")) %>%
-  group_by(user_id, time) %>%
-  summarise(avg_bg = mean(bg)) %>%
-  ggplot(aes(x=time, y=avg_bg))+
-  geom_point(size=0.3)+
-  facet_wrap(~user_id, ncol=7) +
-  labs(x="Hour", y="Average BG Level")+
-  ggtitle("Average BG Level by Hour") +
-  theme(plot.title = element_text(face = "bold")) +
-  theme(axis.text=element_text(size=5, angle = 90))
-```
 
 ## Per user analysis
 

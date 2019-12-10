@@ -56,3 +56,25 @@ meals.selected %>%
     legend.position="bottom",
   )
 ```
+
+
+
+```{r fig.width=4}
+bg_readings.all %>%
+  filter(user_fct %in% selected_user_ids) %>%
+  mutate(hour = format(as.POSIXct(time, format="%H:%M:%S"),"%H")) %>%
+  group_by(user_fct, hour) %>%
+  summarise(avg_bg = mean(bg)) %>%
+  ggplot(aes(x=hour, y=avg_bg))+
+  geom_point(size=0.3)+
+  scale_x_discrete(breaks=c(0, 6, 12, 18, 24)) + 
+  facet_wrap(~user_fct, ncol=6) +
+  labs(
+    title = "Average BG Level by Hour",
+    x="Hour", 
+    y="Average BG Level"
+  ) +
+  theme(
+     axis.text.x = element_text(angle = 90),
+  )
+```

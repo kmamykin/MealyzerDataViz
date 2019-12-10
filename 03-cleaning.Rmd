@@ -53,7 +53,8 @@ as.meals_kind <- function(values) {
 }
 
 print_df <- function(df, ...) {
-  if (length(...) > 0) {
+  arguments <- list(...)
+  if (length(arguments) > 0) {
     print(df %>% select(...))
   } else {
     print(df)
