@@ -78,3 +78,34 @@ bg_readings.all %>%
      axis.text.x = element_text(angle = 90),
   )
 ```
+
+Have the ability of users to estimate nutrients change overtime with the use of the app?
+
+```{r fig.width=6}
+meals.imputed %>%
+  filter(!is.na(calories_eval) & !is.na(calories_user)) %>%
+  mutate(
+    calories_diff = calories_user - calories_eval,
+    carbs_diff = carbs_user - carbs_eval,
+    protein_diff = protein_user - protein_eval,
+    fat_diff = fat_user - fat_eval,
+    fiber_diff = fiber_user - fiber_eval
+  ) %>%
+  mutate(eaten_at_date = as.Date(eaten_at, tz = "EST")) %>%
+  filter(eaten_at_date <"2019-04-01") %>%
+  group_by(user_fct, eaten_at_date) %>%
+  summarise(carbs_diff = mean(carbs_diff)) %>%
+  ggplot(aes(x=eaten_at_date, y=carbs_diff))+
+  geom_point(size=0.1) +
+  geom_smooth(method = "lm", na.rm=TRUE, size=0.5) +
+  facet_wrap(~user_fct, ncol=6, scales = "free_y") +
+  labs (
+    title = "Trend of carbs estimation error",
+    x = "Time",
+    y = "Carbs user estimation error"
+  ) + 
+  theme(
+    axis.text.x = element_text(angle = 90)
+  )
+
+```

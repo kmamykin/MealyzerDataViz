@@ -219,67 +219,87 @@ meals.selected %>%
 Unsurprisinly the lowest BG impact images are all pictures of water/drinks.
 
 
-TODO: Plotting pre and post causes a lot of jagginess. Either plot trend of pre BG or a trend of post BG, or a two parallel trendlines.
-Also look at "fasting" bg overtime. Our data is a proxy for the true "fasting" BG in the morning. It hsould be below 110.
+### Per user correlation between variables
 
 
-## Per user analysis
-
-### Time effect
-
-### Correlation between variables
-
-
-```{r fig.width=18, fig.height=18}
+```{r fig.width=8, fig.height=8}
 meals.selected %>%
-  filter(user_id == focus_user_id) %>%
+  filter(user_id == "2254") %>%
+  filter(fiber_eval < 20) %>% # filter outliers
+  filter(bg_impact_slope < 5 & bg_impact_slope > -3) %>%
   mutate(
     protein_fat=eval_proportion_protein-eval_proportion_fat, 
     protein_carb=eval_proportion_protein-eval_proportion_carbs, 
     carb_fat=eval_proportion_carbs-eval_proportion_fat) %>%
-  select(calories_eval, carbs_eval, fat_eval, protein_eval, fiber_eval, premeal_bg, postmeal_bg, bg_impact, protein_fat, protein_carb, carb_fat) %>%
+  select(calories_eval, eval_calories_computed, carbs_eval, fat_eval, protein_eval, fiber_eval, eval_proportion_carbs, eval_proportion_fat, eval_proportion_protein, bg_impact, bg_impact_slope, premeal_bg, postmeal_bg) %>%
   lattice::splom()
 ```
 
-```{r fig.width=18, fig.height=18}
-meals.selected %>%
-  filter(user_id == focus_user_id) %>%
-  mutate(
-    protein_fat_log_ratio=log(eval_proportion_protein/(eval_proportion_fat+0.0000001)), 
-    protein_carb_log_ratio=log(eval_proportion_protein/(eval_proportion_carbs+0.0000001)), 
-    carb_fat_log_ratio=log(eval_proportion_carbs/(eval_proportion_fat+0.0000001))
-  ) %>%
-  select(eval_calories_computed, eval_proportion_carbs, eval_proportion_fat, eval_proportion_protein, premeal_bg, postmeal_bg, bg_impact, protein_fat_log_ratio, protein_carb_log_ratio, carb_fat_log_ratio) %>%
-  lattice::splom()
-```
+There is a very strong correlation between `calories_eval` (calories assigned by the evaluator) and `eval_calories_computed` (calories calculated from the nutritional breakdown of a meal into carbs/fat/protein amounts). That shows that evaluator's experience is spot on estimating the meal or the evaluators are using the same formula themselves.
+
+There is a positive correlation between `calories_eval`/`eval_calories_computed` and each of `carbs_eval`, 'fat_eval' and 'protein_eval'. Again, no surprise as the calories can be derived from the nutrients.
+
+A strong negative correlation between `eval_proportion_carbs` and `eval_proportion_fat` shows that when people vary meals they tend to vary between  high carbs low fat and low carbs high fat meals. The proportion of protein stays independent somewhat independent. 
+
+The correlation between `bg_impact` and `bg_impact_slope` also makes sense as the time delay between premeal and postmeal BG is relatively constant at about 2h.
 
 
-Talking points:
+## Looking into meal nutrients estimation (evaluator vs user)
 
-* Correlation between calories_eval and all carbs|fat|protein, but much smaller correlation to fiber. Fiber is counted as carbs when calculating the calories_calculated. So when evaluators were estimating the calories_eval, they should have been discurding fiber.
-* premeal_bg and postmeal_bg - positively correlated
-* negative correlation between eval_proportion_carbs & eval_proportion_fat
-* interactions between ..._log_ratio varables split the meals into 2 or 3 clusters
+```{r fig.asp=2,fig.width=3}
+(function(meals) {
+  estimate_diffs = meals %>%
+    mutate(
+      Calories = calories_user - calories_eval,
+      Carbs = carbs_user - carbs_eval,
+      Protein = protein_user - protein_eval,
+      Fat = fat_user - fat_eval,
+      Fiber = fiber_user - fiber_eval,
+    ) %>%
+    filter(!is.na(Calories) & !is.na(Carbs) & !is.na(Protein) & !is.na(Fat) & !is.na(Fiber))
 
-## Meal nutrients evaluator vs user
+  g1 = estimate_diffs %>%
+    ggplot() +
+    geom_boxplot(aes(y = Calories)) +
+    geom_hline(aes(yintercept=0), color="black", alpha = 0.5) +
+    scale_y_continuous(limits = c(-2000, 2000)) +
+    coord_flip() + 
+    labs(
+      #title = "Aggregate user error in estimating calories",
+      y = "Error (grams)"
+    ) + 
+    cowplot::theme_cowplot(font_size = 10)
 
+  g2 = estimate_diffs %>%
+    gather(key = "Nutrient", value = "Error", Carbs, Protein, Fat, Fiber) %>%
+    ggplot() +
+    geom_boxplot(aes(x = reorder(Nutrient, Error, median), y = Error)) +
+    geom_hline(aes(yintercept=0), color="black", alpha = 0.5) +
+    scale_y_continuous(limits = c(-100, 100)) +
+    coord_flip() + 
+    labs(
+      #title = "Aggregate user errors in estimating meal nutrients",
+      x = "Nutrient",
+      y = "Error (grams)"
+    ) + 
+    cowplot::theme_cowplot(font_size = 10)
+  
+  g3 = estimate_diffs %>%
+    filter(!(user_id %in% c("99", "124", "377", "445", "1663"))) %>%
+    ggplot() +
+    geom_boxplot(aes(x = fct_rev(user_fct), y = Carbs), varwidth = TRUE) +
+    geom_hline(aes(yintercept=0), color="black", alpha = 0.5) +
+    scale_y_continuous(limits = c(-100, 100)) +
+    coord_flip() + 
+    labs(
+      #title = "User errors in estimating amount of carbs in meals",
+      x = "Users",
+      y = "Error (grams)"
+    ) +
+    cowplot::theme_cowplot(font_size = 10)
 
-Have the ability of users to estimate nutrients change overtime with the use of the app?
-
-```{r fig.width=6}
-meals.imputed %>%
-  mutate(
-    calories_diff = calories_user - calories_eval,
-    carbs_diff = carbs_user - carbs_eval,
-    protein_diff = protein_user - protein_eval,
-    fat_diff = fat_user - fat_eval,
-    fiber_diff = fiber_user - fiber_eval
-  ) %>%
-  filter(!is.na(calories_diff)) %>%
-  ggplot() +
-  geom_histogram(aes(x = carbs_diff), bins = 30)+
-  facet_wrap(~user_id, ncol = 4)
-
+    cowplot::plot_grid(g1, g2, g3, align = "hv", nrow = 3, axis = "lr", rel_heights = c(0.75, 2, 5))
+})(meals.imputed)
 ```
 
 
@@ -287,28 +307,6 @@ meals.imputed %>%
 Talking points: Aggregate distribution is simmetrical around 0. 
 there is no bias on either side. At averages out per user.
 THis is BIG! no need to do evaluator estimates if usrs are good at that.
-
-
-```{r }
-meals.imputed %>%
-  mutate(
-    calories_diff = calories_user - calories_eval,
-    carbs_diff = carbs_user - carbs_eval,
-    protein_diff = protein_user - protein_eval,
-    fat_diff = fat_user - fat_eval,
-    fiber_diff = fiber_user - fiber_eval
-  ) %>%
-  filter(!is.na(calories_diff) & !is.na(carbs_diff) & !is.na(protein_diff) & !is.na(fat_diff) & !is.na(fiber_diff)) %>%
-  gather(key = "type", value = "diff", carbs_diff, protein_diff, fat_diff, fiber_diff) %>%
-  ggplot() +
-  #facet_wrap(~user_id, ncol = 6, scales = "free_x") + 
-  geom_boxplot(aes(x = reorder(type, diff, median), y = diff)) +
-  coord_flip()
-```
-
-
-Talking point:
-
 * Slight under-counting of the calories, but not as much as I would expect. High density at 0, suggesting lots of meal the evaluator and user entered exactly the same number of calories, possibly because of 0 calory meal (e.g. water) or known calory meal (e.g. protein bar)
 * Systematic under-counting of carbs, slight over-counting of fiber
 
