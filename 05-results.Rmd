@@ -243,8 +243,13 @@ A strong negative correlation between `eval_proportion_carbs` and `eval_proporti
 
 The correlation between `bg_impact` and `bg_impact_slope` also makes sense as the time delay between premeal and postmeal BG is relatively constant at about 2h.
 
+Unfortunately there are no clear correlations to understand what actually affects the glycenic impact. The relationship is non-liniear and more sphisticated methods should be employed to analyse this question.
 
 ## Looking into meal nutrients estimation (evaluator vs user)
+
+Here we look into a question: how well to users estimate their own meals by comparing user's estimates to the professional nutritionist evaluator estimates.
+Here we are chose to display three plots with increasing level of details. 
+
 
 ```{r fig.asp=2,fig.width=3}
 (function(meals) {
@@ -265,10 +270,14 @@ The correlation between `bg_impact` and `bg_impact_slope` also makes sense as th
     scale_y_continuous(limits = c(-2000, 2000)) +
     coord_flip() + 
     labs(
-      #title = "Aggregate user error in estimating calories",
-      y = "Error (grams)"
-    ) + 
-    cowplot::theme_cowplot(font_size = 10)
+      title = "Calories estimation error overall",
+      y = "Error (calories)"
+    ) + theme(
+      axis.title.y = element_blank(),
+      axis.text.y = element_blank(),
+      axis.ticks.y = element_blank()
+    ) # + 
+    #cowplot::theme_cowplot(font_size = 10)
 
   g2 = estimate_diffs %>%
     gather(key = "Nutrient", value = "Error", Carbs, Protein, Fat, Fiber) %>%
@@ -278,11 +287,11 @@ The correlation between `bg_impact` and `bg_impact_slope` also makes sense as th
     scale_y_continuous(limits = c(-100, 100)) +
     coord_flip() + 
     labs(
-      #title = "Aggregate user errors in estimating meal nutrients",
+      title = "Nutrients estimation error overall",
       x = "Nutrient",
       y = "Error (grams)"
-    ) + 
-    cowplot::theme_cowplot(font_size = 10)
+    )# + 
+    #cowplot::theme_cowplot(font_size = 10)
   
   g3 = estimate_diffs %>%
     filter(!(user_id %in% c("99", "124", "377", "445", "1663"))) %>%
@@ -292,37 +301,20 @@ The correlation between `bg_impact` and `bg_impact_slope` also makes sense as th
     scale_y_continuous(limits = c(-100, 100)) +
     coord_flip() + 
     labs(
-      #title = "User errors in estimating amount of carbs in meals",
+      title = "Carbs estimation error by user",
       x = "Users",
       y = "Error (grams)"
-    ) +
-    cowplot::theme_cowplot(font_size = 10)
+    )# +
+    #cowplot::theme_cowplot(font_size = 10)
 
-    cowplot::plot_grid(g1, g2, g3, align = "hv", nrow = 3, axis = "lr", rel_heights = c(0.75, 2, 5))
+    cowplot::plot_grid(g1, g2, g3, align = "hv", nrow = 3, axis = "lr", rel_heights = c(0.8, 2, 5))
 })(meals.imputed)
 ```
 
 
+The first plot displays the distribution of errors by all users when estimating meal calories. By error we mean the difference between evaluator's extimate on the amount of calories and the user's estimate on the same. The distribution of error looks to be a compact simmetric distribution with a median very close to 0. In the task of calories estimation the users did much better then expected. This was a surprising finding to the researcher, where the assumption before seeing the data was that the users are much worse then the nutritionists in the ability to estimate the calories. Another consequence is that there is an opportunity to avoid an expensive process to get the catured meals evaluated by a professional nutritionist and to crowd-source the evaluations.
 
-Talking points: Aggregate distribution is simmetrical around 0. 
-there is no bias on either side. At averages out per user.
-THis is BIG! no need to do evaluator estimates if usrs are good at that.
-* Slight under-counting of the calories, but not as much as I would expect. High density at 0, suggesting lots of meal the evaluator and user entered exactly the same number of calories, possibly because of 0 calory meal (e.g. water) or known calory meal (e.g. protein bar)
-* Systematic under-counting of carbs, slight over-counting of fiber
+The second plot displays how well users estimated each nutrient overall. For Fiber which is generally good for diabetics, there is slight overcounting (wishful thinking?). For Fat and Protein the median of the estimates are pretty close to 0. And the Carbs overall are slightly under-estimated. In estimation of carbs the users performed the worst, which is concerning because tracking/estimating the amount of carbs is one of necessary tasks in managing diabetes.
 
+The third plot breaks down the user's ability to estimate carbs by each user. Here we see that there are systematic biases how different users estimate carbs. Some users (e.g. the first five users) estimate very close to the evaluator's value, and some users are consistently under-estimating. Interestingly there are no users who systematically over-estimated the amount of carbs.
 
-
-## Sleep
-
-```{r}
-sleep = read_csv(file.path(raw_data_path, "1983", "sleep.csv"), col_types = cols()) %>%
-  mutate(time = as.timestamp(time))
-```
-
-
-Questions:
-* does the amount of sleep impact the first BG reading in the day (pre-breakfast, important!) (the very first pre-breakfst BG reading is considered fasting and is a true-ish representation of glycemic control (how bad is your diabetis)).
-* Does amount (or quality of sleep) have an impoact on pre-breakfast BG (<- new measure). 
-* Urban mith - the quality/amount of sleep may change how people respond to meals, e.g. for the same nutritional breakdown of a meal BG_impoact will be different.
-
-* Fat and protein mediate the impact of carbohidrate. How to show this (focus on the visualization, data may be lacking the signal)
