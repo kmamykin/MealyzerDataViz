@@ -109,8 +109,8 @@ Here we look at the distribution of values for premeal BG delay (defined as the 
 g1 = meals.imputed %>%
   filter(premeal_bg_delay_minutes >= 0 & premeal_bg_delay_minutes <= 60) %>%
   ggplot() +
-  geom_histogram(aes(x = premeal_bg_delay_minutes), binwidth = 1.0) +
-  scale_x_continuous(breaks=c(0, 15, 30, 45, 60), labels = c("0", "15m", "30m", "45m", "1h"), limits = c(0, 60), expand = expand_scale(mult = c(0, 0.1))) + 
+  geom_histogram(aes(x = -premeal_bg_delay_minutes), binwidth = 1.0) +
+  scale_x_continuous(breaks=c(0, -15, -30, -45, -60), labels = c("0", "-15m", "-30m", "-45m", "-1h"), limits = c(-60, 0), expand = expand_scale(mult = c(0.1, 0))) + 
   theme(
     axis.title.x = element_blank(),
     axis.title.y = element_blank(),
@@ -121,8 +121,8 @@ g1 = meals.imputed %>%
 g2 = meals.imputed %>%
   filter(premeal_bg_delay_minutes >= 0 & premeal_bg_delay_minutes <= 60) %>%
   ggplot() +
-  geom_boxplot(aes(y = premeal_bg_delay_minutes)) + 
-  scale_y_continuous(breaks=c(0, 15, 30, 45, 60), labels = c("0", "15m", "30m", "45m", "1h"), limits = c(0, 60), expand = expand_scale(mult = c(0, 0.1))) + 
+  geom_boxplot(aes(y = -premeal_bg_delay_minutes)) + 
+  scale_y_continuous(breaks=c(0, -15, -30, -45, -60), labels = c("0", "-15m", "-30m", "-45m", "-1h"), limits = c(-60, 0), expand = expand_scale(mult = c(0.1, 0))) + 
   coord_flip() +
   labs( 
     y = "Premeal delay"
