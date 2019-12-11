@@ -2,7 +2,7 @@
 
 ## Per user data availability
 
-Not every user appears to have every dataset available. While BG recordings and meals are recorded for all selected users, not all of them have meal images available, and not all have Fitbit data (activities and sleep) available.
+Different users have different types of data included in their datasets. The dataset used in this project was a snapshot of an offline data repository created from a live Mealyzer database; not all data fields were available for all users. For example, while all users have records of meals and BG levels captured before meals (the apps require pre-meal BG levels to be captured with every captured meal), some users did not have meal images available, and not all users had Fitbit data (activities and sleep) available.
 
 ```{r}
 users.all %>%
@@ -22,8 +22,7 @@ users.all %>%
   count()
 ```
 
-We have only 7 users with all data present (including complete meals anbd fitbit data), and that is not even taking into account the number of quality meals for those users. The consequence of this sparse data availability is that for different analysis we would need to use different slices of the overall data and different sets of users. When analyzing data for a particular user, the user selection matters a lot.
-
+Overall, only 7 users had complete datasets with all data present (including complete meals and fitbit data); however, even for these 7 users not all recorded meals included all the data fields. As a consequence, the dataset in this project was sparse and inconsistent between users. To accommodate this variability, each sub-analysis presented in this report only included users that had data corresponding to the analysis. Consequently, user IDs vary from one sub-analysis to another.
 
 ## Meals data availability
 
@@ -33,15 +32,17 @@ visdat::vis_dat(meals.all)
 
 There are several patterns of missing values that can be seen from this plot.
 
-`platemate_id` is almost universally missing from all meals.
+platemate_id is almost universally missing from all meals (platemate_id referred to a different way of obtaining nutritional composition of meals not used in these studies)
 
-`premeal_bg` and `premeal_bg_time` are 100% present. The application did not allow recording a meal without also recording BG reading taken shortly before the meal. 
+premeal_bg and premeal_bg_time are 100% present. This was due to the design of the data recording features of the apps: all apps in these studies did not allow recording a meal without also recording BG reading taken shortly before the meal.
 
-`postmeal_bg` and `postmeal_bg_time` on the other hand are not recorded for all meals. This is because despite of the applications sending notifications to the users 2h after the meal reminding to record a postmeal BG, users dodn't do it for every meal. Further we show a breakdown of "compliance" for taking postmeal BG, and a way to impute the missing values.
+postmeal_bg and postmeal_bg_time on the other hand are not recorded for all meals. Unlike pre-meal BG level, which was a required field for every captured meal, post-meal BG needed to be entered by users 2 hours after each meal and separately from the meal. However, few users consistently captured this reading, despite notifications from the app reminding them to record post-meal BG.
 
-Some relatively small percentage of meal are missing the "eval" (evaluator's) fields on the nutritional meal breakdown (e.g. `calories_eval`, `eval_calories_computed`, `eval_proportion_carbs`...). 
+Further we show a breakdown of “compliance” for taking postmeal BG, and a way to impute the missing values.
 
-The "user" nutritional breakdown values are mostly missing (fields like `calories_user`, `user_calories_computed`, `user_proportion_carbs`...). The reason is that some versions of the app asked users to enter nutritional estimation, but some version only asked on the goals, but not nutritional estimation.
+Some relatively small percentage of meal are missing the “eval” (evaluator’s) fields on the nutritional meal breakdown (e.g. calories_eval, eval_calories_computed, eval_proportion_carbs…).
+
+The “user” nutritional breakdown values are mostly missing (fields like calories_user, user_calories_computed, user_proportion_carbs…). The reason is that some versions of the app asked users to enter nutritional estimation, but some version only asked for comparison with goals, but did not ask to enter nutritional estimation.
 
 
 ```{r}
@@ -75,7 +76,7 @@ There does not seem to be any patterns in this visualization beyond staing that 
 
 ## Imputing post-meal BG
 
-As shown before, a lot of meals are missing postmeal BG records, indicating that the users did not record another BG reading around 2h mark as instructed. However, the value of postmeal_bg and postmeal_bg_time can be imputed, considering that in some cases users ate the next meal and recorded a BG reading with it. We impute missing postmeal values with the next meal premeal values. 
+As shown before, many meals are missing post-meal BG records, indicating that the users did not record another BG reading around 2h mark as instructed. However, in some cases, these users recorded their next meals and the corresponding pre-meal BG levels. We impute missing values for postmeal_bg and postmeal_bg_time with the next meal premeal values.
 
 ```{r}
 meals.imputed = meals.all %>%
@@ -103,7 +104,7 @@ After imputing `postmeal_bg` and `postmeal_bg_time` several new metrics were cal
 
 ## Analyzing pre and post meal BG time intervals 
 
-Here we look at the distribution of values for premeal BG delay (defined as the difference in minutes between users recording a BG reading and eating a meal), and postmeal BG delay (defined as the difference in minutes between users eating a meal and taking a postmeal BG reading).
+Here we look at delays between capturing meals and BG levels. Per study instructions, pre-meal BG levels should be captured at the same time as meals they are associated with, and post-meal BG levels should be captured 2 hours after recording the meal (at which time users receive a reminder from the app); however, the apps also give users flexibility in how they record meals and BG levels. Below we show the distribution of values for premeal BG delay (defined as the difference in minutes between users recording a BG reading and eating a meal), and postmeal BG delay (defined as the difference in minutes between users eating a meal and taking a postmeal BG reading).
 
 ```{r fig.asp=0.8}
 g1 = meals.imputed %>%
@@ -169,13 +170,13 @@ gridExtra::grid.arrange(
 
 ```
 
-Premeal BG delay distribution has two distinct modes, one at around 5 min and another at around 22 min. The application to record meals and premeal BGs asked the users to record those two pieces of information at the same time, but also allowed to change the time when the actual BG test was performed. The explanation for the first mode could be the interaction scenario when a person took a BG reading, and before the meal has started recorded it with the application (adjusting the BG test time to about 5min back). The socond mode could be another interaction scenario, where a person takes a BG reading, then eats the meal, and only after the meal is finished records the meal in the app (adjusting the BG test time to about 22 min back). One way to co nfirm it would be to visually analyze the meal images for the meals belonging to the second mode and see if those are the images of already completed meals. The researcher confirmed that in focus groups some people found the process of recording a meal to be disruptive, and may be we are seeing a hack some users adopted not to disrupt the meal experience with a lengthy process of entering a meal in the app while they are hungry.
+Premeal BG delay distribution has two distinct modes, one at around 5 min and another at around 22 min. This distribution suggests that users developed several different approaches to recording meals and BG levels. In the first scenario, users measured their BG, and recorded this BG with the application before starting the meal (adjusting the BG test time to about 5min back). In the second scenario, there is a longer delay between the captured pre-meal BG level and the captured meal. This suggests that these users may have measured their BG levels, but then proceeded to eat their meal first, and recorded both the meal the captured BG level only after the meal was finished, adjusting the time for BG to about 22 min back).   One way to confirm this would be to visually analyze meal images for meals belonging to the second mode and see if those images include already completed meals. The researcher confirmed that in focus groups some participants reported the process of capturing meals to be disruptive; it is possible that these participants developed work-arounds that helped them to record meals without delaying enjoyment of meals while hungry. 
 
-The postmeal BG delays have a median around 2h 15min, due the fact that the app was sending reminders at around 2h after the meal. The distribution has a long tail and a lot of outliers, probably causes by our postmeal BG imputation method and/or lapses in consistently using the app for all meals. For any analysis ths focuses on the question of glycemic impact of the meals such long postmeal interval in not useful. In our analysis we filtered the meal to only those that have a postmeal BG at least 4h after the meal.
+Post-meal BG levels are recorded with a median delay around 2h 15min; this was probably due to the fact that the app was sending users reminders at around 2h after each meal. This distribution has a long tail and a many outliers, probably caused by our post-meal BG imputation method and/or lapses in consistently using the app for all meals. For any analysis that focuses on the question of glycemic impact of the meals such long post-meal interval will create high variability and reduce reliability. In our analysis we filtered meals to only those that have a postmeal BG at least 4h after the meal.
 
 ### Selecting users for the analysis
 
-Not all users used the application in the same capacity, and some recorded very few meals. For the further analysis we select only those users that recorded at least 14 meals (threshold picked such that 28 users were selected for easy facetting in a grid)
+Not all users used the application in the same capacity, and some recorded very few meals. For the further analysis we select top 24 users by the number of meals (for convenient facetting in a grid)
 
 ```{r}
 users.selected = meals.imputed  %>%
