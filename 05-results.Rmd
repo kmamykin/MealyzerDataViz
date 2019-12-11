@@ -151,7 +151,6 @@ meals.selected %>%
   theme(
     axis.text.x = element_text(angle = 90)
   )
-# TODO: colorcode facets whis positive vs negative trend
 ```
 
 At a glance it looks like most of the users either maintained or decreased the number of calories they consume per day. Notable exception is user 2890, whose calories consumption increased. What is concerning about this plot is that for most users the daily calories consumption is well below 2000 calories/day. One explanation is that users didn't record all meals in a day.
@@ -180,7 +179,6 @@ meals.selected %>%
   theme(
     axis.text.x = element_text(angle = 90)
   )
-# TODO: colorcode facets whis positive vs negative trend
 ```
 
 The fasting BG is defined as the first BG measurement after 8h of fasting, normally after sleep in the morning before breakfast. This plot shows the trend of fasting BG by user with a trend line (in blue) and a threshold (in red). The official guidelines to the fasting BG are: below 100 is considered normal (not shown on the plot), 100-125 is pre-diabetes, above 125 leads to a disgosis with diabetes.
@@ -191,7 +189,7 @@ For most of the users the trend line looks flat and at or below the threshold le
 
 Here we explore the images of meals for user 2254. The first set of images show meals that has the biggest impact over shortest timeframe (`bg_impact_slope`), and the second set show the meals that had smallest (even negative) imapct on BG.
 
-```{r fig.asp=0.6}
+```{r fig.asp=0.8}
 display_meals <- function(df, ncol = 6, nrow = 3, rotate = 0) {
   meals = df[1:(ncol*nrow), ] %>% select(user_id, meal_id)
   filenames = paste0(normalizePath("~/Dropbox/MealyzerData"), "/", meals[["user_id"]], "/images/medium/", meals[["meal_id"]], ".jpg")
@@ -207,7 +205,7 @@ meals.selected %>%
 ```
 
 
-```{r fig.asp=0.6}
+```{r fig.asp=0.8}
 meals.selected %>%
   filter(user_id == "2254") %>%
   arrange(bg_impact_slope) %>%

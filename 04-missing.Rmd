@@ -105,7 +105,7 @@ After imputing `postmeal_bg` and `postmeal_bg_time` several new metrics were cal
 
 Here we look at the distribution of values for premeal BG delay (defined as the difference in minutes between users recording a BG reading and eating a meal), and postmeal BG delay (defined as the difference in minutes between users eating a meal and taking a postmeal BG reading).
 
-```{r}
+```{r fig.asp=0.8}
 g1 = meals.imputed %>%
   filter(premeal_bg_delay_minutes >= 0 & premeal_bg_delay_minutes <= 60) %>%
   ggplot() +
