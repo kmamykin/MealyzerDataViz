@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 2 Data sources | Mealyzer diabetes app study exploratory data visualization</title>
-  <meta name="description" content="Chapter 2 Data sources | Mealyzer diabetes app study exploratory data visualization" />
+  <title>Chapter 2 Data sources | Exploration of data collected with self monitoring in diabetes</title>
+  <meta name="description" content="Chapter 2 Data sources | Exploration of data collected with self monitoring in diabetes" />
   <meta name="generator" content="bookdown 0.16 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 2 Data sources | Mealyzer diabetes app study exploratory data visualization" />
+  <meta property="og:title" content="Chapter 2 Data sources | Exploration of data collected with self monitoring in diabetes" />
   <meta property="og:type" content="book" />
   
   
@@ -16,15 +16,15 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 2 Data sources | Mealyzer diabetes app study exploratory data visualization" />
+  <meta name="twitter:title" content="Chapter 2 Data sources | Exploration of data collected with self monitoring in diabetes" />
   
   
   
 
-<meta name="author" content="Klyment Mamykin, Sunny Lee, Jinrong Cao" />
+<meta name="author" content="Kliment Mamykin, Sunny Lee, Jinrong Cao" />
 
 
-<meta name="date" content="2019-12-01" />
+<meta name="date" content="2019-12-10" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -144,35 +144,43 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.1" data-path="data-sources.html"><a href="data-sources.html#mealyzer-application-and-functionality"><i class="fa fa-check"></i><b>2.1</b> Mealyzer application and functionality</a></li>
 <li class="chapter" data-level="2.2" data-path="data-sources.html"><a href="data-sources.html#dataset-description"><i class="fa fa-check"></i><b>2.2</b> Dataset description</a></li>
 <li class="chapter" data-level="2.3" data-path="data-sources.html"><a href="data-sources.html#dataset-collection-artifacts"><i class="fa fa-check"></i><b>2.3</b> Dataset collection artifacts</a></li>
-<li class="chapter" data-level="2.4" data-path="data-sources.html"><a href="data-sources.html#data-import"><i class="fa fa-check"></i><b>2.4</b> Data Import</a><ul>
-<li class="chapter" data-level="2.4.1" data-path="data-sources.html"><a href="data-sources.html#selecting-users-for-the-analysis"><i class="fa fa-check"></i><b>2.4.1</b> Selecting users for the analysis</a></li>
-</ul></li>
+<li class="chapter" data-level="2.4" data-path="data-sources.html"><a href="data-sources.html#data-import"><i class="fa fa-check"></i><b>2.4</b> Data Import</a></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="data-transformation.html"><a href="data-transformation.html"><i class="fa fa-check"></i><b>3</b> Data transformation</a><ul>
-<li class="chapter" data-level="3.1" data-path="data-transformation.html"><a href="data-transformation.html#anonymized-timestamps"><i class="fa fa-check"></i><b>3.1</b> Anonymized timestamps</a></li>
-<li class="chapter" data-level="3.2" data-path="data-transformation.html"><a href="data-transformation.html#other-calculations"><i class="fa fa-check"></i><b>3.2</b> Other calculations</a></li>
+<li class="chapter" data-level="3.1" data-path="data-transformation.html"><a href="data-transformation.html#enhancing-user-records-with-data-availability-indicators"><i class="fa fa-check"></i><b>3.1</b> Enhancing user records with data availability indicators</a></li>
+<li class="chapter" data-level="3.2" data-path="data-transformation.html"><a href="data-transformation.html#anonymized-timestamps"><i class="fa fa-check"></i><b>3.2</b> Anonymized timestamps</a></li>
+<li class="chapter" data-level="3.3" data-path="data-transformation.html"><a href="data-transformation.html#other-field-types-conversions"><i class="fa fa-check"></i><b>3.3</b> Other field types conversions</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="missing-values.html"><a href="missing-values.html"><i class="fa fa-check"></i><b>4</b> Missing values</a></li>
+<li class="chapter" data-level="4" data-path="missing-values.html"><a href="missing-values.html"><i class="fa fa-check"></i><b>4</b> Missing values</a><ul>
+<li class="chapter" data-level="4.1" data-path="missing-values.html"><a href="missing-values.html#per-user-data-availability"><i class="fa fa-check"></i><b>4.1</b> Per user data availability</a></li>
+<li class="chapter" data-level="4.2" data-path="missing-values.html"><a href="missing-values.html#meals-data-availability"><i class="fa fa-check"></i><b>4.2</b> Meals data availability</a></li>
+<li class="chapter" data-level="4.3" data-path="missing-values.html"><a href="missing-values.html#visualizing-user-compliance-on-recording-postmeal-bg"><i class="fa fa-check"></i><b>4.3</b> Visualizing user compliance on recording postmeal BG</a></li>
+<li class="chapter" data-level="4.4" data-path="missing-values.html"><a href="missing-values.html#imputing-post-meal-bg"><i class="fa fa-check"></i><b>4.4</b> Imputing post-meal BG</a></li>
+<li class="chapter" data-level="4.5" data-path="missing-values.html"><a href="missing-values.html#analyzing-pre-and-post-meal-bg-time-intervals"><i class="fa fa-check"></i><b>4.5</b> Analyzing pre and post meal BG time intervals</a><ul>
+<li class="chapter" data-level="4.5.1" data-path="missing-values.html"><a href="missing-values.html#selecting-users-for-the-analysis"><i class="fa fa-check"></i><b>4.5.1</b> Selecting users for the analysis</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="missing-values.html"><a href="missing-values.html#final-selected-meals-subset-for-bg-impact-analysis"><i class="fa fa-check"></i><b>4.6</b> Final selected meals subset for BG impact analysis</a></li>
+</ul></li>
 <li class="chapter" data-level="5" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>5</b> Results</a><ul>
-<li class="chapter" data-level="5.1" data-path="results.html"><a href="results.html#consistent-meal-times-vs-grazers"><i class="fa fa-check"></i><b>5.1</b> Consistent meal times vs grazers</a></li>
+<li class="chapter" data-level="5.1" data-path="results.html"><a href="results.html#looking-at-the-time-of-the-meals"><i class="fa fa-check"></i><b>5.1</b> Looking at the time of the meals</a></li>
 <li class="chapter" data-level="5.2" data-path="results.html"><a href="results.html#meal-kind-analysis"><i class="fa fa-check"></i><b>5.2</b> Meal kind analysis</a></li>
-<li class="chapter" data-level="5.3" data-path="results.html"><a href="results.html#per-user-analysis"><i class="fa fa-check"></i><b>5.3</b> Per user analysis</a><ul>
-<li class="chapter" data-level="5.3.1" data-path="results.html"><a href="results.html#correlation-between-variables"><i class="fa fa-check"></i><b>5.3.1</b> Correlation between variables</a></li>
-<li class="chapter" data-level="5.3.2" data-path="results.html"><a href="results.html#time-effect"><i class="fa fa-check"></i><b>5.3.2</b> Time effect</a></li>
-<li class="chapter" data-level="5.3.3" data-path="results.html"><a href="results.html#meal-bg-impact-visualization"><i class="fa fa-check"></i><b>5.3.3</b> Meal BG impact visualization</a></li>
+<li class="chapter" data-level="5.3" data-path="results.html"><a href="results.html#meal-nutrients-analysis"><i class="fa fa-check"></i><b>5.3</b> Meal nutrients analysis</a></li>
+<li class="chapter" data-level="5.4" data-path="results.html"><a href="results.html#meal-bg-impact-visualization"><i class="fa fa-check"></i><b>5.4</b> Meal BG impact visualization</a></li>
+<li class="chapter" data-level="5.5" data-path="results.html"><a href="results.html#trends-in-calories"><i class="fa fa-check"></i><b>5.5</b> Trends in calories</a></li>
+<li class="chapter" data-level="5.6" data-path="results.html"><a href="results.html#trend-in-fasting-bg"><i class="fa fa-check"></i><b>5.6</b> Trend in fasting BG</a></li>
+<li class="chapter" data-level="5.7" data-path="results.html"><a href="results.html#meal-images"><i class="fa fa-check"></i><b>5.7</b> Meal images</a><ul>
+<li class="chapter" data-level="5.7.1" data-path="results.html"><a href="results.html#per-user-correlation-between-variables"><i class="fa fa-check"></i><b>5.7.1</b> Per user correlation between variables</a></li>
 </ul></li>
+<li class="chapter" data-level="5.8" data-path="results.html"><a href="results.html#looking-into-meal-nutrients-estimation-evaluator-vs-user"><i class="fa fa-check"></i><b>5.8</b> Looking into meal nutrients estimation (evaluator vs user)</a></li>
 </ul></li>
-<li class="chapter" data-level="6" data-path="images.html"><a href="images.html"><i class="fa fa-check"></i><b>6</b> Images</a><ul>
-<li class="chapter" data-level="6.1" data-path="images.html"><a href="images.html#meal-nutrients-evaluator-vs-user"><i class="fa fa-check"></i><b>6.1</b> Meal nutrients evaluator vs user</a></li>
-<li class="chapter" data-level="6.2" data-path="images.html"><a href="images.html#overtime-trends"><i class="fa fa-check"></i><b>6.2</b> Overtime trends</a></li>
-<li class="chapter" data-level="6.3" data-path="images.html"><a href="images.html#sleep"><i class="fa fa-check"></i><b>6.3</b> Sleep</a></li>
+<li class="chapter" data-level="6" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>6</b> Conclusion</a></li>
+<li class="chapter" data-level="7" data-path="experiments-visualizing-data.html"><a href="experiments-visualizing-data.html"><i class="fa fa-check"></i><b>7</b> Experiments visualizing data</a><ul>
+<li class="chapter" data-level="7.0.1" data-path="experiments-visualizing-data.html"><a href="experiments-visualizing-data.html#dataset-highlevel-view"><i class="fa fa-check"></i><b>7.0.1</b> Dataset highlevel view</a></li>
+<li class="chapter" data-level="7.0.2" data-path="experiments-visualizing-data.html"><a href="experiments-visualizing-data.html#plotting-activeness-vs.bg-level"><i class="fa fa-check"></i><b>7.0.2</b> Plotting activeness vs. bg level</a></li>
+<li class="chapter" data-level="7.0.3" data-path="experiments-visualizing-data.html"><a href="experiments-visualizing-data.html#plotting-prepost-meal-bg-faceting-on-user_id"><i class="fa fa-check"></i><b>7.0.3</b> Plotting pre/post meal bg ,faceting on user_id</a></li>
 </ul></li>
-<li class="chapter" data-level="7" data-path="interactive-component.html"><a href="interactive-component.html"><i class="fa fa-check"></i><b>7</b> Interactive component</a></li>
-<li class="chapter" data-level="8" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>8</b> Conclusion</a></li>
-<li class="chapter" data-level="9" data-path="experiments-visualizing-data.html"><a href="experiments-visualizing-data.html"><i class="fa fa-check"></i><b>9</b> Experiments visualizing data</a><ul>
-<li class="chapter" data-level="9.0.1" data-path="experiments-visualizing-data.html"><a href="experiments-visualizing-data.html#dataset-highlevel-view"><i class="fa fa-check"></i><b>9.0.1</b> Dataset highlevel view</a></li>
-<li class="chapter" data-level="9.0.2" data-path="experiments-visualizing-data.html"><a href="experiments-visualizing-data.html#plotting-activeness-vs.bg-level"><i class="fa fa-check"></i><b>9.0.2</b> Plotting activeness vs. bg level</a></li>
-<li class="chapter" data-level="9.0.3" data-path="experiments-visualizing-data.html"><a href="experiments-visualizing-data.html#plotting-prepost-meal-bg-faceting-on-user_id"><i class="fa fa-check"></i><b>9.0.3</b> Plotting pre/post meal bg ,faceting on user_id</a></li>
+<li class="chapter" data-level="8" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i><b>8</b> Appendix</a><ul>
+<li class="chapter" data-level="8.1" data-path="appendix.html"><a href="appendix.html#sleep"><i class="fa fa-check"></i><b>8.1</b> Sleep</a></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -185,7 +193,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Mealyzer diabetes app study exploratory data visualization</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Exploration of data collected with self monitoring in diabetes</a>
           </h1>
         </div>
 
@@ -215,102 +223,86 @@ meal details, evaluator nutrients, user nutriends, calculated fields (calculated
 <div id="data-import" class="section level2">
 <h2><span class="header-section-number">2.4</span> Data Import</h2>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">raw_data_path =<span class="st"> &quot;~/Dropbox/MealyzerData&quot;</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">mealyser_data_overview =<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(raw_data_path, <span class="st">&quot;mealyzer_data_overview.csv&quot;</span>), <span class="dt">col_types =</span> <span class="kw">cols</span>())</a></code></pre></div>
-<div id="selecting-users-for-the-analysis" class="section level3">
-<h3><span class="header-section-number">2.4.1</span> Selecting users for the analysis</h3>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">users =<span class="st"> </span>mealyser_data_overview <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="st">  </span><span class="kw">filter</span>(complete_meals <span class="op">&gt;</span><span class="st"> </span><span class="dv">14</span>)</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw">print</span>(users[[<span class="st">&quot;user_id&quot;</span>]])</a></code></pre></div>
-<pre><code>##  [1]   24   56   57   58   88 1665 1809 1821 1883 1957 1983 2004 2254 2262
-## [15] 2288 2308 2312 2316 2329 2392 2475 2536 2702 2721 2822 2890 2942 2948</code></pre>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">read_mealyzer_files &lt;-<span class="st"> </span><span class="cf">function</span>(data_dir, user_ids, file_name, add_user_id, col_types) {</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2">  result &lt;-<span class="st"> </span><span class="kw">c</span>()</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3">  <span class="cf">for</span> (user_id <span class="cf">in</span> user_ids) {</a>
-<a class="sourceLine" id="cb4-4" data-line-number="4">    </a>
-<a class="sourceLine" id="cb4-5" data-line-number="5">    file_path =<span class="st"> </span><span class="kw">file.path</span>(data_dir, <span class="kw">as.character</span>(user_id), file_name)</a>
-<a class="sourceLine" id="cb4-6" data-line-number="6">    df =<span class="st"> </span><span class="kw">read_csv</span>(file_path, <span class="dt">col_types =</span> col_types)</a>
-<a class="sourceLine" id="cb4-7" data-line-number="7">    <span class="cf">if</span> (add_user_id) {</a>
-<a class="sourceLine" id="cb4-8" data-line-number="8">      df =<span class="st"> </span><span class="kw">cbind</span>(<span class="dt">user_id =</span> user_id, df)</a>
-<a class="sourceLine" id="cb4-9" data-line-number="9">    }</a>
-<a class="sourceLine" id="cb4-10" data-line-number="10">    <span class="cf">if</span> (<span class="kw">length</span>(result) <span class="op">==</span><span class="st"> </span><span class="dv">0</span>) {</a>
-<a class="sourceLine" id="cb4-11" data-line-number="11">      result &lt;-<span class="st"> </span>df</a>
-<a class="sourceLine" id="cb4-12" data-line-number="12">    } <span class="cf">else</span> {</a>
-<a class="sourceLine" id="cb4-13" data-line-number="13">      result &lt;-<span class="st"> </span><span class="kw">rbind</span>(result, df)</a>
-<a class="sourceLine" id="cb4-14" data-line-number="14">    }</a>
-<a class="sourceLine" id="cb4-15" data-line-number="15">  }</a>
-<a class="sourceLine" id="cb4-16" data-line-number="16">  <span class="kw">return</span>(result)</a>
-<a class="sourceLine" id="cb4-17" data-line-number="17">}</a>
-<a class="sourceLine" id="cb4-18" data-line-number="18"></a>
-<a class="sourceLine" id="cb4-19" data-line-number="19">as.timestamp &lt;-<span class="st"> </span><span class="cf">function</span>(minutes_since, <span class="dt">anchor_date =</span> <span class="st">&#39;2019-01-01 00:00:00 EST&#39;</span>) {</a>
-<a class="sourceLine" id="cb4-20" data-line-number="20">  anchor_time =<span class="st"> </span><span class="kw">as.POSIXct</span>(anchor_date)</a>
-<a class="sourceLine" id="cb4-21" data-line-number="21">  <span class="kw">return</span>(anchor_time <span class="op">+</span><span class="st"> </span>minutes_since <span class="op">*</span><span class="st"> </span><span class="dv">60</span>)</a>
-<a class="sourceLine" id="cb4-22" data-line-number="22">}</a>
-<a class="sourceLine" id="cb4-23" data-line-number="23"></a>
-<a class="sourceLine" id="cb4-24" data-line-number="24">as.meals_kind &lt;-<span class="st"> </span><span class="cf">function</span>(values) {</a>
-<a class="sourceLine" id="cb4-25" data-line-number="25">  <span class="kw">return</span>(<span class="kw">fct_relevel</span>(values, <span class="kw">c</span>(<span class="st">&quot;breakfast&quot;</span>, <span class="st">&quot;morning_snack&quot;</span>, <span class="st">&quot;lunch&quot;</span>, <span class="st">&quot;afternoon_snack&quot;</span>, <span class="st">&quot;dinner&quot;</span>, <span class="st">&quot;after_dinner_snack&quot;</span>)))</a>
-<a class="sourceLine" id="cb4-26" data-line-number="26">}</a>
-<a class="sourceLine" id="cb4-27" data-line-number="27"></a>
-<a class="sourceLine" id="cb4-28" data-line-number="28">print_df &lt;-<span class="st"> </span><span class="cf">function</span>(df, ...) {</a>
-<a class="sourceLine" id="cb4-29" data-line-number="29">  <span class="kw">print</span>(df <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(...))</a>
-<a class="sourceLine" id="cb4-30" data-line-number="30">  <span class="kw">return</span>(df)</a>
-<a class="sourceLine" id="cb4-31" data-line-number="31">}</a></code></pre></div>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">bg_readings =<span class="st"> </span><span class="kw">read_mealyzer_files</span>(raw_data_path, users[[<span class="st">&quot;user_id&quot;</span>]], <span class="st">&quot;bg_labeled.csv&quot;</span>, <span class="dt">add_user_id =</span> <span class="ot">TRUE</span>, <span class="dt">col_types =</span> <span class="kw">cols</span>(</a>
-<a class="sourceLine" id="cb5-2" data-line-number="2">  <span class="dt">time =</span> <span class="kw">col_double</span>(),</a>
-<a class="sourceLine" id="cb5-3" data-line-number="3">  <span class="dt">bg =</span> <span class="kw">col_double</span>(),</a>
-<a class="sourceLine" id="cb5-4" data-line-number="4">  <span class="dt">meals_kind =</span> <span class="kw">col_character</span>(),</a>
-<a class="sourceLine" id="cb5-5" data-line-number="5">  <span class="dt">meal_id =</span> <span class="kw">col_double</span>(),</a>
-<a class="sourceLine" id="cb5-6" data-line-number="6">  <span class="dt">readings_kind =</span> <span class="kw">col_character</span>()</a>
-<a class="sourceLine" id="cb5-7" data-line-number="7">)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-8" data-line-number="8"><span class="st">  </span><span class="kw">mutate</span>(</a>
-<a class="sourceLine" id="cb5-9" data-line-number="9">    <span class="dt">user_id =</span> <span class="kw">as.character</span>(user_id),</a>
-<a class="sourceLine" id="cb5-10" data-line-number="10">    <span class="dt">time =</span> <span class="kw">as.timestamp</span>(time), </a>
-<a class="sourceLine" id="cb5-11" data-line-number="11">    <span class="dt">meals_kind =</span> <span class="kw">as.meals_kind</span>(meals_kind),</a>
-<a class="sourceLine" id="cb5-12" data-line-number="12">    <span class="dt">readings_kind =</span> <span class="kw">fct_relevel</span>(readings_kind, <span class="kw">c</span>(<span class="st">&quot;premeal&quot;</span>, <span class="st">&quot;postmeal&quot;</span>))</a>
-<a class="sourceLine" id="cb5-13" data-line-number="13">  )</a>
-<a class="sourceLine" id="cb5-14" data-line-number="14"><span class="kw">head</span>(bg_readings)</a></code></pre></div>
-<pre><code>##   user_id                time bg    meals_kind meal_id readings_kind
-## 1      24 2019-01-02 21:10:00 81        dinner     811       premeal
-## 2      24 2019-01-02 22:45:00 94        dinner     811      postmeal
-## 3      24 2019-01-03 06:15:00 84 morning_snack     812       premeal
-## 4      24 2019-01-03 07:20:00 89 morning_snack     812      postmeal
-## 5      24 2019-01-03 07:25:00 89     breakfast     813       premeal
-## 6      24 2019-01-03 09:05:00 85     breakfast     813      postmeal</code></pre>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">meals_data =<span class="st"> </span><span class="kw">read_mealyzer_files</span>(raw_data_path, users[[<span class="st">&quot;user_id&quot;</span>]], <span class="st">&quot;mealyzer_data.csv&quot;</span>, <span class="dt">add_user_id =</span> <span class="ot">FALSE</span>, <span class="dt">col_types =</span> <span class="kw">cols</span>()) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="st">  </span><span class="kw">mutate</span>(</a>
-<a class="sourceLine" id="cb7-3" data-line-number="3">    <span class="dt">user_id =</span> <span class="kw">as.character</span>(user_id),</a>
-<a class="sourceLine" id="cb7-4" data-line-number="4">    <span class="dt">eaten_at =</span> <span class="kw">as.timestamp</span>(eaten_at),</a>
-<a class="sourceLine" id="cb7-5" data-line-number="5">    <span class="dt">kind =</span> <span class="kw">as.meals_kind</span>(kind),</a>
-<a class="sourceLine" id="cb7-6" data-line-number="6">    <span class="dt">premeal_bg_time =</span> <span class="kw">as.timestamp</span>(premeal_bg_time),</a>
-<a class="sourceLine" id="cb7-7" data-line-number="7">    <span class="dt">postmeal_bg_time =</span> <span class="kw">as.timestamp</span>(postmeal_bg_time),</a>
-<a class="sourceLine" id="cb7-8" data-line-number="8">    <span class="dt">premeal_bg_delay_minutes =</span> <span class="kw">as.double</span>(<span class="kw">difftime</span>(eaten_at, premeal_bg_time, <span class="dt">units =</span> <span class="st">&quot;mins&quot;</span>)),</a>
-<a class="sourceLine" id="cb7-9" data-line-number="9">    <span class="dt">postmeal_bg_delay_minutes =</span> <span class="kw">as.double</span>(<span class="kw">difftime</span>(postmeal_bg_time, eaten_at, <span class="dt">units =</span> <span class="st">&quot;mins&quot;</span>)),</a>
-<a class="sourceLine" id="cb7-10" data-line-number="10">    <span class="dt">bg_impact =</span> postmeal_bg <span class="op">-</span><span class="st"> </span>premeal_bg,</a>
-<a class="sourceLine" id="cb7-11" data-line-number="11">    <span class="dt">bg_impact_slope =</span> bg_impact <span class="op">/</span><span class="st"> </span>(premeal_bg_delay_minutes <span class="op">+</span><span class="st"> </span>postmeal_bg_delay_minutes)</a>
-<a class="sourceLine" id="cb7-12" data-line-number="12">  )</a>
-<a class="sourceLine" id="cb7-13" data-line-number="13"><span class="kw">head</span>(meals_data)</a></code></pre></div>
-<pre><code>## # A tibble: 6 x 35
-##   user_id meal_id eaten_at            title ingredients kind 
-##   &lt;chr&gt;     &lt;dbl&gt; &lt;dttm&gt;              &lt;chr&gt; &lt;chr&gt;       &lt;fct&gt;
-## 1 24          811 2019-01-02 22:11:26 Taco… Fried shri… dinn…
-## 2 24          812 2019-01-03 06:20:17 Latte Espresso, … morn…
-## 3 24          813 2019-01-03 07:35:04 0% f… 6oz fage y… brea…
-## 4 24          814 2019-01-03 13:49:18 Appl… Granny Smi… lunch
-## 5 24          819 2019-01-03 19:59:10 Steak Steak toma… dinn…
-## 6 24          821 2019-01-04 06:48:27 Espr… 4oz 1% mil… morn…
-## # … with 29 more variables: photo_file_name &lt;chr&gt;, carbs_eval &lt;dbl&gt;,
-## #   protein_eval &lt;dbl&gt;, fat_eval &lt;dbl&gt;, calories_eval &lt;dbl&gt;,
-## #   fiber_eval &lt;dbl&gt;, evaluator_id &lt;dbl&gt;, platemate_id &lt;lgl&gt;,
-## #   carbs_user &lt;dbl&gt;, protein_user &lt;dbl&gt;, fat_user &lt;dbl&gt;,
-## #   calories_user &lt;dbl&gt;, fiber_user &lt;dbl&gt;, premeal_bg &lt;dbl&gt;,
-## #   premeal_bg_time &lt;dttm&gt;, postmeal_bg &lt;dbl&gt;, postmeal_bg_time &lt;dttm&gt;,
-## #   eval_calories_computed &lt;dbl&gt;, eval_proportion_carbs &lt;dbl&gt;,
-## #   eval_proportion_protein &lt;dbl&gt;, eval_proportion_fat &lt;dbl&gt;,
-## #   user_calories_computed &lt;dbl&gt;, user_proportion_carbs &lt;dbl&gt;,
-## #   user_proportion_protein &lt;dbl&gt;, user_proportion_fat &lt;dbl&gt;,
-## #   premeal_bg_delay_minutes &lt;dbl&gt;, postmeal_bg_delay_minutes &lt;dbl&gt;,
-## #   bg_impact &lt;dbl&gt;, bg_impact_slope &lt;dbl&gt;</code></pre>
+<a class="sourceLine" id="cb1-2" data-line-number="2">users.raw =<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(raw_data_path, <span class="st">&quot;mealyzer_data_overview.csv&quot;</span>), <span class="dt">col_types =</span> <span class="kw">cols</span>())</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">glimpse</span>(users.raw)</a></code></pre></div>
+<pre><code>Observations: 66
+Variables: 7
+$ user_id                   &lt;dbl&gt; 24, 56, 57, 58, 88, 99, 124, 377, 445,…
+$ app                       &lt;chr&gt; &quot;GlucOracle&quot;, &quot;GlucOracle&quot;, &quot;GlucOracl…
+$ total_meals               &lt;dbl&gt; 93, 60, 48, 36, 38, 2, 8, 13, 7, 48, 8…
+$ total_bg_readings         &lt;dbl&gt; 193, 120, 96, 71, 80, 3, 15, 23, 14, 5…
+$ meals_with_nutrition_eval &lt;dbl&gt; 93, 60, 48, 36, 38, 2, 8, 12, 7, 1, 34…
+$ meals_with_pre_post_bg    &lt;dbl&gt; 87, 58, 40, 34, 35, 1, 7, 10, 7, 6, 46…
+$ complete_meals            &lt;dbl&gt; 87, 40, 32, 32, 35, 1, 1, 1, 1, NA, 15…</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">read.mealyzer_files &lt;-<span class="st"> </span><span class="cf">function</span>(data_dir, user_ids, file_name, add_user_id, col_types) {</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">  result &lt;-<span class="st"> </span><span class="kw">c</span>()</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">  <span class="cf">for</span> (user_id <span class="cf">in</span> user_ids) {</a>
+<a class="sourceLine" id="cb3-4" data-line-number="4">    </a>
+<a class="sourceLine" id="cb3-5" data-line-number="5">    file_path =<span class="st"> </span><span class="kw">file.path</span>(data_dir, <span class="kw">as.character</span>(user_id), file_name)</a>
+<a class="sourceLine" id="cb3-6" data-line-number="6">    df =<span class="st"> </span><span class="kw">read_csv</span>(file_path, <span class="dt">col_types =</span> col_types)</a>
+<a class="sourceLine" id="cb3-7" data-line-number="7">    <span class="cf">if</span> (add_user_id) {</a>
+<a class="sourceLine" id="cb3-8" data-line-number="8">      df =<span class="st"> </span><span class="kw">cbind</span>(<span class="dt">user_id =</span> user_id, df)</a>
+<a class="sourceLine" id="cb3-9" data-line-number="9">    }</a>
+<a class="sourceLine" id="cb3-10" data-line-number="10">    <span class="cf">if</span> (<span class="kw">length</span>(result) <span class="op">==</span><span class="st"> </span><span class="dv">0</span>) {</a>
+<a class="sourceLine" id="cb3-11" data-line-number="11">      result &lt;-<span class="st"> </span>df</a>
+<a class="sourceLine" id="cb3-12" data-line-number="12">    } <span class="cf">else</span> {</a>
+<a class="sourceLine" id="cb3-13" data-line-number="13">      result &lt;-<span class="st"> </span><span class="kw">rbind</span>(result, df)</a>
+<a class="sourceLine" id="cb3-14" data-line-number="14">    }</a>
+<a class="sourceLine" id="cb3-15" data-line-number="15">  }</a>
+<a class="sourceLine" id="cb3-16" data-line-number="16">  <span class="kw">return</span>(result)</a>
+<a class="sourceLine" id="cb3-17" data-line-number="17">}</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">bg_readings.raw =<span class="st"> </span><span class="kw">read.mealyzer_files</span>(raw_data_path, users.raw[[<span class="st">&quot;user_id&quot;</span>]], <span class="st">&quot;bg_labeled.csv&quot;</span>, <span class="dt">add_user_id =</span> <span class="ot">TRUE</span>, <span class="dt">col_types =</span> <span class="kw">cols</span>(</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">  <span class="dt">time =</span> <span class="kw">col_double</span>(),</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">  <span class="dt">bg =</span> <span class="kw">col_double</span>(),</a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">  <span class="dt">meals_kind =</span> <span class="kw">col_character</span>(),</a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">  <span class="dt">meal_id =</span> <span class="kw">col_double</span>(),</a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">  <span class="dt">readings_kind =</span> <span class="kw">col_character</span>()</a>
+<a class="sourceLine" id="cb4-7" data-line-number="7">))</a>
+<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="kw">glimpse</span>(bg_readings.raw)</a></code></pre></div>
+<pre><code>Observations: 7,057
+Variables: 6
+$ user_id       &lt;dbl&gt; 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24…
+$ time          &lt;dbl&gt; 2710.000, 2805.000, 3255.000, 3320.000, 3325.000, …
+$ bg            &lt;dbl&gt; 81, 94, 84, 89, 89, 85, 86, 97, 82, 92, 84, 99, 99…
+$ meals_kind    &lt;chr&gt; &quot;dinner&quot;, &quot;dinner&quot;, &quot;morning_snack&quot;, &quot;morning_snac…
+$ meal_id       &lt;dbl&gt; 811, 811, 812, 812, 813, 813, 814, 814, 819, 819, …
+$ readings_kind &lt;chr&gt; &quot;premeal&quot;, &quot;postmeal&quot;, &quot;premeal&quot;, &quot;postmeal&quot;, &quot;pre…</code></pre>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">meals.raw =<span class="st"> </span><span class="kw">read.mealyzer_files</span>(raw_data_path, users.raw[[<span class="st">&quot;user_id&quot;</span>]], <span class="st">&quot;mealyzer_data.csv&quot;</span>, <span class="dt">add_user_id =</span> <span class="ot">FALSE</span>, <span class="dt">col_types =</span> <span class="kw">cols</span>()) </a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="kw">glimpse</span>(meals.raw)</a></code></pre></div>
+<pre><code>Observations: 4,361
+Variables: 31
+$ user_id                 &lt;dbl&gt; 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, …
+$ meal_id                 &lt;dbl&gt; 811, 812, 813, 814, 819, 821, 822, 825, …
+$ eaten_at                &lt;dbl&gt; 2771.446, 3260.292, 3335.071, 3709.311, …
+$ title                   &lt;chr&gt; &quot;Taco fried shrimp  And spinach salad&quot;, …
+$ ingredients             &lt;chr&gt; &quot;Fried shrimp corn meal crusted, tortia,…
+$ kind                    &lt;chr&gt; &quot;dinner&quot;, &quot;morning_snack&quot;, &quot;breakfast&quot;, …
+$ photo_file_name         &lt;chr&gt; &quot;cdv_photo_001.jpg&quot;, &quot;cdv_photo_002.jpg&quot;…
+$ carbs_eval              &lt;dbl&gt; 57, 7, 29, 29, 22, 6, 24, 1, 48, 63, 22,…
+$ protein_eval            &lt;dbl&gt; 22, 4, 30, 4, 45, 4, 34, 22, 25, 36, 18,…
+$ fat_eval                &lt;dbl&gt; 35, 1, 28, 8, 14, 1, 29, 28, 16, 33, 13,…
+$ calories_eval           &lt;dbl&gt; 637, 53, 374, 191, 423, 51, 475, 335, 43…
+$ fiber_eval              &lt;dbl&gt; 5, 0, 12, 5, 2, 0, 10, 1, 2, 17, 3, 2, 0…
+$ evaluator_id            &lt;dbl&gt; 6865, 6865, 6865, 6865, 59, 59, 59, 59, …
+$ platemate_id            &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
+$ carbs_user              &lt;dbl&gt; 47, 4, 36, 22, 30, 4, 38, 10, 31, 41, 12…
+$ protein_user            &lt;dbl&gt; 14, 0, 18, 8, 30, 1, 18, 26, 28, 18, 9, …
+$ fat_user                &lt;dbl&gt; 35, 1, 36, 3, 10, 1, 36, 15, 16, 40, 9, …
+$ calories_user           &lt;dbl&gt; 570, 80, 400, 300, 520, 80, 400, 600, 60…
+$ fiber_user              &lt;dbl&gt; 12, 0, 8, 3, 5, 0, 8, 20, 14, 8, 3, 11, …
+$ premeal_bg              &lt;dbl&gt; 81, 84, 89, 86, 82, 84, 99, 89, 115, 95,…
+$ premeal_bg_time         &lt;dbl&gt; 2710, 3255, 3325, 3700, 4030, 4720, 4790…
+$ postmeal_bg             &lt;dbl&gt; 94, 89, 85, 97, 92, 99, 105, 90, 98, 99,…
+$ postmeal_bg_time        &lt;dbl&gt; 2805.000, 3320.000, 3425.000, 3755.000, …
+$ eval_calories_computed  &lt;dbl&gt; 631, 53, 488, 204, 394, 49, 493, 344, 43…
+$ eval_proportion_carbs   &lt;dbl&gt; 0.36133122, 0.52830189, 0.23770492, 0.56…
+$ eval_proportion_protein &lt;dbl&gt; 0.13946117, 0.30188679, 0.24590164, 0.07…
+$ eval_proportion_fat     &lt;dbl&gt; 0.4992076, 0.1698113, 0.5163934, 0.35294…
+$ user_calories_computed  &lt;dbl&gt; 559, 25, 540, 147, 330, 29, 548, 279, 38…
+$ user_proportion_carbs   &lt;dbl&gt; 0.33631485, 0.64000000, 0.26666667, 0.59…
+$ user_proportion_protein &lt;dbl&gt; 0.1001789, 0.0000000, 0.1333333, 0.21768…
+$ user_proportion_fat     &lt;dbl&gt; 0.5635063, 0.3600000, 0.6000000, 0.18367…</code></pre>
 
-</div>
 </div>
 </div>
             </section>
