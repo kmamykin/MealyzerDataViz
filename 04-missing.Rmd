@@ -27,7 +27,7 @@ We have only 7 users with all data present (including complete meals anbd fitbit
 
 ## Meals data availability
 
-```{r fig.width=6}
+```{r}
 visdat::vis_dat(meals.all)
 ```
 
@@ -44,13 +44,13 @@ Some relatively small percentage of meal are missing the "eval" (evaluator's) fi
 The "user" nutritional breakdown values are mostly missing (fields like `calories_user`, `user_calories_computed`, `user_proportion_carbs`...). The reason is that some versions of the app asked users to enter nutritional estimation, but some version only asked on the goals, but not nutritional estimation.
 
 
-```{r fig.height=3}
+```{r}
 extracat::visna(meals.all)
 ```
 
 ## Visualizing user compliance on recording postmeal BG
 
-```{r fig.width=3,fig.asp=1.5}
+```{r fig.asp=1.5}
 meals.all %>%
   mutate(premeal_bg_exist = ifelse(is.na(premeal_bg), 0, 1), postmeal_bg_exist = ifelse(is.na(postmeal_bg), 0, 1)) %>%
   group_by(user_id) %>%
@@ -105,7 +105,7 @@ After imputing `postmeal_bg` and `postmeal_bg_time` several new metrics were cal
 
 Here we look at the distribution of values for premeal BG delay (defined as the difference in minutes between users recording a BG reading and eating a meal), and postmeal BG delay (defined as the difference in minutes between users eating a meal and taking a postmeal BG reading).
 
-```{r fig.height=4}
+```{r}
 g1 = meals.imputed %>%
   filter(premeal_bg_delay_minutes >= 0 & premeal_bg_delay_minutes <= 60) %>%
   ggplot() +

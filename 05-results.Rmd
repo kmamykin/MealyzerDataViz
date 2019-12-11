@@ -8,7 +8,7 @@ Analyzing combinied data for multiple users did not yield any interesting insigh
 
 ## Looking at the time of the meals
 
-```{r fig.width=4}
+```{r}
 meals.selected %>%
   mutate(eaten_at_hour = hour(eaten_at)) %>%
   ggplot() +
@@ -30,7 +30,7 @@ For those "two meals" user, what meal of the day are they skipping? Lets analyze
 
 ## Meal kind analysis
 
-```{r fig.width=4}
+```{r}
 meals.selected %>%
   group_by(user_fct, kind) %>%
   summarise(freq = n()) %>%
@@ -63,7 +63,7 @@ Another observation is that some users eat a lot of snacks, and some users do no
 
 ## Meal nutrients analysis
 
-```{r fig.width=4}
+```{r}
 meals.selected %>%
   filter(!is.na(calories_eval)) %>%
   select(user_fct, kind, Carbs = carbs_eval, Protein = protein_eval, Fat = fat_eval, Fiber = fiber_eval) %>%
@@ -95,14 +95,12 @@ meals.selected %>%
 
 Interesting to note that in almost all users the carbs is the biggest contributor to the diet, then protein, then fat and then fiber. Users that buck that trend are 57, 1884, 2948. 
 
-TODO: Add proportions of nutrients per meal kind by user
-
 
 ## Meal BG impact visualization
 
 This is somewhat un-usual plot, where each line segment represents one meal a user had colored with the meal kind (breakfast, dinner, etc.). The line segment starts at the time (relative to the meal time) and BG of premeal measurement, and ends at the time/BG of the postmeal measurement. The steeper slope of the line indicates higher BG impact of a meal. The red horizontal line shows the diagnostic threshold level of 200mg/dL for postmeal BG to diagnose diabetes.
 
-```{r fig.width=4}
+```{r fig.asp=0.8}
 meals.selected %>% 
   ggplot() +
   geom_segment(aes(x = -premeal_bg_delay_minutes, xend = postmeal_bg_delay_minutes, y=premeal_bg, yend=postmeal_bg, color = kind), show.legend = FALSE, alpha = 0.2) + 
@@ -116,7 +114,7 @@ meals.selected %>%
     x = "Time since meal",
     y = "BG",
     title = "BG impact of meals per user",
-    caption = "Red horizontal line indicates warning postmeal BG levele of 180mg/dL"
+    caption = "Red horizontal line indicates warning postmeal BG levele of 200mg/dL"
   ) + 
   guides(color = guide_legend(nrow = 1), fill = guide_legend(nrow = 1)) +
   theme(
@@ -135,7 +133,7 @@ User 2942 seems to consistently have breakfasts with an impact of about 25-30 BG
 
 ## Trends in calories
 
-```{r fig.width=4}
+```{r}
 meals.selected %>%
   mutate(eaten_at_date = as.Date(eaten_at, tz = "EST")) %>%
   filter(eaten_at_date <"2019-04-01" & !is.na(calories_eval)) %>%
@@ -162,7 +160,7 @@ Plotting daily amount of carbs consumed (carbs is the most important nutrient to
 
 ## Trend in fasting BG
 
-```{r fig.width=4}
+```{r}
 meals.selected %>%
   mutate(eaten_at_date = as.Date(eaten_at, tz = "EST")) %>%
   filter(eaten_at_date <"2019-04-01" & !is.na(premeal_bg)) %>%
@@ -193,7 +191,7 @@ For most of the users the trend line looks flat and at or below the threshold le
 
 Here we explore the images of meals for user 2254. The first set of images show meals that has the biggest impact over shortest timeframe (`bg_impact_slope`), and the second set show the meals that had smallest (even negative) imapct on BG.
 
-```{r fig.height=5, fig.width=9}
+```{r fig.asp=0.6}
 display_meals <- function(df, ncol = 6, nrow = 3, rotate = 0) {
   meals = df[1:(ncol*nrow), ] %>% select(user_id, meal_id)
   filenames = paste0(normalizePath("~/Dropbox/MealyzerData"), "/", meals[["user_id"]], "/images/medium/", meals[["meal_id"]], ".jpg")
@@ -209,7 +207,7 @@ meals.selected %>%
 ```
 
 
-```{r}
+```{r fig.asp=0.6}
 meals.selected %>%
   filter(user_id == "2254") %>%
   arrange(bg_impact_slope) %>%
@@ -222,7 +220,7 @@ Unsurprisinly the lowest BG impact images are all pictures of water/drinks.
 ### Per user correlation between variables
 
 
-```{r fig.width=8, fig.height=8}
+```{r fig.asp=1,fig.width=12}
 meals.selected %>%
   filter(user_id == "2254") %>%
   filter(fiber_eval < 20) %>% # filter outliers
@@ -251,7 +249,7 @@ Here we look into a question: how well to users estimate their own meals by comp
 Here we are chose to display three plots with increasing level of details. 
 
 
-```{r fig.asp=2,fig.width=3}
+```{r fig.asp=2}
 (function(meals) {
   estimate_diffs = meals %>%
     mutate(

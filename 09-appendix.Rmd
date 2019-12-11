@@ -1,7 +1,7 @@
 # Appendix
 
 
-```{r fig.width=4}
+```{r}
 meals.selected %>%
   mutate(eaten_at_date = as.Date(eaten_at, tz = "EST")) %>%
   filter(eaten_at_date <"2019-04-01" & !is.na(carbs_eval)) %>%
@@ -22,7 +22,7 @@ meals.selected %>%
 ```
 
 
-```{r fig.width=4}
+```{r}
 meals.selected %>%
   mutate(eaten_at_date = as.Date(eaten_at, tz = "EST")) %>%
   filter(eaten_at_date <"2019-04-01" & !is.na(calories_eval)) %>%
@@ -59,7 +59,7 @@ meals.selected %>%
 
 
 
-```{r fig.width=4}
+```{r}
 bg_readings.all %>%
   filter(user_fct %in% selected_user_ids) %>%
   mutate(hour = format(as.POSIXct(time, format="%H:%M:%S"),"%H")) %>%
@@ -81,7 +81,7 @@ bg_readings.all %>%
 
 Have the ability of users to estimate nutrients change overtime with the use of the app?
 
-```{r fig.width=6}
+```{r}
 meals.imputed %>%
   filter(!is.na(calories_eval) & !is.na(calories_user)) %>%
   mutate(
@@ -110,7 +110,7 @@ meals.imputed %>%
 
 ```
 
-```{r fig.width=6}
+```{r}
 meals.imputed %>%
   filter(!is.na(calories_eval) & !is.na(calories_user)) %>%
   mutate(
