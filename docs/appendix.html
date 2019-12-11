@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 8 Appendix | Exploration of data collected with self monitoring in diabetes</title>
-  <meta name="description" content="Chapter 8 Appendix | Exploration of data collected with self monitoring in diabetes" />
+  <title>Chapter 7 Appendix | Exploration of data collected with self monitoring in diabetes</title>
+  <meta name="description" content="Chapter 7 Appendix | Exploration of data collected with self monitoring in diabetes" />
   <meta name="generator" content="bookdown 0.16 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 8 Appendix | Exploration of data collected with self monitoring in diabetes" />
+  <meta property="og:title" content="Chapter 7 Appendix | Exploration of data collected with self monitoring in diabetes" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 8 Appendix | Exploration of data collected with self monitoring in diabetes" />
+  <meta name="twitter:title" content="Chapter 7 Appendix | Exploration of data collected with self monitoring in diabetes" />
   
   
   
@@ -31,7 +31,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="experiments-visualizing-data.html"/>
+<link rel="prev" href="conclusion.html"/>
 
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -55,9 +55,6 @@
 <script src="libs/webcomponents-2.0.0/webcomponents.js"></script>
 <script src="libs/r2d3-binding-0.2.4/r2d3.js"></script>
 <script src="libs/d3v5-5.9.2/d3.min.js"></script>
-<link href="libs/parallel-coordinates-2.1.8/parcoords.css" rel="stylesheet" />
-<script src="libs/parcoords-binding-1.0.0/parcoords.js"></script>
-<script src="libs/d3-5.10.0/d3.min.js"></script>
 
 
 <style type="text/css">
@@ -136,7 +133,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <nav role="navigation">
 
 <ul class="summary">
-<li><a href="./">Mealyzer Data Vix</a></li>
+<li><a href="./">Mealyzer Data Viz</a></li>
 
 <li class="divider"></li>
 <li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
@@ -174,13 +171,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="5.8" data-path="results.html"><a href="results.html#looking-into-meal-nutrients-estimation-evaluator-vs-user"><i class="fa fa-check"></i><b>5.8</b> Looking into meal nutrients estimation (evaluator vs user)</a></li>
 </ul></li>
 <li class="chapter" data-level="6" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>6</b> Conclusion</a></li>
-<li class="chapter" data-level="7" data-path="experiments-visualizing-data.html"><a href="experiments-visualizing-data.html"><i class="fa fa-check"></i><b>7</b> Experiments visualizing data</a><ul>
-<li class="chapter" data-level="7.0.1" data-path="experiments-visualizing-data.html"><a href="experiments-visualizing-data.html#dataset-highlevel-view"><i class="fa fa-check"></i><b>7.0.1</b> Dataset highlevel view</a></li>
-<li class="chapter" data-level="7.0.2" data-path="experiments-visualizing-data.html"><a href="experiments-visualizing-data.html#plotting-activeness-vs.bg-level"><i class="fa fa-check"></i><b>7.0.2</b> Plotting activeness vs. bg level</a></li>
-<li class="chapter" data-level="7.0.3" data-path="experiments-visualizing-data.html"><a href="experiments-visualizing-data.html#plotting-prepost-meal-bg-faceting-on-user_id"><i class="fa fa-check"></i><b>7.0.3</b> Plotting pre/post meal bg ,faceting on user_id</a></li>
-</ul></li>
-<li class="chapter" data-level="8" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i><b>8</b> Appendix</a><ul>
-<li class="chapter" data-level="8.1" data-path="appendix.html"><a href="appendix.html#sleep"><i class="fa fa-check"></i><b>8.1</b> Sleep</a></li>
+<li class="chapter" data-level="7" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i><b>7</b> Appendix</a><ul>
+<li class="chapter" data-level="7.1" data-path="appendix.html"><a href="appendix.html#sleep"><i class="fa fa-check"></i><b>7.1</b> Sleep</a></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -202,122 +194,122 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
             <section class="normal" id="section-">
 <div id="appendix" class="section level1">
-<h1><span class="header-section-number">Chapter 8</span> Appendix</h1>
-<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb58-1" data-line-number="1">meals.selected <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb58-2" data-line-number="2"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">eaten_at_date =</span> <span class="kw">as.Date</span>(eaten_at, <span class="dt">tz =</span> <span class="st">&quot;EST&quot;</span>)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb58-3" data-line-number="3"><span class="st">  </span><span class="kw">filter</span>(eaten_at_date <span class="op">&lt;</span><span class="st">&quot;2019-04-01&quot;</span> <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span><span class="kw">is.na</span>(carbs_eval)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb58-4" data-line-number="4"><span class="st">  </span><span class="kw">group_by</span>(user_fct, eaten_at_date) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb58-5" data-line-number="5"><span class="st">  </span><span class="kw">summarise</span>(<span class="dt">sum_by_day =</span> <span class="kw">sum</span>(carbs_eval)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb58-6" data-line-number="6"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x=</span>eaten_at_date, <span class="dt">y=</span>sum_by_day))<span class="op">+</span></a>
-<a class="sourceLine" id="cb58-7" data-line-number="7"><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">size=</span><span class="fl">0.1</span>)<span class="op">+</span></a>
-<a class="sourceLine" id="cb58-8" data-line-number="8"><span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>)<span class="op">+</span></a>
-<a class="sourceLine" id="cb58-9" data-line-number="9"><span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span>user_fct, <span class="dt">ncol=</span><span class="dv">6</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb58-10" data-line-number="10"><span class="st">  </span><span class="kw">labs</span> (</a>
-<a class="sourceLine" id="cb58-11" data-line-number="11">    <span class="dt">title =</span> <span class="st">&quot;Total carbs consumed trends by user&quot;</span>,</a>
-<a class="sourceLine" id="cb58-12" data-line-number="12">    <span class="dt">x =</span> <span class="st">&quot;Time&quot;</span>,</a>
-<a class="sourceLine" id="cb58-13" data-line-number="13">    <span class="dt">y =</span> <span class="st">&quot;Carbs&quot;</span></a>
-<a class="sourceLine" id="cb58-14" data-line-number="14">  ) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb58-15" data-line-number="15"><span class="st">  </span><span class="kw">theme</span>(</a>
-<a class="sourceLine" id="cb58-16" data-line-number="16">    <span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">angle =</span> <span class="dv">90</span>)</a>
-<a class="sourceLine" id="cb58-17" data-line-number="17">  )</a></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-43-1.png" width="384" /></p>
-<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb59-1" data-line-number="1">meals.selected <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb59-2" data-line-number="2"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">eaten_at_date =</span> <span class="kw">as.Date</span>(eaten_at, <span class="dt">tz =</span> <span class="st">&quot;EST&quot;</span>)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb59-3" data-line-number="3"><span class="st">  </span><span class="kw">filter</span>(eaten_at_date <span class="op">&lt;</span><span class="st">&quot;2019-04-01&quot;</span> <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span><span class="kw">is.na</span>(calories_eval)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb59-4" data-line-number="4"><span class="st">  </span><span class="kw">group_by</span>(user_fct, eaten_at_date) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb59-5" data-line-number="5"><span class="st">  </span><span class="kw">summarise</span>(</a>
-<a class="sourceLine" id="cb59-6" data-line-number="6">    <span class="dt">sum_carbs =</span> <span class="kw">sum</span>(carbs_eval), </a>
-<a class="sourceLine" id="cb59-7" data-line-number="7">    <span class="dt">sum_protein =</span> <span class="kw">sum</span>(protein_eval), </a>
-<a class="sourceLine" id="cb59-8" data-line-number="8">    <span class="dt">sum_fat =</span> <span class="kw">sum</span>(fat_eval), </a>
-<a class="sourceLine" id="cb59-9" data-line-number="9">    <span class="dt">sum_fiber =</span> <span class="kw">sum</span>(fiber_eval),</a>
-<a class="sourceLine" id="cb59-10" data-line-number="10">    <span class="dt">total =</span> sum_carbs<span class="op">+</span>sum_protein<span class="op">+</span>sum_fat<span class="op">+</span>sum_fiber,</a>
-<a class="sourceLine" id="cb59-11" data-line-number="11">    <span class="dt">Carbs=</span>sum_carbs<span class="op">/</span>total,</a>
-<a class="sourceLine" id="cb59-12" data-line-number="12">    <span class="dt">Protein=</span>sum_protein<span class="op">/</span>total,</a>
-<a class="sourceLine" id="cb59-13" data-line-number="13">    <span class="dt">Fat=</span>sum_fat<span class="op">/</span>total,</a>
-<a class="sourceLine" id="cb59-14" data-line-number="14">    <span class="dt">Fiber=</span>sum_fiber<span class="op">/</span>total</a>
-<a class="sourceLine" id="cb59-15" data-line-number="15">  ) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb59-16" data-line-number="16"><span class="st">  </span><span class="kw">gather</span>(<span class="dt">key =</span> <span class="st">&quot;Nutrient&quot;</span>, <span class="dt">value =</span> <span class="st">&quot;Proportion&quot;</span>, Carbs, Protein, Fat, Fiber) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb59-17" data-line-number="17"><span class="st">  </span><span class="co">#print_df() %&gt;%</span></a>
-<a class="sourceLine" id="cb59-18" data-line-number="18"><span class="st">  </span><span class="kw">ggplot</span>()<span class="op">+</span></a>
-<a class="sourceLine" id="cb59-19" data-line-number="19"><span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">x=</span>eaten_at_date, <span class="dt">y=</span>Proportion, <span class="dt">color =</span> Nutrient), <span class="dt">size=</span><span class="fl">0.1</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb59-20" data-line-number="20"><span class="st">  </span><span class="kw">geom_smooth</span>(<span class="kw">aes</span>(<span class="dt">x=</span>eaten_at_date, <span class="dt">y=</span>Proportion, <span class="dt">color =</span> Nutrient), <span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb59-21" data-line-number="21"><span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span>user_fct, <span class="dt">ncol=</span><span class="dv">6</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb59-22" data-line-number="22"><span class="st">  </span><span class="kw">labs</span> (</a>
-<a class="sourceLine" id="cb59-23" data-line-number="23">    <span class="dt">title =</span> <span class="st">&quot;Nutrient proportions trends by user&quot;</span>,</a>
-<a class="sourceLine" id="cb59-24" data-line-number="24">    <span class="dt">x =</span> <span class="st">&quot;Time&quot;</span>,</a>
-<a class="sourceLine" id="cb59-25" data-line-number="25">    <span class="dt">y =</span> <span class="st">&quot;Proportion&quot;</span></a>
-<a class="sourceLine" id="cb59-26" data-line-number="26">  ) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb59-27" data-line-number="27"><span class="st">  </span><span class="kw">guides</span>(<span class="dt">color =</span> <span class="kw">guide_legend</span>(<span class="dt">nrow =</span> <span class="dv">1</span>), <span class="dt">fill =</span> <span class="kw">guide_legend</span>(<span class="dt">nrow =</span> <span class="dv">1</span>)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb59-28" data-line-number="28"><span class="st">  </span><span class="kw">theme</span>(</a>
-<a class="sourceLine" id="cb59-29" data-line-number="29">    <span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">angle =</span> <span class="dv">90</span>),</a>
-<a class="sourceLine" id="cb59-30" data-line-number="30">    <span class="dt">legend.title =</span> <span class="kw">element_blank</span>(), </a>
-<a class="sourceLine" id="cb59-31" data-line-number="31">    <span class="dt">legend.position=</span><span class="st">&quot;bottom&quot;</span>,</a>
-<a class="sourceLine" id="cb59-32" data-line-number="32">  )</a></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-44-1.png" width="384" /></p>
-<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb60-1" data-line-number="1">bg_readings.all <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb60-2" data-line-number="2"><span class="st">  </span><span class="kw">filter</span>(user_fct <span class="op">%in%</span><span class="st"> </span>selected_user_ids) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb60-3" data-line-number="3"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">hour =</span> <span class="kw">format</span>(<span class="kw">as.POSIXct</span>(time, <span class="dt">format=</span><span class="st">&quot;%H:%M:%S&quot;</span>),<span class="st">&quot;%H&quot;</span>)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb60-4" data-line-number="4"><span class="st">  </span><span class="kw">group_by</span>(user_fct, hour) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb60-5" data-line-number="5"><span class="st">  </span><span class="kw">summarise</span>(<span class="dt">avg_bg =</span> <span class="kw">mean</span>(bg)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb60-6" data-line-number="6"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x=</span>hour, <span class="dt">y=</span>avg_bg))<span class="op">+</span></a>
-<a class="sourceLine" id="cb60-7" data-line-number="7"><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">size=</span><span class="fl">0.3</span>)<span class="op">+</span></a>
-<a class="sourceLine" id="cb60-8" data-line-number="8"><span class="st">  </span><span class="kw">scale_x_discrete</span>(<span class="dt">breaks=</span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">6</span>, <span class="dv">12</span>, <span class="dv">18</span>, <span class="dv">24</span>)) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb60-9" data-line-number="9"><span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span>user_fct, <span class="dt">ncol=</span><span class="dv">6</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb60-10" data-line-number="10"><span class="st">  </span><span class="kw">labs</span>(</a>
-<a class="sourceLine" id="cb60-11" data-line-number="11">    <span class="dt">title =</span> <span class="st">&quot;Average BG Level by Hour&quot;</span>,</a>
-<a class="sourceLine" id="cb60-12" data-line-number="12">    <span class="dt">x=</span><span class="st">&quot;Hour&quot;</span>, </a>
-<a class="sourceLine" id="cb60-13" data-line-number="13">    <span class="dt">y=</span><span class="st">&quot;Average BG Level&quot;</span></a>
-<a class="sourceLine" id="cb60-14" data-line-number="14">  ) <span class="op">+</span></a>
-<a class="sourceLine" id="cb60-15" data-line-number="15"><span class="st">  </span><span class="kw">theme</span>(</a>
-<a class="sourceLine" id="cb60-16" data-line-number="16">     <span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">angle =</span> <span class="dv">90</span>),</a>
-<a class="sourceLine" id="cb60-17" data-line-number="17">  )</a></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-45-1.png" width="384" /></p>
+<h1><span class="header-section-number">Chapter 7</span> Appendix</h1>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb38-1" data-line-number="1">meals.selected <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb38-2" data-line-number="2"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">eaten_at_date =</span> <span class="kw">as.Date</span>(eaten_at, <span class="dt">tz =</span> <span class="st">&quot;EST&quot;</span>)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb38-3" data-line-number="3"><span class="st">  </span><span class="kw">filter</span>(eaten_at_date <span class="op">&lt;</span><span class="st">&quot;2019-04-01&quot;</span> <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span><span class="kw">is.na</span>(carbs_eval)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb38-4" data-line-number="4"><span class="st">  </span><span class="kw">group_by</span>(user_fct, eaten_at_date) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb38-5" data-line-number="5"><span class="st">  </span><span class="kw">summarise</span>(<span class="dt">sum_by_day =</span> <span class="kw">sum</span>(carbs_eval)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb38-6" data-line-number="6"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x=</span>eaten_at_date, <span class="dt">y=</span>sum_by_day))<span class="op">+</span></a>
+<a class="sourceLine" id="cb38-7" data-line-number="7"><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">size=</span><span class="fl">0.1</span>)<span class="op">+</span></a>
+<a class="sourceLine" id="cb38-8" data-line-number="8"><span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>)<span class="op">+</span></a>
+<a class="sourceLine" id="cb38-9" data-line-number="9"><span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span>user_fct, <span class="dt">ncol=</span><span class="dv">6</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb38-10" data-line-number="10"><span class="st">  </span><span class="kw">labs</span> (</a>
+<a class="sourceLine" id="cb38-11" data-line-number="11">    <span class="dt">title =</span> <span class="st">&quot;Total carbs consumed trends by user&quot;</span>,</a>
+<a class="sourceLine" id="cb38-12" data-line-number="12">    <span class="dt">x =</span> <span class="st">&quot;Time&quot;</span>,</a>
+<a class="sourceLine" id="cb38-13" data-line-number="13">    <span class="dt">y =</span> <span class="st">&quot;Carbs&quot;</span></a>
+<a class="sourceLine" id="cb38-14" data-line-number="14">  ) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb38-15" data-line-number="15"><span class="st">  </span><span class="kw">theme</span>(</a>
+<a class="sourceLine" id="cb38-16" data-line-number="16">    <span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">angle =</span> <span class="dv">90</span>)</a>
+<a class="sourceLine" id="cb38-17" data-line-number="17">  )</a></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-30-1.png" width="100%" /></p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" data-line-number="1">meals.selected <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb39-2" data-line-number="2"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">eaten_at_date =</span> <span class="kw">as.Date</span>(eaten_at, <span class="dt">tz =</span> <span class="st">&quot;EST&quot;</span>)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb39-3" data-line-number="3"><span class="st">  </span><span class="kw">filter</span>(eaten_at_date <span class="op">&lt;</span><span class="st">&quot;2019-04-01&quot;</span> <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span><span class="kw">is.na</span>(calories_eval)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb39-4" data-line-number="4"><span class="st">  </span><span class="kw">group_by</span>(user_fct, eaten_at_date) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb39-5" data-line-number="5"><span class="st">  </span><span class="kw">summarise</span>(</a>
+<a class="sourceLine" id="cb39-6" data-line-number="6">    <span class="dt">sum_carbs =</span> <span class="kw">sum</span>(carbs_eval), </a>
+<a class="sourceLine" id="cb39-7" data-line-number="7">    <span class="dt">sum_protein =</span> <span class="kw">sum</span>(protein_eval), </a>
+<a class="sourceLine" id="cb39-8" data-line-number="8">    <span class="dt">sum_fat =</span> <span class="kw">sum</span>(fat_eval), </a>
+<a class="sourceLine" id="cb39-9" data-line-number="9">    <span class="dt">sum_fiber =</span> <span class="kw">sum</span>(fiber_eval),</a>
+<a class="sourceLine" id="cb39-10" data-line-number="10">    <span class="dt">total =</span> sum_carbs<span class="op">+</span>sum_protein<span class="op">+</span>sum_fat<span class="op">+</span>sum_fiber,</a>
+<a class="sourceLine" id="cb39-11" data-line-number="11">    <span class="dt">Carbs=</span>sum_carbs<span class="op">/</span>total,</a>
+<a class="sourceLine" id="cb39-12" data-line-number="12">    <span class="dt">Protein=</span>sum_protein<span class="op">/</span>total,</a>
+<a class="sourceLine" id="cb39-13" data-line-number="13">    <span class="dt">Fat=</span>sum_fat<span class="op">/</span>total,</a>
+<a class="sourceLine" id="cb39-14" data-line-number="14">    <span class="dt">Fiber=</span>sum_fiber<span class="op">/</span>total</a>
+<a class="sourceLine" id="cb39-15" data-line-number="15">  ) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb39-16" data-line-number="16"><span class="st">  </span><span class="kw">gather</span>(<span class="dt">key =</span> <span class="st">&quot;Nutrient&quot;</span>, <span class="dt">value =</span> <span class="st">&quot;Proportion&quot;</span>, Carbs, Protein, Fat, Fiber) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb39-17" data-line-number="17"><span class="st">  </span><span class="co">#print_df() %&gt;%</span></a>
+<a class="sourceLine" id="cb39-18" data-line-number="18"><span class="st">  </span><span class="kw">ggplot</span>()<span class="op">+</span></a>
+<a class="sourceLine" id="cb39-19" data-line-number="19"><span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">x=</span>eaten_at_date, <span class="dt">y=</span>Proportion, <span class="dt">color =</span> Nutrient), <span class="dt">size=</span><span class="fl">0.1</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb39-20" data-line-number="20"><span class="st">  </span><span class="kw">geom_smooth</span>(<span class="kw">aes</span>(<span class="dt">x=</span>eaten_at_date, <span class="dt">y=</span>Proportion, <span class="dt">color =</span> Nutrient), <span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb39-21" data-line-number="21"><span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span>user_fct, <span class="dt">ncol=</span><span class="dv">6</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb39-22" data-line-number="22"><span class="st">  </span><span class="kw">labs</span> (</a>
+<a class="sourceLine" id="cb39-23" data-line-number="23">    <span class="dt">title =</span> <span class="st">&quot;Nutrient proportions trends by user&quot;</span>,</a>
+<a class="sourceLine" id="cb39-24" data-line-number="24">    <span class="dt">x =</span> <span class="st">&quot;Time&quot;</span>,</a>
+<a class="sourceLine" id="cb39-25" data-line-number="25">    <span class="dt">y =</span> <span class="st">&quot;Proportion&quot;</span></a>
+<a class="sourceLine" id="cb39-26" data-line-number="26">  ) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb39-27" data-line-number="27"><span class="st">  </span><span class="kw">guides</span>(<span class="dt">color =</span> <span class="kw">guide_legend</span>(<span class="dt">nrow =</span> <span class="dv">1</span>), <span class="dt">fill =</span> <span class="kw">guide_legend</span>(<span class="dt">nrow =</span> <span class="dv">1</span>)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb39-28" data-line-number="28"><span class="st">  </span><span class="kw">theme</span>(</a>
+<a class="sourceLine" id="cb39-29" data-line-number="29">    <span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">angle =</span> <span class="dv">90</span>),</a>
+<a class="sourceLine" id="cb39-30" data-line-number="30">    <span class="dt">legend.title =</span> <span class="kw">element_blank</span>(), </a>
+<a class="sourceLine" id="cb39-31" data-line-number="31">    <span class="dt">legend.position=</span><span class="st">&quot;bottom&quot;</span>,</a>
+<a class="sourceLine" id="cb39-32" data-line-number="32">  )</a></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-31-1.png" width="100%" /></p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb40-1" data-line-number="1">bg_readings.all <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb40-2" data-line-number="2"><span class="st">  </span><span class="kw">filter</span>(user_fct <span class="op">%in%</span><span class="st"> </span>selected_user_ids) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb40-3" data-line-number="3"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">hour =</span> <span class="kw">format</span>(<span class="kw">as.POSIXct</span>(time, <span class="dt">format=</span><span class="st">&quot;%H:%M:%S&quot;</span>),<span class="st">&quot;%H&quot;</span>)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb40-4" data-line-number="4"><span class="st">  </span><span class="kw">group_by</span>(user_fct, hour) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb40-5" data-line-number="5"><span class="st">  </span><span class="kw">summarise</span>(<span class="dt">avg_bg =</span> <span class="kw">mean</span>(bg)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb40-6" data-line-number="6"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x=</span>hour, <span class="dt">y=</span>avg_bg))<span class="op">+</span></a>
+<a class="sourceLine" id="cb40-7" data-line-number="7"><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">size=</span><span class="fl">0.3</span>)<span class="op">+</span></a>
+<a class="sourceLine" id="cb40-8" data-line-number="8"><span class="st">  </span><span class="kw">scale_x_discrete</span>(<span class="dt">breaks=</span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">6</span>, <span class="dv">12</span>, <span class="dv">18</span>, <span class="dv">24</span>)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb40-9" data-line-number="9"><span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span>user_fct, <span class="dt">ncol=</span><span class="dv">6</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb40-10" data-line-number="10"><span class="st">  </span><span class="kw">labs</span>(</a>
+<a class="sourceLine" id="cb40-11" data-line-number="11">    <span class="dt">title =</span> <span class="st">&quot;Average BG Level by Hour&quot;</span>,</a>
+<a class="sourceLine" id="cb40-12" data-line-number="12">    <span class="dt">x=</span><span class="st">&quot;Hour&quot;</span>, </a>
+<a class="sourceLine" id="cb40-13" data-line-number="13">    <span class="dt">y=</span><span class="st">&quot;Average BG Level&quot;</span></a>
+<a class="sourceLine" id="cb40-14" data-line-number="14">  ) <span class="op">+</span></a>
+<a class="sourceLine" id="cb40-15" data-line-number="15"><span class="st">  </span><span class="kw">theme</span>(</a>
+<a class="sourceLine" id="cb40-16" data-line-number="16">     <span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">angle =</span> <span class="dv">90</span>),</a>
+<a class="sourceLine" id="cb40-17" data-line-number="17">  )</a></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-32-1.png" width="100%" /></p>
 <p>Have the ability of users to estimate nutrients change overtime with the use of the app?</p>
-<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb61-1" data-line-number="1">meals.imputed <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb61-2" data-line-number="2"><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(calories_eval) <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span><span class="kw">is.na</span>(calories_user)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb61-3" data-line-number="3"><span class="st">  </span><span class="kw">mutate</span>(</a>
-<a class="sourceLine" id="cb61-4" data-line-number="4">    <span class="dt">calories_diff =</span> calories_user <span class="op">-</span><span class="st"> </span>calories_eval,</a>
-<a class="sourceLine" id="cb61-5" data-line-number="5">    <span class="dt">carbs_diff =</span> carbs_user <span class="op">-</span><span class="st"> </span>carbs_eval,</a>
-<a class="sourceLine" id="cb61-6" data-line-number="6">    <span class="dt">protein_diff =</span> protein_user <span class="op">-</span><span class="st"> </span>protein_eval,</a>
-<a class="sourceLine" id="cb61-7" data-line-number="7">    <span class="dt">fat_diff =</span> fat_user <span class="op">-</span><span class="st"> </span>fat_eval,</a>
-<a class="sourceLine" id="cb61-8" data-line-number="8">    <span class="dt">fiber_diff =</span> fiber_user <span class="op">-</span><span class="st"> </span>fiber_eval</a>
-<a class="sourceLine" id="cb61-9" data-line-number="9">  ) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb61-10" data-line-number="10"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">eaten_at_date =</span> <span class="kw">as.Date</span>(eaten_at, <span class="dt">tz =</span> <span class="st">&quot;EST&quot;</span>)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb61-11" data-line-number="11"><span class="st">  </span><span class="kw">filter</span>(eaten_at_date <span class="op">&lt;</span><span class="st">&quot;2019-04-01&quot;</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb61-12" data-line-number="12"><span class="st">  </span><span class="kw">group_by</span>(user_fct, eaten_at_date) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb61-13" data-line-number="13"><span class="st">  </span><span class="kw">summarise</span>(<span class="dt">carbs_diff =</span> <span class="kw">mean</span>(carbs_diff)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb61-14" data-line-number="14"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x=</span>eaten_at_date, <span class="dt">y=</span>carbs_diff))<span class="op">+</span></a>
-<a class="sourceLine" id="cb61-15" data-line-number="15"><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">size=</span><span class="fl">0.1</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb61-16" data-line-number="16"><span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>, <span class="dt">na.rm=</span><span class="ot">TRUE</span>, <span class="dt">size=</span><span class="fl">0.5</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb61-17" data-line-number="17"><span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span>user_fct, <span class="dt">ncol=</span><span class="dv">6</span>, <span class="dt">scales =</span> <span class="st">&quot;free_y&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb61-18" data-line-number="18"><span class="st">  </span><span class="kw">labs</span> (</a>
-<a class="sourceLine" id="cb61-19" data-line-number="19">    <span class="dt">title =</span> <span class="st">&quot;Trend of carbs estimation error&quot;</span>,</a>
-<a class="sourceLine" id="cb61-20" data-line-number="20">    <span class="dt">x =</span> <span class="st">&quot;Time&quot;</span>,</a>
-<a class="sourceLine" id="cb61-21" data-line-number="21">    <span class="dt">y =</span> <span class="st">&quot;Carbs user estimation error&quot;</span></a>
-<a class="sourceLine" id="cb61-22" data-line-number="22">  ) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb61-23" data-line-number="23"><span class="st">  </span><span class="kw">theme</span>(</a>
-<a class="sourceLine" id="cb61-24" data-line-number="24">    <span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">angle =</span> <span class="dv">90</span>)</a>
-<a class="sourceLine" id="cb61-25" data-line-number="25">  )</a></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-46-1.png" width="576" /></p>
-<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb62-1" data-line-number="1">meals.imputed <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb62-2" data-line-number="2"><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(calories_eval) <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span><span class="kw">is.na</span>(calories_user)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb62-3" data-line-number="3"><span class="st">  </span><span class="kw">mutate</span>(</a>
-<a class="sourceLine" id="cb62-4" data-line-number="4">    <span class="dt">calories_diff =</span> calories_user <span class="op">-</span><span class="st"> </span>calories_eval,</a>
-<a class="sourceLine" id="cb62-5" data-line-number="5">    <span class="dt">carbs_diff =</span> carbs_user <span class="op">-</span><span class="st"> </span>carbs_eval,</a>
-<a class="sourceLine" id="cb62-6" data-line-number="6">    <span class="dt">protein_diff =</span> protein_user <span class="op">-</span><span class="st"> </span>protein_eval,</a>
-<a class="sourceLine" id="cb62-7" data-line-number="7">    <span class="dt">fat_diff =</span> fat_user <span class="op">-</span><span class="st"> </span>fat_eval,</a>
-<a class="sourceLine" id="cb62-8" data-line-number="8">    <span class="dt">fiber_diff =</span> fiber_user <span class="op">-</span><span class="st"> </span>fiber_eval</a>
-<a class="sourceLine" id="cb62-9" data-line-number="9">  ) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb62-10" data-line-number="10"><span class="st">  </span><span class="kw">gather</span>(<span class="dt">key =</span> <span class="st">&quot;type&quot;</span>, <span class="dt">value =</span> <span class="st">&quot;diff&quot;</span>, carbs_diff, protein_diff, fat_diff) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb62-11" data-line-number="11"><span class="st">  </span><span class="kw">ggplot</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb62-12" data-line-number="12"><span class="st">  </span><span class="kw">geom_boxplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> type, <span class="dt">y =</span> diff)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb62-13" data-line-number="13"><span class="st">  </span><span class="kw">coord_flip</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb62-14" data-line-number="14"><span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span>user_fct, <span class="dt">ncol =</span> <span class="dv">6</span>)</a></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-47-1.png" width="576" /></p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb41-1" data-line-number="1">meals.imputed <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb41-2" data-line-number="2"><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(calories_eval) <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span><span class="kw">is.na</span>(calories_user)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb41-3" data-line-number="3"><span class="st">  </span><span class="kw">mutate</span>(</a>
+<a class="sourceLine" id="cb41-4" data-line-number="4">    <span class="dt">calories_diff =</span> calories_user <span class="op">-</span><span class="st"> </span>calories_eval,</a>
+<a class="sourceLine" id="cb41-5" data-line-number="5">    <span class="dt">carbs_diff =</span> carbs_user <span class="op">-</span><span class="st"> </span>carbs_eval,</a>
+<a class="sourceLine" id="cb41-6" data-line-number="6">    <span class="dt">protein_diff =</span> protein_user <span class="op">-</span><span class="st"> </span>protein_eval,</a>
+<a class="sourceLine" id="cb41-7" data-line-number="7">    <span class="dt">fat_diff =</span> fat_user <span class="op">-</span><span class="st"> </span>fat_eval,</a>
+<a class="sourceLine" id="cb41-8" data-line-number="8">    <span class="dt">fiber_diff =</span> fiber_user <span class="op">-</span><span class="st"> </span>fiber_eval</a>
+<a class="sourceLine" id="cb41-9" data-line-number="9">  ) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb41-10" data-line-number="10"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">eaten_at_date =</span> <span class="kw">as.Date</span>(eaten_at, <span class="dt">tz =</span> <span class="st">&quot;EST&quot;</span>)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb41-11" data-line-number="11"><span class="st">  </span><span class="kw">filter</span>(eaten_at_date <span class="op">&lt;</span><span class="st">&quot;2019-04-01&quot;</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb41-12" data-line-number="12"><span class="st">  </span><span class="kw">group_by</span>(user_fct, eaten_at_date) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb41-13" data-line-number="13"><span class="st">  </span><span class="kw">summarise</span>(<span class="dt">carbs_diff =</span> <span class="kw">mean</span>(carbs_diff)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb41-14" data-line-number="14"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x=</span>eaten_at_date, <span class="dt">y=</span>carbs_diff))<span class="op">+</span></a>
+<a class="sourceLine" id="cb41-15" data-line-number="15"><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">size=</span><span class="fl">0.1</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb41-16" data-line-number="16"><span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>, <span class="dt">na.rm=</span><span class="ot">TRUE</span>, <span class="dt">size=</span><span class="fl">0.5</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb41-17" data-line-number="17"><span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span>user_fct, <span class="dt">ncol=</span><span class="dv">6</span>, <span class="dt">scales =</span> <span class="st">&quot;free_y&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb41-18" data-line-number="18"><span class="st">  </span><span class="kw">labs</span> (</a>
+<a class="sourceLine" id="cb41-19" data-line-number="19">    <span class="dt">title =</span> <span class="st">&quot;Trend of carbs estimation error&quot;</span>,</a>
+<a class="sourceLine" id="cb41-20" data-line-number="20">    <span class="dt">x =</span> <span class="st">&quot;Time&quot;</span>,</a>
+<a class="sourceLine" id="cb41-21" data-line-number="21">    <span class="dt">y =</span> <span class="st">&quot;Carbs user estimation error&quot;</span></a>
+<a class="sourceLine" id="cb41-22" data-line-number="22">  ) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb41-23" data-line-number="23"><span class="st">  </span><span class="kw">theme</span>(</a>
+<a class="sourceLine" id="cb41-24" data-line-number="24">    <span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">angle =</span> <span class="dv">90</span>)</a>
+<a class="sourceLine" id="cb41-25" data-line-number="25">  )</a></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-33-1.png" width="100%" /></p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb42-1" data-line-number="1">meals.imputed <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb42-2" data-line-number="2"><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(calories_eval) <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span><span class="kw">is.na</span>(calories_user)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb42-3" data-line-number="3"><span class="st">  </span><span class="kw">mutate</span>(</a>
+<a class="sourceLine" id="cb42-4" data-line-number="4">    <span class="dt">calories_diff =</span> calories_user <span class="op">-</span><span class="st"> </span>calories_eval,</a>
+<a class="sourceLine" id="cb42-5" data-line-number="5">    <span class="dt">carbs_diff =</span> carbs_user <span class="op">-</span><span class="st"> </span>carbs_eval,</a>
+<a class="sourceLine" id="cb42-6" data-line-number="6">    <span class="dt">protein_diff =</span> protein_user <span class="op">-</span><span class="st"> </span>protein_eval,</a>
+<a class="sourceLine" id="cb42-7" data-line-number="7">    <span class="dt">fat_diff =</span> fat_user <span class="op">-</span><span class="st"> </span>fat_eval,</a>
+<a class="sourceLine" id="cb42-8" data-line-number="8">    <span class="dt">fiber_diff =</span> fiber_user <span class="op">-</span><span class="st"> </span>fiber_eval</a>
+<a class="sourceLine" id="cb42-9" data-line-number="9">  ) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb42-10" data-line-number="10"><span class="st">  </span><span class="kw">gather</span>(<span class="dt">key =</span> <span class="st">&quot;type&quot;</span>, <span class="dt">value =</span> <span class="st">&quot;diff&quot;</span>, carbs_diff, protein_diff, fat_diff) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb42-11" data-line-number="11"><span class="st">  </span><span class="kw">ggplot</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb42-12" data-line-number="12"><span class="st">  </span><span class="kw">geom_boxplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> type, <span class="dt">y =</span> diff)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb42-13" data-line-number="13"><span class="st">  </span><span class="kw">coord_flip</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb42-14" data-line-number="14"><span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span>user_fct, <span class="dt">ncol =</span> <span class="dv">6</span>)</a></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-34-1.png" width="100%" /></p>
 <div id="sleep" class="section level2">
-<h2><span class="header-section-number">8.1</span> Sleep</h2>
-<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb63-1" data-line-number="1">sleep =<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(raw_data_path, <span class="st">&quot;1983&quot;</span>, <span class="st">&quot;sleep.csv&quot;</span>), <span class="dt">col_types =</span> <span class="kw">cols</span>()) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb63-2" data-line-number="2"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">time =</span> <span class="kw">as.timestamp</span>(time))</a></code></pre></div>
+<h2><span class="header-section-number">7.1</span> Sleep</h2>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb43-1" data-line-number="1">sleep =<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(raw_data_path, <span class="st">&quot;1983&quot;</span>, <span class="st">&quot;sleep.csv&quot;</span>), <span class="dt">col_types =</span> <span class="kw">cols</span>()) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb43-2" data-line-number="2"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">time =</span> <span class="kw">as.timestamp</span>(time))</a></code></pre></div>
 <p>Questions:
 * does the amount of sleep impact the first BG reading in the day (pre-breakfast, important!) (the very first pre-breakfst BG reading is considered fasting and is a true-ish representation of glycemic control (how bad is your diabetis)).
 * Does amount (or quality of sleep) have an impoact on pre-breakfast BG (&lt;- new measure).
@@ -333,7 +325,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           </div>
         </div>
       </div>
-<a href="experiments-visualizing-data.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="conclusion.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
 
     </div>
   </div>
