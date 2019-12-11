@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Exploration of data collected with self monitoring in diabetes</title>
-  <meta name="description" content="Exploration of data collected with self monitoring in diabetes" />
+  <title>Exploration of data collected with self monitoring app in diabetes</title>
+  <meta name="description" content="Exploration of data collected with self monitoring app in diabetes" />
   <meta name="generator" content="bookdown 0.16 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Exploration of data collected with self monitoring in diabetes" />
+  <meta property="og:title" content="Exploration of data collected with self monitoring app in diabetes" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Exploration of data collected with self monitoring in diabetes" />
+  <meta name="twitter:title" content="Exploration of data collected with self monitoring app in diabetes" />
   
   
   
@@ -24,7 +24,7 @@
 <meta name="author" content="Kliment Mamykin, Sunny Lee, Jinrong Cao" />
 
 
-<meta name="date" content="2019-12-10" />
+<meta name="date" content="2019-12-11" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -160,7 +160,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="5" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>5</b> Results</a><ul>
 <li class="chapter" data-level="5.1" data-path="results.html"><a href="results.html#looking-at-the-time-of-the-meals"><i class="fa fa-check"></i><b>5.1</b> Looking at the time of the meals</a></li>
-<li class="chapter" data-level="5.2" data-path="results.html"><a href="results.html#meal-kind-analysis"><i class="fa fa-check"></i><b>5.2</b> Meal kind analysis</a></li>
+<li class="chapter" data-level="5.2" data-path="results.html"><a href="results.html#meal-type-analysis"><i class="fa fa-check"></i><b>5.2</b> Meal type analysis</a></li>
 <li class="chapter" data-level="5.3" data-path="results.html"><a href="results.html#meal-nutrients-analysis"><i class="fa fa-check"></i><b>5.3</b> Meal nutrients analysis</a></li>
 <li class="chapter" data-level="5.4" data-path="results.html"><a href="results.html#meal-bg-impact-visualization"><i class="fa fa-check"></i><b>5.4</b> Meal BG impact visualization</a></li>
 <li class="chapter" data-level="5.5" data-path="results.html"><a href="results.html#trends-in-calories"><i class="fa fa-check"></i><b>5.5</b> Trends in calories</a></li>
@@ -185,7 +185,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Exploration of data collected with self monitoring in diabetes</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Exploration of data collected with self monitoring app in diabetes</a>
           </h1>
         </div>
 
@@ -194,15 +194,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
             <section class="normal" id="section-">
 <div id="header">
-<h1 class="title">Exploration of data collected with self monitoring in diabetes</h1>
+<h1 class="title">Exploration of data collected with self monitoring app in diabetes</h1>
 <p class="author"><em>Kliment Mamykin, Sunny Lee, Jinrong Cao</em></p>
-<p class="date"><em>2019-12-10</em></p>
+<p class="date"><em>2019-12-11</em></p>
 </div>
 <div id="introduction" class="section level1">
 <h1><span class="header-section-number">Chapter 1</span> Introduction</h1>
-<p>The data in this dataset was collected with several mobile applications built for monitoring and self management of type 2 diabetes. ?? as part of what study?. All apps included almost the same set of features for data collection but all provided different types of feedback to users. Glucoracle app asked individuals to photograph the meal, provide text description and ingredients, estimate nutritional breakdown of the meal, and capture the blood glucose (BG) before and after the meal. The users received predictions for postmeal BG levels. Platano app v1 allowed users to simply record the meals and the BG levels pre and post meals. Platano app v2 allowed users to record the meals+BGs and for each meal asked if the meal met their nutritional goals. Platano users also were provided with Fitbit tracking device for tracking physical activity and sleep.
-All meals collected by he app were evaluated by a nutritional expert to estimate the number of calories and the nutritional breakdown (grams of protein, fat, carbs, fiber) in the meals. Only Glucoracle app also asked users to estimate the calories and nutritional breakdown of the meals to the best of their abilities.</p>
-<p>While all the apps had some different features, the dataset collected exhibits a lot of common sets of fields. The goal for this project is to perform exploratory data visualization of this dataset.</p>
+<p>The data in this dataset was collected with several mobile applications built for monitoring and self management of type 2 diabetes. All these mobile apps were created within the research lab at the Columbia University Medical Center. All apps included nearly identical set of features for data collection but all provided different types of feedback to users:</p>
+<ol style="list-style-type: decimal">
+<li><p>Glucoracle app asked individuals to record their meals by photographing them and providing a brief text description and ingredients. For each meal, users were asked to estimate nutritional composition of the meal to the best of their abilities, and record blood glucose (BG) levels captured with a conventional glucometer before and after the meal. All these data were used to train a personalized predictive model of BG regulation, which provided users with personalized predictions for post-meal BG levels. Glucoracle was deployed with individuals with type 2 diabetes recruited for pilot studies (n=20).</p></li>
+<li><p>Platano app had several versions. V1 allowed users to simply record their meals (photographs and brief descriptions and ingredients) and BG levels pre and post meals. Platano app v2 asked users to set nutritional goals (suggested by registered dietitians). Once the goals were set, it also allowed users to record meals and BG before and after meals; for each captured meal it asked users to assess whether this meal met their nutritional goals. Platano users were also provided with Fitbit tracking devices for tracking physical activity and sleep. All meals recorded with the app were evaluated by a team of nutritional experts to estimate the amount of calories and the nutritional breakdown (grams of protein, fat, carbs, fiber) in the meals. Platano was deployed in a pilot study with individuals with type 2 diabetes (n=40).</p></li>
+</ol>
+<p>While these apps varied in their features, the dataset collected exhibits many common fields. The goal for this project is to perform exploratory data visualization of this dataset.</p>
 
 </div>
             </section>

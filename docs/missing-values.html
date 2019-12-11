@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 4 Missing values | Exploration of data collected with self monitoring in diabetes</title>
-  <meta name="description" content="Chapter 4 Missing values | Exploration of data collected with self monitoring in diabetes" />
+  <title>Chapter 4 Missing values | Exploration of data collected with self monitoring app in diabetes</title>
+  <meta name="description" content="Chapter 4 Missing values | Exploration of data collected with self monitoring app in diabetes" />
   <meta name="generator" content="bookdown 0.16 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 4 Missing values | Exploration of data collected with self monitoring in diabetes" />
+  <meta property="og:title" content="Chapter 4 Missing values | Exploration of data collected with self monitoring app in diabetes" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 4 Missing values | Exploration of data collected with self monitoring in diabetes" />
+  <meta name="twitter:title" content="Chapter 4 Missing values | Exploration of data collected with self monitoring app in diabetes" />
   
   
   
@@ -24,7 +24,7 @@
 <meta name="author" content="Kliment Mamykin, Sunny Lee, Jinrong Cao" />
 
 
-<meta name="date" content="2019-12-10" />
+<meta name="date" content="2019-12-11" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -160,7 +160,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="5" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>5</b> Results</a><ul>
 <li class="chapter" data-level="5.1" data-path="results.html"><a href="results.html#looking-at-the-time-of-the-meals"><i class="fa fa-check"></i><b>5.1</b> Looking at the time of the meals</a></li>
-<li class="chapter" data-level="5.2" data-path="results.html"><a href="results.html#meal-kind-analysis"><i class="fa fa-check"></i><b>5.2</b> Meal kind analysis</a></li>
+<li class="chapter" data-level="5.2" data-path="results.html"><a href="results.html#meal-type-analysis"><i class="fa fa-check"></i><b>5.2</b> Meal type analysis</a></li>
 <li class="chapter" data-level="5.3" data-path="results.html"><a href="results.html#meal-nutrients-analysis"><i class="fa fa-check"></i><b>5.3</b> Meal nutrients analysis</a></li>
 <li class="chapter" data-level="5.4" data-path="results.html"><a href="results.html#meal-bg-impact-visualization"><i class="fa fa-check"></i><b>5.4</b> Meal BG impact visualization</a></li>
 <li class="chapter" data-level="5.5" data-path="results.html"><a href="results.html#trends-in-calories"><i class="fa fa-check"></i><b>5.5</b> Trends in calories</a></li>
@@ -185,7 +185,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Exploration of data collected with self monitoring in diabetes</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Exploration of data collected with self monitoring app in diabetes</a>
           </h1>
         </div>
 
@@ -197,7 +197,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1><span class="header-section-number">Chapter 4</span> Missing values</h1>
 <div id="per-user-data-availability" class="section level2">
 <h2><span class="header-section-number">4.1</span> Per user data availability</h2>
-<p>Not every user appears to have every dataset available. While BG recordings and meals are recorded for all selected users, not all of them have meal images available, and not all have Fitbit data (activities and sleep) available.</p>
+<p>Different users have different types of data included in their datasets. The dataset used in this project was a snapshot of an offline data repository created from a live Mealyzer database; not all data fields were available for all users. For example, while all users have records of meals and BG levels captured before meals (the apps require pre-meal BG levels to be captured with every captured meal), some users did not have meal images available, and not all users had Fitbit data (activities and sleep) available.</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">users.all <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb15-2" data-line-number="2"><span class="st">  </span><span class="co"># Fake false data availability flags with NAs to visualize it as missing</span></a>
 <a class="sourceLine" id="cb15-3" data-line-number="3"><span class="st">  </span><span class="kw">mutate</span>(</a>
@@ -207,7 +207,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <a class="sourceLine" id="cb15-7" data-line-number="7">    <span class="dt">has_activities_steps =</span> <span class="kw">ifelse</span>(has_activities_steps, has_activities_steps, <span class="ot">NA</span>),</a>
 <a class="sourceLine" id="cb15-8" data-line-number="8">  ) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb15-9" data-line-number="9"><span class="st">  </span>visdat<span class="op">::</span><span class="kw">vis_dat</span>()</a></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-9-1.png" width="100%" /></p>
+<p><img src="_main_files/figure-html/unnamed-chunk-44-1.png" width="100%" /></p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">users.all <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb16-2" data-line-number="2"><span class="st">  </span><span class="kw">filter</span>(has_sleep <span class="op">&amp;</span><span class="st"> </span>has_activities_steps <span class="op">&amp;</span><span class="st"> </span>has_activities_calories <span class="op">&amp;</span><span class="st"> </span>has_activities_distance <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span><span class="kw">is.na</span>(complete_meals)) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb16-3" data-line-number="3"><span class="st">  </span><span class="kw">count</span>()</a></code></pre></div>
@@ -215,20 +215,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       n
   &lt;int&gt;
 1     7</code></pre>
-<p>We have only 7 users with all data present (including complete meals anbd fitbit data), and that is not even taking into account the number of quality meals for those users. The consequence of this sparse data availability is that for different analysis we would need to use different slices of the overall data and different sets of users. When analyzing data for a particular user, the user selection matters a lot.</p>
+<p>Overall, only 7 users had complete datasets with all data present (including complete meals and fitbit data); however, even for these 7 users not all recorded meals included all the data fields. As a consequence, the dataset in this project was sparse and inconsistent between users. To accommodate this variability, each sub-analysis presented in this report only included users that had data corresponding to the analysis. Consequently, user IDs vary from one sub-analysis to another.</p>
 </div>
 <div id="meals-data-availability" class="section level2">
 <h2><span class="header-section-number">4.2</span> Meals data availability</h2>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">visdat<span class="op">::</span><span class="kw">vis_dat</span>(meals.all)</a></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-11-1.png" width="100%" /></p>
+<p><img src="_main_files/figure-html/unnamed-chunk-46-1.png" width="100%" /></p>
 <p>There are several patterns of missing values that can be seen from this plot.</p>
-<p><code>platemate_id</code> is almost universally missing from all meals.</p>
-<p><code>premeal_bg</code> and <code>premeal_bg_time</code> are 100% present. The application did not allow recording a meal without also recording BG reading taken shortly before the meal.</p>
-<p><code>postmeal_bg</code> and <code>postmeal_bg_time</code> on the other hand are not recorded for all meals. This is because despite of the applications sending notifications to the users 2h after the meal reminding to record a postmeal BG, users dodn’t do it for every meal. Further we show a breakdown of “compliance” for taking postmeal BG, and a way to impute the missing values.</p>
-<p>Some relatively small percentage of meal are missing the “eval” (evaluator’s) fields on the nutritional meal breakdown (e.g. <code>calories_eval</code>, <code>eval_calories_computed</code>, <code>eval_proportion_carbs</code>…).</p>
-<p>The “user” nutritional breakdown values are mostly missing (fields like <code>calories_user</code>, <code>user_calories_computed</code>, <code>user_proportion_carbs</code>…). The reason is that some versions of the app asked users to enter nutritional estimation, but some version only asked on the goals, but not nutritional estimation.</p>
+<p>platemate_id is almost universally missing from all meals (platemate_id referred to a different way of obtaining nutritional composition of meals not used in these studies)</p>
+<p>premeal_bg and premeal_bg_time are 100% present. This was due to the design of the data recording features of the apps: all apps in these studies did not allow recording a meal without also recording BG reading taken shortly before the meal.</p>
+<p>postmeal_bg and postmeal_bg_time on the other hand are not recorded for all meals. Unlike pre-meal BG level, which was a required field for every captured meal, post-meal BG needed to be entered by users 2 hours after each meal and separately from the meal. However, few users consistently captured this reading, despite notifications from the app reminding them to record post-meal BG.</p>
+<p>Further we show a breakdown of “compliance” for taking postmeal BG, and a way to impute the missing values.</p>
+<p>Some relatively small percentage of meal are missing the “eval” (evaluator’s) fields on the nutritional meal breakdown (e.g. calories_eval, eval_calories_computed, eval_proportion_carbs…).</p>
+<p>The “user” nutritional breakdown values are mostly missing (fields like calories_user, user_calories_computed, user_proportion_carbs…). The reason is that some versions of the app asked users to enter nutritional estimation, but some version only asked for comparison with goals, but did not ask to enter nutritional estimation.</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1">extracat<span class="op">::</span><span class="kw">visna</span>(meals.all)</a></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-12-1.png" width="100%" /></p>
+<p><img src="_main_files/figure-html/unnamed-chunk-47-1.png" width="100%" /></p>
 </div>
 <div id="visualizing-user-compliance-on-recording-postmeal-bg" class="section level2">
 <h2><span class="header-section-number">4.3</span> Visualizing user compliance on recording postmeal BG</h2>
@@ -250,12 +251,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <a class="sourceLine" id="cb20-16" data-line-number="16">    <span class="dt">fill =</span> <span class="st">&quot;Postmeal BG&quot;</span></a>
 <a class="sourceLine" id="cb20-17" data-line-number="17">  ) <span class="op">+</span></a>
 <a class="sourceLine" id="cb20-18" data-line-number="18"><span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&quot;right&quot;</span>)</a></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-13-1.png" width="100%" /></p>
+<p><img src="_main_files/figure-html/unnamed-chunk-48-1.png" width="100%" /></p>
 <p>There does not seem to be any patterns in this visualization beyond staing that some users were diligent and recorded most of the postmeals BG, some totally ignored it, and the majority of users are somewhere in between.</p>
 </div>
 <div id="imputing-post-meal-bg" class="section level2">
 <h2><span class="header-section-number">4.4</span> Imputing post-meal BG</h2>
-<p>As shown before, a lot of meals are missing postmeal BG records, indicating that the users did not record another BG reading around 2h mark as instructed. However, the value of postmeal_bg and postmeal_bg_time can be imputed, considering that in some cases users ate the next meal and recorded a BG reading with it. We impute missing postmeal values with the next meal premeal values.</p>
+<p>As shown before, many meals are missing post-meal BG records, indicating that the users did not record another BG reading around 2h mark as instructed. However, in some cases, these users recorded their next meals and the corresponding pre-meal BG levels. We impute missing values for postmeal_bg and postmeal_bg_time with the next meal premeal values.</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1">meals.imputed =<span class="st"> </span>meals.all <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb21-2" data-line-number="2"><span class="st">  </span><span class="kw">arrange</span>(user_id, eaten_at) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb21-3" data-line-number="3"><span class="st">  </span><span class="kw">mutate</span>(</a>
@@ -280,12 +281,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="analyzing-pre-and-post-meal-bg-time-intervals" class="section level2">
 <h2><span class="header-section-number">4.5</span> Analyzing pre and post meal BG time intervals</h2>
-<p>Here we look at the distribution of values for premeal BG delay (defined as the difference in minutes between users recording a BG reading and eating a meal), and postmeal BG delay (defined as the difference in minutes between users eating a meal and taking a postmeal BG reading).</p>
+<p>Here we look at delays between capturing meals and BG levels. Per study instructions, pre-meal BG levels should be captured at the same time as meals they are associated with, and post-meal BG levels should be captured 2 hours after recording the meal (at which time users receive a reminder from the app); however, the apps also give users flexibility in how they record meals and BG levels. Below we show the distribution of values for premeal BG delay (defined as the difference in minutes between users recording a BG reading and eating a meal), and postmeal BG delay (defined as the difference in minutes between users eating a meal and taking a postmeal BG reading).</p>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1">g1 =<span class="st"> </span>meals.imputed <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb22-2" data-line-number="2"><span class="st">  </span><span class="kw">filter</span>(premeal_bg_delay_minutes <span class="op">&gt;=</span><span class="st"> </span><span class="dv">0</span> <span class="op">&amp;</span><span class="st"> </span>premeal_bg_delay_minutes <span class="op">&lt;=</span><span class="st"> </span><span class="dv">60</span>) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb22-3" data-line-number="3"><span class="st">  </span><span class="kw">ggplot</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb22-4" data-line-number="4"><span class="st">  </span><span class="kw">geom_histogram</span>(<span class="kw">aes</span>(<span class="dt">x =</span> premeal_bg_delay_minutes), <span class="dt">binwidth =</span> <span class="fl">1.0</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb22-5" data-line-number="5"><span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks=</span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">15</span>, <span class="dv">30</span>, <span class="dv">45</span>, <span class="dv">60</span>), <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;0&quot;</span>, <span class="st">&quot;15m&quot;</span>, <span class="st">&quot;30m&quot;</span>, <span class="st">&quot;45m&quot;</span>, <span class="st">&quot;1h&quot;</span>), <span class="dt">limits =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">60</span>), <span class="dt">expand =</span> <span class="kw">expand_scale</span>(<span class="dt">mult =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="fl">0.1</span>))) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb22-4" data-line-number="4"><span class="st">  </span><span class="kw">geom_histogram</span>(<span class="kw">aes</span>(<span class="dt">x =</span> <span class="op">-</span>premeal_bg_delay_minutes), <span class="dt">binwidth =</span> <span class="fl">1.0</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb22-5" data-line-number="5"><span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks=</span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">-15</span>, <span class="dv">-30</span>, <span class="dv">-45</span>, <span class="dv">-60</span>), <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;0&quot;</span>, <span class="st">&quot;-15m&quot;</span>, <span class="st">&quot;-30m&quot;</span>, <span class="st">&quot;-45m&quot;</span>, <span class="st">&quot;-1h&quot;</span>), <span class="dt">limits =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">60</span>, <span class="dv">0</span>), <span class="dt">expand =</span> <span class="kw">expand_scale</span>(<span class="dt">mult =</span> <span class="kw">c</span>(<span class="fl">0.1</span>, <span class="dv">0</span>))) <span class="op">+</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb22-6" data-line-number="6"><span class="st">  </span><span class="kw">theme</span>(</a>
 <a class="sourceLine" id="cb22-7" data-line-number="7">    <span class="dt">axis.title.x =</span> <span class="kw">element_blank</span>(),</a>
 <a class="sourceLine" id="cb22-8" data-line-number="8">    <span class="dt">axis.title.y =</span> <span class="kw">element_blank</span>(),</a>
@@ -296,8 +297,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <a class="sourceLine" id="cb22-13" data-line-number="13">g2 =<span class="st"> </span>meals.imputed <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb22-14" data-line-number="14"><span class="st">  </span><span class="kw">filter</span>(premeal_bg_delay_minutes <span class="op">&gt;=</span><span class="st"> </span><span class="dv">0</span> <span class="op">&amp;</span><span class="st"> </span>premeal_bg_delay_minutes <span class="op">&lt;=</span><span class="st"> </span><span class="dv">60</span>) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb22-15" data-line-number="15"><span class="st">  </span><span class="kw">ggplot</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb22-16" data-line-number="16"><span class="st">  </span><span class="kw">geom_boxplot</span>(<span class="kw">aes</span>(<span class="dt">y =</span> premeal_bg_delay_minutes)) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb22-17" data-line-number="17"><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">breaks=</span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">15</span>, <span class="dv">30</span>, <span class="dv">45</span>, <span class="dv">60</span>), <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;0&quot;</span>, <span class="st">&quot;15m&quot;</span>, <span class="st">&quot;30m&quot;</span>, <span class="st">&quot;45m&quot;</span>, <span class="st">&quot;1h&quot;</span>), <span class="dt">limits =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">60</span>), <span class="dt">expand =</span> <span class="kw">expand_scale</span>(<span class="dt">mult =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="fl">0.1</span>))) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb22-16" data-line-number="16"><span class="st">  </span><span class="kw">geom_boxplot</span>(<span class="kw">aes</span>(<span class="dt">y =</span> <span class="op">-</span>premeal_bg_delay_minutes)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb22-17" data-line-number="17"><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">breaks=</span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">-15</span>, <span class="dv">-30</span>, <span class="dv">-45</span>, <span class="dv">-60</span>), <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;0&quot;</span>, <span class="st">&quot;-15m&quot;</span>, <span class="st">&quot;-30m&quot;</span>, <span class="st">&quot;-45m&quot;</span>, <span class="st">&quot;-1h&quot;</span>), <span class="dt">limits =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">60</span>, <span class="dv">0</span>), <span class="dt">expand =</span> <span class="kw">expand_scale</span>(<span class="dt">mult =</span> <span class="kw">c</span>(<span class="fl">0.1</span>, <span class="dv">0</span>))) <span class="op">+</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb22-18" data-line-number="18"><span class="st">  </span><span class="kw">coord_flip</span>() <span class="op">+</span></a>
 <a class="sourceLine" id="cb22-19" data-line-number="19"><span class="st">  </span><span class="kw">labs</span>( </a>
 <a class="sourceLine" id="cb22-20" data-line-number="20">    <span class="dt">y =</span> <span class="st">&quot;Premeal delay&quot;</span></a>
@@ -341,12 +342,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <a class="sourceLine" id="cb22-58" data-line-number="58">  <span class="dt">heights =</span> <span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">1</span>),</a>
 <a class="sourceLine" id="cb22-59" data-line-number="59">  <span class="dt">top =</span> <span class="st">&quot;Pre and post meal BG delays&quot;</span></a>
 <a class="sourceLine" id="cb22-60" data-line-number="60">)</a></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-15-1.png" width="100%" /></p>
-<p>Premeal BG delay distribution has two distinct modes, one at around 5 min and another at around 22 min. The application to record meals and premeal BGs asked the users to record those two pieces of information at the same time, but also allowed to change the time when the actual BG test was performed. The explanation for the first mode could be the interaction scenario when a person took a BG reading, and before the meal has started recorded it with the application (adjusting the BG test time to about 5min back). The socond mode could be another interaction scenario, where a person takes a BG reading, then eats the meal, and only after the meal is finished records the meal in the app (adjusting the BG test time to about 22 min back). One way to co nfirm it would be to visually analyze the meal images for the meals belonging to the second mode and see if those are the images of already completed meals. The researcher confirmed that in focus groups some people found the process of recording a meal to be disruptive, and may be we are seeing a hack some users adopted not to disrupt the meal experience with a lengthy process of entering a meal in the app while they are hungry.</p>
-<p>The postmeal BG delays have a median around 2h 15min, due the fact that the app was sending reminders at around 2h after the meal. The distribution has a long tail and a lot of outliers, probably causes by our postmeal BG imputation method and/or lapses in consistently using the app for all meals. For any analysis ths focuses on the question of glycemic impact of the meals such long postmeal interval in not useful. In our analysis we filtered the meal to only those that have a postmeal BG at least 4h after the meal.</p>
+<p><img src="_main_files/figure-html/unnamed-chunk-50-1.png" width="100%" /></p>
+<p>Premeal BG delay distribution has two distinct modes, one at around 5 min and another at around 22 min. This distribution suggests that users developed several different approaches to recording meals and BG levels. In the first scenario, users measured their BG, and recorded this BG with the application before starting the meal (adjusting the BG test time to about 5min back). In the second scenario, there is a longer delay between the captured pre-meal BG level and the captured meal. This suggests that these users may have measured their BG levels, but then proceeded to eat their meal first, and recorded both the meal the captured BG level only after the meal was finished, adjusting the time for BG to about 22 min back). One way to confirm this would be to visually analyze meal images for meals belonging to the second mode and see if those images include already completed meals. The researcher confirmed that in focus groups some participants reported the process of capturing meals to be disruptive; it is possible that these participants developed work-arounds that helped them to record meals without delaying enjoyment of meals while hungry.</p>
+<p>Post-meal BG levels are recorded with a median delay around 2h 15min; this was probably due to the fact that the app was sending users reminders at around 2h after each meal. This distribution has a long tail and a many outliers, probably caused by our post-meal BG imputation method and/or lapses in consistently using the app for all meals. For any analysis that focuses on the question of glycemic impact of the meals such long post-meal interval will create high variability and reduce reliability. In our analysis we filtered meals to only those that have a postmeal BG at least 4h after the meal.</p>
 <div id="selecting-users-for-the-analysis" class="section level3">
 <h3><span class="header-section-number">4.5.1</span> Selecting users for the analysis</h3>
-<p>Not all users used the application in the same capacity, and some recorded very few meals. For the further analysis we select only those users that recorded at least 14 meals (threshold picked such that 28 users were selected for easy facetting in a grid)</p>
+<p>Not all users used the application in the same capacity, and some recorded very few meals. For the further analysis we select top 24 users by the number of meals (for convenient facetting in a grid)</p>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1">users.selected =<span class="st"> </span>meals.imputed  <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb23-2" data-line-number="2"><span class="st">  </span><span class="kw">filter</span>(premeal_bg_delay_minutes <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span> <span class="op">&amp;</span><span class="st"> </span>premeal_bg_delay_minutes <span class="op">&lt;=</span><span class="st"> </span><span class="dv">60</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># Limit premeal bg delay to 1h</span></a>
 <a class="sourceLine" id="cb23-3" data-line-number="3"><span class="st">  </span><span class="kw">filter</span>(postmeal_bg_delay_minutes <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span> <span class="op">&amp;</span><span class="st"> </span>postmeal_bg_delay_minutes <span class="op">&lt;=</span><span class="st"> </span><span class="dv">240</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># Limit postmeal bg delay to 4h </span></a>
