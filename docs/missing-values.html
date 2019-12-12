@@ -24,7 +24,7 @@
 <meta name="author" content="Kliment Mamykin, Sunny Lee, Jinrong Cao" />
 
 
-<meta name="date" content="2019-12-11" />
+<meta name="date" content="2019-12-12" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -170,9 +170,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="5.8" data-path="results.html"><a href="results.html#looking-into-meal-nutrients-estimation-evaluator-vs-user"><i class="fa fa-check"></i><b>5.8</b> Looking into meal nutrients estimation (evaluator vs user)</a></li>
 </ul></li>
-<li class="chapter" data-level="6" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>6</b> Conclusion</a></li>
-<li class="chapter" data-level="7" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i><b>7</b> Appendix</a><ul>
-<li class="chapter" data-level="7.1" data-path="appendix.html"><a href="appendix.html#sleep"><i class="fa fa-check"></i><b>7.1</b> Sleep</a></li>
+<li class="chapter" data-level="6" data-path="interactive.html"><a href="interactive.html"><i class="fa fa-check"></i><b>6</b> Interactive</a></li>
+<li class="chapter" data-level="7" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>7</b> Conclusion</a></li>
+<li class="chapter" data-level="8" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i><b>8</b> Appendix</a><ul>
+<li class="chapter" data-level="8.1" data-path="appendix.html"><a href="appendix.html#sleep"><i class="fa fa-check"></i><b>8.1</b> Sleep</a></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -207,7 +208,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <a class="sourceLine" id="cb15-7" data-line-number="7">    <span class="dt">has_activities_steps =</span> <span class="kw">ifelse</span>(has_activities_steps, has_activities_steps, <span class="ot">NA</span>),</a>
 <a class="sourceLine" id="cb15-8" data-line-number="8">  ) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb15-9" data-line-number="9"><span class="st">  </span>visdat<span class="op">::</span><span class="kw">vis_dat</span>()</a></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-44-1.png" width="100%" /></p>
+<p><img src="_main_files/figure-html/unnamed-chunk-9-1.png" width="100%" /></p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">users.all <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb16-2" data-line-number="2"><span class="st">  </span><span class="kw">filter</span>(has_sleep <span class="op">&amp;</span><span class="st"> </span>has_activities_steps <span class="op">&amp;</span><span class="st"> </span>has_activities_calories <span class="op">&amp;</span><span class="st"> </span>has_activities_distance <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span><span class="kw">is.na</span>(complete_meals)) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb16-3" data-line-number="3"><span class="st">  </span><span class="kw">count</span>()</a></code></pre></div>
@@ -220,7 +221,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="meals-data-availability" class="section level2">
 <h2><span class="header-section-number">4.2</span> Meals data availability</h2>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">visdat<span class="op">::</span><span class="kw">vis_dat</span>(meals.all)</a></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-46-1.png" width="100%" /></p>
+<p><img src="_main_files/figure-html/unnamed-chunk-11-1.png" width="100%" /></p>
 <p>There are several patterns of missing values that can be seen from this plot.</p>
 <p>platemate_id is almost universally missing from all meals (platemate_id referred to a different way of obtaining nutritional composition of meals not used in these studies)</p>
 <p>premeal_bg and premeal_bg_time are 100% present. This was due to the design of the data recording features of the apps: all apps in these studies did not allow recording a meal without also recording BG reading taken shortly before the meal.</p>
@@ -229,7 +230,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Some relatively small percentage of meal are missing the “eval” (evaluator’s) fields on the nutritional meal breakdown (e.g. calories_eval, eval_calories_computed, eval_proportion_carbs…).</p>
 <p>The “user” nutritional breakdown values are mostly missing (fields like calories_user, user_calories_computed, user_proportion_carbs…). The reason is that some versions of the app asked users to enter nutritional estimation, but some version only asked for comparison with goals, but did not ask to enter nutritional estimation.</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1">extracat<span class="op">::</span><span class="kw">visna</span>(meals.all)</a></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-47-1.png" width="100%" /></p>
+<p><img src="_main_files/figure-html/unnamed-chunk-12-1.png" width="100%" /></p>
 </div>
 <div id="visualizing-user-compliance-on-recording-postmeal-bg" class="section level2">
 <h2><span class="header-section-number">4.3</span> Visualizing user compliance on recording postmeal BG</h2>
@@ -251,7 +252,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <a class="sourceLine" id="cb20-16" data-line-number="16">    <span class="dt">fill =</span> <span class="st">&quot;Postmeal BG&quot;</span></a>
 <a class="sourceLine" id="cb20-17" data-line-number="17">  ) <span class="op">+</span></a>
 <a class="sourceLine" id="cb20-18" data-line-number="18"><span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&quot;right&quot;</span>)</a></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-48-1.png" width="100%" /></p>
+<p><img src="_main_files/figure-html/unnamed-chunk-13-1.png" width="100%" /></p>
 <p>There does not seem to be any patterns in this visualization beyond staing that some users were diligent and recorded most of the postmeals BG, some totally ignored it, and the majority of users are somewhere in between.</p>
 </div>
 <div id="imputing-post-meal-bg" class="section level2">
@@ -342,7 +343,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <a class="sourceLine" id="cb22-58" data-line-number="58">  <span class="dt">heights =</span> <span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">1</span>),</a>
 <a class="sourceLine" id="cb22-59" data-line-number="59">  <span class="dt">top =</span> <span class="st">&quot;Pre and post meal BG delays&quot;</span></a>
 <a class="sourceLine" id="cb22-60" data-line-number="60">)</a></code></pre></div>
-<p><img src="_main_files/figure-html/unnamed-chunk-50-1.png" width="100%" /></p>
+<p><img src="_main_files/figure-html/unnamed-chunk-15-1.png" width="100%" /></p>
 <p>Premeal BG delay distribution has two distinct modes, one at around 5 min and another at around 22 min. This distribution suggests that users developed several different approaches to recording meals and BG levels. In the first scenario, users measured their BG, and recorded this BG with the application before starting the meal (adjusting the BG test time to about 5min back). In the second scenario, there is a longer delay between the captured pre-meal BG level and the captured meal. This suggests that these users may have measured their BG levels, but then proceeded to eat their meal first, and recorded both the meal the captured BG level only after the meal was finished, adjusting the time for BG to about 22 min back). One way to confirm this would be to visually analyze meal images for meals belonging to the second mode and see if those images include already completed meals. The researcher confirmed that in focus groups some participants reported the process of capturing meals to be disruptive; it is possible that these participants developed work-arounds that helped them to record meals without delaying enjoyment of meals while hungry.</p>
 <p>Post-meal BG levels are recorded with a median delay around 2h 15min; this was probably due to the fact that the app was sending users reminders at around 2h after each meal. This distribution has a long tail and a many outliers, probably caused by our post-meal BG imputation method and/or lapses in consistently using the app for all meals. For any analysis that focuses on the question of glycemic impact of the meals such long post-meal interval will create high variability and reduce reliability. In our analysis we filtered meals to only those that have a postmeal BG at least 4h after the meal.</p>
 <div id="selecting-users-for-the-analysis" class="section level3">

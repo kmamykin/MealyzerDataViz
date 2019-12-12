@@ -41,6 +41,16 @@ This is a template for the EDAV final project. It is based on the template creat
 
 (You will need to repeat steps 2 and 4 every time you wish to update the book online.)
 
+### Updating the book
+
+- [ ] 1. Publish shiny app: `library(rsconnect)` and `rsconnect::deployApp('static/shiny_app.Rmd')`
+
+- [ ] 2. Render locally with `bookdown::render_book("index.Rmd")`.
+
+- [ ] 3. Use `browseURL("docs/index.html")` to view your book locally (or just open `index.html` in a browser).
+
+- [ ] 4. If it looks good, commit and push all changed files to GitHub. 
+
 ### Set up GitHub Pages
 
 - [ ] 1. On the home page of your repo, click Settings. Scroll down to the GitHub pages section and change **Source** to **master branch /docs folder**.  Above the **Source** line, a bar will appear with your book's URL. The bar will initially be blue and indicate that your book is *ready* to be published and will change to green once it is published. Copy the URL. (Note that sometimes there is a delay until your book actually appears at that URL. If it doesn't appear after a few minutes, try making a small change locally, rendering the book, and pushing the changes to trigger a deploy.)

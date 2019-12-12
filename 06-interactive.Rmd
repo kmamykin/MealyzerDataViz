@@ -1,0 +1,5 @@
+# Interactive
+
+```{r}
+knitr::include_app("https://kmamykin.shinyapps.io/shiny_app/", height = "600px")
+```
