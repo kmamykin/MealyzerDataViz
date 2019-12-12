@@ -30,15 +30,6 @@ opts_chunk$set(echo = FALSE, comment="", warning = FALSE, message = FALSE, tidy.
 
 ```
 
-
-```{r}
-users.selected.csv = read_csv(file = "https://raw.githubusercontent.com/kmamykin/MealyzerDataViz/master/static/users.selected.csv")
-meals.selected.csv = read_csv(file = "https://raw.githubusercontent.com/kmamykin/MealyzerDataViz/master/static/meals.selected.csv")
-user_list <- as.character(users.selected.csv[["user_id"]])
-meal_kind <- as.character(unique(meals.selected.csv[["kind"]]))
-```
-
-
 ```{r}
 as.timestamp <- function(minutes_since, anchor_date = '2019-01-01 00:00:00 EST') {
   anchor_time = as.POSIXct(anchor_date)
@@ -49,6 +40,21 @@ as.meals_kind <- function(values) {
   return(fct_relevel(values, c("breakfast", "morning_snack", "lunch", "afternoon_snack", "dinner", "after_dinner_snack")))
 }
 ```
+
+```{r}
+users.selected.csv = read_csv(file = "https://raw.githubusercontent.com/kmamykin/MealyzerDataViz/master/static/users.selected.csv")
+meals.selected.csv = read_csv(file = "https://raw.githubusercontent.com/kmamykin/MealyzerDataViz/master/static/meals.selected.csv")
+meals.selected.csv = meals.selected.csv %>%
+  mutate(
+    user_id = as.character(user_id),
+    user_number = as.integer(user_id),
+    user_fct = fct_reorder(user_id, user_number),
+    kind = as.meals_kind(kind)
+  )
+user_list <- as.character(users.selected.csv[["user_id"]])
+meal_kind <- as.character(unique(meals.selected.csv[["kind"]]))
+```
+
 
 Introduction
 =====================================  
@@ -96,12 +102,14 @@ renderPlot({
     mutate(prop = total/sum(total)) %>%
     ungroup() %>%
     ggplot(aes(x = user_id, y = prop, fill = forcats::fct_rev(variable))) +
-        geom_bar(stat = "identity") + 
-        coord_flip() + 
-        labs(x = "User ID",
-             y = "Proportion",
-             title = "Proportion of Meals by Nutrient - Expert Evaluation") + 
-             theme(plot.title = element_text(face = "bold"), legend.title = element_blank(), legend.position="bottom") +
+    geom_bar(stat = "identity") + 
+    coord_flip() + 
+    labs(
+      x = "User ID",
+      y = "Proportion",
+      title = "Proportion of Meals by Nutrient - Expert Evaluation"
+    ) + 
+    theme(plot.title = element_text(face = "bold"), legend.title = element_blank(), legend.position="bottom") +
     guides(fill = guide_legend(nrow = 1, reverse=T))
 })
 
@@ -152,7 +160,7 @@ renderPlot({
     filter(value < 100)  %>%
     ggplot(aes(x = date, y = value, col=key)) + 
     geom_point(size=0.3) + geom_smooth(method=lm, se=FALSE) +
-    facet_wrap(~user_id, ncol=7) +
+    facet_wrap(~user_id, ncol=6) +
     labs(x = "Date",y = "Weights", title = "Weights of Food Intake by Nutrient Over Time") +
     theme(plot.title = element_text(face = "bold"), legend.title = element_blank()) +
     guides(colour = guide_legend(reverse=T))
@@ -189,10 +197,10 @@ renderPlot({
     mutate(date = as.Date(eaten_at, tz = "EST")) %>%
     select(user_id, date, kind, premeal_bg, postmeal_bg) %>%
     group_by(user_id, date) %>%
-    summarise(avgpremealbg = mean(premeal_bg), avgpostmealbg = mean(postmeal_bg)) %>%
+    summarise(avg_premeal_bg = mean(premeal_bg), avg_postmeal_bg = mean(postmeal_bg)) %>%
     gather(key = key, value = value, -user_id, -date) %>%
     ggplot(aes(x = date, y = value, col=key)) + geom_point(size=0.2) + geom_smooth(method=lm, se=FALSE) +
-    facet_wrap(~user_id,ncol=14) +
+    facet_wrap(~user_id,ncol=12) +
     labs(x="Date", y="Average BG Level")+
     ggtitle("Average Premeal and Postmeal BG Level by Day") +
     theme(plot.title = element_text(face = "bold"), legend.title = element_blank(), legend.position="bottom")
@@ -208,10 +216,10 @@ renderPlot({
   mutate(hour = hour(as.POSIXct(eaten_at,format="%H:%M:%S"))) %>%
   select(user_id, hour, kind, premeal_bg, postmeal_bg) %>%
   group_by(user_id, hour) %>%
-  summarise(avgpremealbg = mean(premeal_bg), avgpostmealbg = mean(postmeal_bg)) %>%
+  summarise(avg_premeal_bg = mean(premeal_bg), avg_postmeal_bg = mean(postmeal_bg)) %>%
   gather(key = key, value = value, -user_id, -hour) %>%
   ggplot(aes(x = hour, y = value, col=key)) + geom_point(size=0.5) + geom_smooth(method=lm, se=FALSE) +
-  facet_wrap(~user_id,ncol=14) +
+  facet_wrap(~user_id,ncol=12) +
   labs(x="Hour", y="Average BG Level")+
   ggtitle("Average Premeal and Postmeal BG Level by Hour") +
   theme(plot.title = element_text(face = "bold"), legend.title = element_blank(), legend.position="bottom")
@@ -249,7 +257,7 @@ meals.selected.csv %>%
   mutate(date = as.Date(eaten_at, tz = "EST")) %>%
   select(user_id, date, kind, premeal_bg, postmeal_bg) %>%
   group_by(user_id, date) %>%
-  summarise(avgpremealbg = mean(premeal_bg), avgpostmealbg = mean(postmeal_bg)) %>%
+  summarise(avg_premeal_bg = mean(premeal_bg), avg_postmeal_bg = mean(postmeal_bg)) %>%
   gather(key = key, value = value, -user_id, -date) %>%
   ggplot(aes(x = date, y = value, col=key)) + geom_point(size=1) + 
   geom_smooth(method=lm, se=FALSE) +
@@ -381,7 +389,7 @@ renderPlot({
     mutate(hour = hour(as.POSIXct(eaten_at,format="%H:%M:%S"))) %>%
     select(user_id, hour, kind, premeal_bg, postmeal_bg) %>%
     group_by(user_id, hour) %>%
-    summarise(avgpremealbg = mean(premeal_bg), avgpostmealbg = mean(postmeal_bg)) %>%
+    summarise(avg_premeal_bg = mean(premeal_bg), avg_postmeal_bg = mean(postmeal_bg)) %>%
     gather(key = key, value = value, -user_id, -hour) %>%
     ggplot(aes(x = hour, y = value, col=key)) + geom_point(size=2) + 
     geom_smooth(method=lm, se=FALSE) +
