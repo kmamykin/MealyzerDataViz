@@ -32,38 +32,14 @@ opts_chunk$set(echo = FALSE, comment="", warning = FALSE, message = FALSE, tidy.
 
 
 ```{r}
-# Data Import
-raw_data_path = "~/Dropbox/MealyzerData"
-mealyser_data_overview = read_csv(file.path(raw_data_path, "mealyzer_data_overview.csv"), col_types = cols())
+users.selected.csv = read_csv(file = "users.selected.csv")
+meals.selected.csv = read_csv(file = "meals.selected.csv")
+user_list <- as.character(users.selected.csv[["user_id"]])
+meal_kind <- as.character(unique(meals.selected.csv[["kind"]]))
 ```
 
 
 ```{r}
-# Selecting users for the analysis
-users = mealyser_data_overview %>%
-  filter(complete_meals > 14)
-#print(users[["user_id"]])
-```
-
-```{r}
-read_mealyzer_files <- function(data_dir, user_ids, file_name, add_user_id, col_types) {
-  result <- c()
-  for (user_id in user_ids) {
-    
-    file_path = file.path(data_dir, as.character(user_id), file_name)
-    df = read_csv(file_path, col_types = col_types)
-    if (add_user_id) {
-      df = cbind(user_id = user_id, df)
-    }
-    if (length(result) == 0) {
-      result <- df
-    } else {
-      result <- rbind(result, df)
-    }
-  }
-  return(result)
-}
-
 as.timestamp <- function(minutes_since, anchor_date = '2019-01-01 00:00:00 EST') {
   anchor_time = as.POSIXct(anchor_date)
   return(anchor_time + minutes_since * 60)
@@ -72,51 +48,7 @@ as.timestamp <- function(minutes_since, anchor_date = '2019-01-01 00:00:00 EST')
 as.meals_kind <- function(values) {
   return(fct_relevel(values, c("breakfast", "morning_snack", "lunch", "afternoon_snack", "dinner", "after_dinner_snack")))
 }
-
-print_df <- function(df, ...) {
-  print(df %>% select(...))
-  return(df)
-}
-
 ```
-
-```{r}
-bg_readings = read_mealyzer_files(raw_data_path, users[["user_id"]], "bg_labeled.csv", add_user_id = TRUE, col_types = cols(
-  time = col_double(),
-  bg = col_double(),
-  meals_kind = col_character(),
-  meal_id = col_double(),
-  readings_kind = col_character()
-)) %>%
-  mutate(
-    user_id = as.character(user_id),
-    time = as.timestamp(time), 
-    meals_kind = as.meals_kind(meals_kind),
-    readings_kind = fct_relevel(readings_kind, c("premeal", "postmeal"))
-  )
-meals_data = read_mealyzer_files(raw_data_path, users[["user_id"]], "mealyzer_data.csv", add_user_id = FALSE, col_types = cols()) %>%
-  mutate(
-    user_id = as.character(user_id),
-    eaten_at = as.timestamp(eaten_at),
-    kind = as.meals_kind(kind),
-    premeal_bg_time = as.timestamp(premeal_bg_time),
-    postmeal_bg_time = as.timestamp(postmeal_bg_time),
-    premeal_bg_delay_minutes = as.double(difftime(eaten_at, premeal_bg_time, units = "mins")),
-    postmeal_bg_delay_minutes = as.double(difftime(postmeal_bg_time, eaten_at, units = "mins")),
-    bg_impact = postmeal_bg - premeal_bg,
-    bg_impact_slope = bg_impact / (premeal_bg_delay_minutes + postmeal_bg_delay_minutes)
-  )
-#head(meals_data)
-```
-
-
-```{r constants}
-users <- mealyser_data_overview %>%
-  filter(complete_meals > 14)
-user_list <- as.character(users[["user_id"]])
-meal_kind <- as.character(unique(meals_data[["kind"]]))
-```
-
 
 Introduction
 =====================================  
@@ -152,7 +84,7 @@ Row {data-width=400}
 ```{r}
 renderPlot({
   # Proportion of Meals by Nutrient - Expert Evaluation
-  meals_data %>%
+  meals.selected.csv %>%
     filter(user_id %in% input$user_id_tab) %>%
     filter(kind %in% input$meal_kind_tab) %>%
     filter(eaten_at >= input$date_range_tab[1] & eaten_at <= input$date_range_tab[2]) %>%
@@ -180,7 +112,7 @@ renderPlot({
 ```{r}
 renderPlot({
   # Proportion of Meals by Nutrient - Self Evaluation
-  meals_data %>%
+  meals.selected.csv %>%
     filter(user_id %in% input$user_id_tab) %>%
     filter(kind %in% input$meal_kind_tab) %>%
     filter(eaten_at >= input$date_range_tab[1] & eaten_at <= input$date_range_tab[2]) %>%
@@ -208,7 +140,7 @@ Row {data-width=500}
 ### Chart 3
 ```{r}
 renderPlot({
-  meals_data %>%
+  meals.selected.csv %>%
     filter(user_id %in% input$user_id_tab) %>%
     filter(kind %in% input$meal_kind_tab) %>%
     filter(eaten_at >= input$date_range_tab[1] & eaten_at <= input$date_range_tab[2]) %>%
@@ -251,7 +183,7 @@ Row {data-width=500}
 ### Chart 1
 ```{r}
 renderPlot({
-  meals_data %>%
+  meals.selected.csv %>%
     filter(kind %in% input$meal_kind_tab3) %>%
     filter(eaten_at >= input$date_range_tab3[1] & eaten_at <= input$date_range_tab3[2]) %>%
     mutate(date = as.Date(eaten_at, tz = "EST")) %>%
@@ -270,7 +202,7 @@ renderPlot({
 ### Chart 2
 ```{r}
 renderPlot({
-  meals_data %>%
+  meals.selected.csv %>%
   filter(kind %in% input$meal_kind_tab3) %>%
   filter(eaten_at >= input$date_range_tab3[1] & eaten_at <= input$date_range_tab3[2]) %>%
   mutate(hour = hour(as.POSIXct(eaten_at,format="%H:%M:%S"))) %>%
@@ -310,7 +242,7 @@ inputPanel(
 ### Chart 1
 ```{r}
 renderPlot({
-meals_data %>%
+meals.selected.csv %>%
   filter(user_id %in% input$user_id_tab4) %>%
   filter(kind %in% input$meal_kind_tab4) %>%
   filter(eaten_at >= input$date_range_tab4[1] & eaten_at <= input$date_range_tab4[2]) %>%
@@ -331,7 +263,7 @@ meals_data %>%
 ### Chart 2
 ```{r}
 renderPlot({
-  meals_data %>%
+  meals.selected.csv %>%
     filter(user_id %in% input$user_id_tab4) %>%
     filter(kind %in% input$meal_kind_tab4) %>%
     filter(eaten_at >= input$date_range_tab4[1] & eaten_at <= input$date_range_tab4[2]) %>%
@@ -352,7 +284,7 @@ renderPlot({
 
 #renderPlot({
 # The average BG impact for each meal kind, faceting on user_id
-#meals_data %>%
+#meals.selected.csv %>%
 #  filter(user_id %in% input$user_id_tab4) %>%
 #  filter(kind %in% input$meal_kind_tab4) %>%
 #  filter(eaten_at >= input$date_range_tab4[1] & eaten_at <= input$date_range_tab4[2]) %>%
@@ -375,7 +307,7 @@ renderPlot({
 ### Chart 3
 ```{r}
 renderPlot({
-  meals_data %>%
+  meals.selected.csv %>%
     filter(user_id %in% input$user_id_tab4) %>%
     filter(kind %in% input$meal_kind_tab4) %>%
     filter(eaten_at >= input$date_range_tab4[1] & eaten_at <= input$date_range_tab4[2]) %>%
@@ -398,7 +330,7 @@ renderPlot({
 ```{r}
 renderPlot({
   # Proportion of Meals by Nutrient - Expert Evaluation
-  meals_data %>%
+  meals.selected.csv %>%
     filter(user_id %in% input$user_id_tab4) %>%
     filter(kind %in% input$meal_kind_tab4) %>%
     filter(eaten_at >= input$date_range_tab4[1] & eaten_at <= input$date_range_tab4[2]) %>%
@@ -442,7 +374,7 @@ inputPanel(
 ### Chart 1
 ```{r}
 renderPlot({
-  meals_data %>%
+  meals.selected.csv %>%
     filter(user_id %in% input$user_id_tab5) %>%
     filter(kind %in% input$meal_kind_tab5) %>%
     filter(eaten_at >= input$date_range_tab5[1] & eaten_at <= input$date_range_tab5[2]) %>%
@@ -463,7 +395,7 @@ renderPlot({
 ### Chart 2
 ```{r}
 renderPlot({
-  meals_data %>%
+  meals.selected.csv %>%
     filter(user_id %in% input$user_id_tab5) %>%
     filter(kind %in% input$meal_kind_tab5) %>%
     filter(eaten_at >= input$date_range_tab5[1] & eaten_at <= input$date_range_tab5[2]) %>%
@@ -483,7 +415,7 @@ renderPlot({
 ### Chart 3
 ```{r}
 renderPlot({
-  meals_data %>%
+  meals.selected.csv %>%
     filter(user_id %in% input$user_id_tab5) %>%
     filter(kind %in% input$meal_kind_tab5) %>%
     filter(eaten_at >= input$date_range_tab5[1] & eaten_at <= input$date_range_tab5[2]) %>%
@@ -503,7 +435,7 @@ renderPlot({
 ### Chart 4
 ```{r}
 renderPlot({
-  meals_data %>%
+  meals.selected.csv %>%
     filter(user_id %in% input$user_id_tab5) %>%
     filter(kind %in% input$meal_kind_tab5) %>%
     filter(eaten_at >= input$date_range_tab5[1] & eaten_at <= input$date_range_tab5[2]) %>%

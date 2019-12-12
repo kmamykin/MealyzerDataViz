@@ -202,5 +202,10 @@ meals.selected = meals.imputed %>%
   filter(postmeal_bg_delay_minutes > 0 & postmeal_bg_delay_minutes <= 240) # Limit postmeal bg delay to 4h 
 ```
 
+And finally saving the dataset in CSV files to make it available for the interactive Shiny application.
 
+```{r}
+write.csv(users.selected, file = "static/users.selected.csv", row.names = FALSE, na = "")
+write.csv(meals.selected, file = "static/meals.selected.csv", row.names = FALSE, na = "")
+```
 
