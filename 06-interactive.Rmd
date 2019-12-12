@@ -1,5 +1,7 @@
 # Interactive
 
-```{r}
+If the application inside this window is too small to work with, please <a href="https://kmamykin.shinyapps.io/shiny_app/" target="_blank">click here</a> to open it in a new tab.
+
+```{r echo = FALSE}
 knitr::include_app("https://kmamykin.shinyapps.io/shiny_app/", height = "600px")
 ```
