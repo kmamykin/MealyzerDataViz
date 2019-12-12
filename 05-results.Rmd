@@ -215,7 +215,6 @@ meals.selected %>%
 
 Unsurprisinly the lowest BG impact images are all pictures of water/drinks.
 
-
 ### Per user correlation between variables
 
 

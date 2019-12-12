@@ -1,2 +1,8 @@
 # Conclusion
 
+* One of the conclusions we learned is that in analytics of human behaviour aggregating across people (especially if the number of people in dataset is small) hides the patterns that are apparent when looking at a person's behaviour
+
+* We did't see an easy answer to the question: what are the factors that impact person's BG. Analyzing relationship between the nutrients and the glycemic impact of a meal we did not see linear correlation, suggesting a more sophisticated methods should be used for further exploration.
+
+* user dashboard
+
