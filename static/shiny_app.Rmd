@@ -32,8 +32,8 @@ opts_chunk$set(echo = FALSE, comment="", warning = FALSE, message = FALSE, tidy.
 
 
 ```{r}
-users.selected.csv = read_csv(file = "users.selected.csv")
-meals.selected.csv = read_csv(file = "meals.selected.csv")
+users.selected.csv = read_csv(file = "https://raw.githubusercontent.com/kmamykin/MealyzerDataViz/master/static/users.selected.csv")
+meals.selected.csv = read_csv(file = "https://raw.githubusercontent.com/kmamykin/MealyzerDataViz/master/static/meals.selected.csv")
 user_list <- as.character(users.selected.csv[["user_id"]])
 meal_kind <- as.character(unique(meals.selected.csv[["kind"]]))
 ```
