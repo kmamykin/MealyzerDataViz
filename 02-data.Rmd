@@ -1,36 +1,18 @@
 # Data sources
 
-## Mealyzer application and functionality
-
-Our data is collected from a proprietary application contributed by Kliment which allows users to record their blood glucose level before and after a meal, what they eat for a meal, counts of how many meals exist for each user, the estimation of calorie level of their meals, activity & sleep data from Fitbit devices, and images of what user consumes for each meal. The original data is pulled using code in a GitHub repository and saved in the local dropbox, which contains an individual directory for each user's data.
-
 ## Dataset description
 
-BG Readings: The bg_readings data contains information of all blood glucose values recorded at a given timestamp, in mg/dl, for a particular meal, before or after the meal; columns include: time, bg, meals_kind, meal_id, and readings_kind.
+BG Readings: The bg_readings data contains information of all blood glucose (BG) values recorded at a given timestamp, in mg/dl, for a particular meal, before or after the meal; columns include: time, bg, meals_kind, meal_id, and readings_kind.
+
 Meals: The meals data contains all information about each meal the users consumed, including time, meal title, ingredients, meal kind, nutrients evaluation and calories estimation by experts and by users themselves, and nutrient proportions, etc.
+
 Activities: Only a small portion of users opted-in and shared Fitbit data. We are provided the activities-steps file and the activities-distance file for each user with Fitbit device available. In both files, time is the number of minutes since the anchor_date, while value is the value recorded for that timestamp - either number of steps or distance (in miles). Since the distance data is merely a linear function of the number of steps data, we use the steps data as a proxy for user’s activity level in this project. *anchor_data: midnight eastern on the day before the first meal recording
+
 Sleep: Only a small portion of users opted-in and shared Fitbit data. In the sleep_overview file for each user, we see the date of sleep, duration, minutes asleep, time in bed, etc. We mainly use minutesAsleep as the proxy for sleep data and compare that with activities and meals data in this project. 
+
 Meal Photos: Images are in the images folder in each user directory. Users are expected to submit their meal photos for evaluations by the professional nutritionist evaluators. Once the meal photos are uploaded in the app, information on nutritional composition of their meals is recorded and can be found in the meals data. 
 
-
-## Dataset collection artifacts
-
-pre and post meal bg times
-
-evaluator
-
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(fig.width=7, fig.asp=0.618, out.width="100%", echo = TRUE, warning=FALSE, message=FALSE)
-library(tidyverse)
-library(lubridate)
-library(forcats)
-library(r2d3)
-library(parcoords)
-library(dplyr)
-```
-
-## Data Import
+## Table: users
 
 
 ```{r}
@@ -60,6 +42,8 @@ read.mealyzer_files <- function(data_dir, user_ids, file_name, add_user_id, col_
 }
 ```
 
+## Table: bg_readings
+
 ```{r}
 bg_readings.raw = read.mealyzer_files(raw_data_path, users.raw[["user_id"]], "bg_labeled.csv", add_user_id = TRUE, col_types = cols(
   time = col_double(),
@@ -71,8 +55,56 @@ bg_readings.raw = read.mealyzer_files(raw_data_path, users.raw[["user_id"]], "bg
 glimpse(bg_readings.raw)
 ```
 
+`bg_reading` was a dataset we skipped after the initial data investigation, as it's content (pre and post meal BGs) were already integrated with the meals dataset described below.
+
+## Table: meals
 
 ```{r}
 meals.raw = read.mealyzer_files(raw_data_path, users.raw[["user_id"]], "mealyzer_data.csv", add_user_id = FALSE, col_types = cols()) 
 glimpse(meals.raw)
 ```
+
+Meals dataset contains the following fields:
+
+### General fields
+
+* `user_id` - identifies a user of the applicatoin
+* `meal_id` - indentifier for the meal
+* `eaten_at` - timestamp (in seconds since the anchor date)
+* `title` - user's description of the meal
+* `ingredients` - user's description of the ingredients
+* `kind` - designates meal kind with values "breakfast", "morning_snack",  "lunch",  "afternoon_snack", "dinner", "after_dinner_snack"
+* `photo_file_name`- a filename of the image file. Not actually matching the image filenames as those have a format <meal_id>.png
+
+### BG impact related fields
+
+* `premeal_bg` - mandatory premeal recording of BG in mg/dl
+* `premeal_bg_time` - mandatory timestamp (in seconds since anchor time) when the user measured her BG
+* `postmeal_bg` - optional postmeal recording of BG in mg/dl
+* `postmeal_bg_time` - optional postmeal timestamp (in seconds since anchor time)
+
+### Nutritionist evaluation fields
+
+* `evaluator_id` - identifier of the professional who performed the evaluation
+* `platemate_id` - always NA
+* `carbs_eval` - evaluated amount of carbs (carbohydrates) in the meal (in grams)
+* `protein_eval` - evaluated amount of protein (in grams)
+* `fat_eval` - evaluated amount of fat (in grams)
+* `calories_eval` - evaluated amount of calories (in grams)
+* `fiber_eval` - evaluated amount of fat (in grams)
+* `eval_calories_computed` - computed number of calories based on the amount of `carbs_eval`, `protein_eval`, `fat_eval`, `fiber_eval`. This is in contrast to `calories_eval` amount which was entered by the evaluators
+* `eval_proportion_carbs` - calculated proportion of carbs in the meal
+* `eval_proportion_protein` - calculated proportion of protein in the meal
+* `eval_proportion_fat` - calculated proportion of fat in the meal
+
+### User estimation fields
+
+* `carbs_user` - user estimated amount of carbs in the meal (in grams)
+* `protein_user` - user estimated amount of protein in the meal (in grams)
+* `fat_user` - user estimated amount of fat in the meal (in grams)
+* `calories_user` - user estimated amount of calories in the meal (in grams)
+* `fiber_user` - user estimated amount of fiber in the meal (in grams)     
+* `user_calories_computed` - computed number of calories based on the amount of `carbs_user`, `protein_user`, `fat_user`, `fiber_user`. This is in contrast to `calories_user` amount which was entered by the evaluators
+* `user_proportion_carbs` - calculated proportion of carbs in the meal based on user estimates
+* `user_proportion_protein` - calculated proportion of carbs in the meal based on user estimates
+* `user_proportion_fat` - calculated proportion of carbs in the meal based on user estimates
