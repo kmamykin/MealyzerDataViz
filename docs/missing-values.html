@@ -102,24 +102,21 @@
 <li class="chapter" data-level="4.6" data-path="missing-values.html"><a href="missing-values.html#final-selected-meals-subset-for-bg-impact-analysis"><i class="fa fa-check"></i><b>4.6</b> Final selected meals subset for BG impact analysis</a></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>5</b> Results</a><ul>
-<li class="chapter" data-level="5.1" data-path="results.html"><a href="results.html#looking-at-the-time-of-the-meals"><i class="fa fa-check"></i><b>5.1</b> Looking at the time of the meals</a></li>
+<li class="chapter" data-level="5.1" data-path="results.html"><a href="results.html#time-of-the-meals-analysis"><i class="fa fa-check"></i><b>5.1</b> Time of the meals analysis</a></li>
 <li class="chapter" data-level="5.2" data-path="results.html"><a href="results.html#meal-type-analysis"><i class="fa fa-check"></i><b>5.2</b> Meal type analysis</a></li>
 <li class="chapter" data-level="5.3" data-path="results.html"><a href="results.html#meal-nutrients-analysis"><i class="fa fa-check"></i><b>5.3</b> Meal nutrients analysis</a></li>
 <li class="chapter" data-level="5.4" data-path="results.html"><a href="results.html#meal-bg-impact-visualization"><i class="fa fa-check"></i><b>5.4</b> Meal BG impact visualization</a></li>
 <li class="chapter" data-level="5.5" data-path="results.html"><a href="results.html#trends-in-calories"><i class="fa fa-check"></i><b>5.5</b> Trends in calories</a></li>
 <li class="chapter" data-level="5.6" data-path="results.html"><a href="results.html#trend-in-fasting-bg"><i class="fa fa-check"></i><b>5.6</b> Trend in fasting BG</a></li>
-<li class="chapter" data-level="5.7" data-path="results.html"><a href="results.html#meal-images"><i class="fa fa-check"></i><b>5.7</b> Meal images</a><ul>
-<li class="chapter" data-level="5.7.1" data-path="results.html"><a href="results.html#per-user-correlation-between-variables"><i class="fa fa-check"></i><b>5.7.1</b> Per user correlation between variables</a></li>
-</ul></li>
-<li class="chapter" data-level="5.8" data-path="results.html"><a href="results.html#looking-into-meal-nutrients-estimation-evaluator-vs-user"><i class="fa fa-check"></i><b>5.8</b> Looking into meal nutrients estimation (evaluator vs user)</a></li>
+<li class="chapter" data-level="5.7" data-path="results.html"><a href="results.html#meal-images"><i class="fa fa-check"></i><b>5.7</b> Meal images</a></li>
+<li class="chapter" data-level="5.8" data-path="results.html"><a href="results.html#per-user-correlation-between-variables"><i class="fa fa-check"></i><b>5.8</b> Per user correlation between variables</a></li>
+<li class="chapter" data-level="5.9" data-path="results.html"><a href="results.html#meal-nutrients-estimation-evaluator-vs-user"><i class="fa fa-check"></i><b>5.9</b> Meal nutrients estimation (evaluator vs user)</a></li>
 </ul></li>
 <li class="chapter" data-level="6" data-path="interactive.html"><a href="interactive.html"><i class="fa fa-check"></i><b>6</b> Interactive</a><ul>
 <li class="chapter" data-level="6.1" data-path="interactive.html"><a href="interactive.html#interesting-findings"><i class="fa fa-check"></i><b>6.1</b> 6.1 Interesting Findings</a></li>
 </ul></li>
 <li class="chapter" data-level="7" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>7</b> Conclusion</a></li>
-<li class="chapter" data-level="8" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i><b>8</b> Appendix</a><ul>
-<li class="chapter" data-level="8.1" data-path="appendix.html"><a href="appendix.html#sleep"><i class="fa fa-check"></i><b>8.1</b> Sleep</a></li>
-</ul></li>
+<li class="chapter" data-level="8" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i><b>8</b> Appendix</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
 </ul>
@@ -144,7 +141,7 @@
 <div id="per-user-data-availability" class="section level2">
 <h2><span class="header-section-number">4.1</span> Per user data availability</h2>
 <p>Different users have different types of data included in their datasets. The dataset used in this project was a snapshot of an offline data repository created from a live Mealyzer database; not all data fields were available for all users. For example, while all users have records of meals and BG levels captured before meals (the apps require pre-meal BG levels to be captured with every captured meal), some users did not have meal images available, and not all users had Fitbit data (activities and sleep) available.</p>
-<p><img src="_main_files/figure-html/unnamed-chunk-13-1.png" width="100%" /></p>
+<p><img src="_main_files/figure-html/unnamed-chunk-10-1.png" width="100%" /></p>
 <pre><code># A tibble: 1 x 1
       n
   &lt;int&gt;
@@ -153,7 +150,7 @@
 </div>
 <div id="meals-data-availability" class="section level2">
 <h2><span class="header-section-number">4.2</span> Meals data availability</h2>
-<p><img src="_main_files/figure-html/unnamed-chunk-15-1.png" width="100%" /></p>
+<p><img src="_main_files/figure-html/unnamed-chunk-12-1.png" width="100%" /></p>
 <p>There are several patterns of missing values that can be seen from this plot.</p>
 <p>platemate_id is almost universally missing from all meals (platemate_id referred to a different way of obtaining nutritional composition of meals not used in these studies)</p>
 <p>premeal_bg and premeal_bg_time are 100% present. This was due to the design of the data recording features of the apps: all apps in these studies did not allow recording a meal without also recording BG reading taken shortly before the meal.</p>
@@ -161,11 +158,11 @@
 <p>Further we show a breakdown of “compliance” for taking postmeal BG, and a way to impute the missing values.</p>
 <p>Some relatively small percentage of meal are missing the “eval” (evaluator’s) fields on the nutritional meal breakdown (e.g. calories_eval, eval_calories_computed, eval_proportion_carbs…).</p>
 <p>The “user” nutritional breakdown values are mostly missing (fields like calories_user, user_calories_computed, user_proportion_carbs…). The reason is that some versions of the app asked users to enter nutritional estimation, but some version only asked for comparison with goals, but did not ask to enter nutritional estimation.</p>
-<p><img src="_main_files/figure-html/unnamed-chunk-16-1.png" width="100%" /></p>
+<p><img src="_main_files/figure-html/unnamed-chunk-13-1.png" width="100%" /></p>
 </div>
 <div id="visualizing-user-compliance-on-recording-postmeal-bg" class="section level2">
 <h2><span class="header-section-number">4.3</span> Visualizing user compliance on recording postmeal BG</h2>
-<p><img src="_main_files/figure-html/unnamed-chunk-17-1.png" width="100%" /></p>
+<p><img src="_main_files/figure-html/unnamed-chunk-14-1.png" width="100%" /></p>
 <p>There does not seem to be any patterns in this visualization beyond staing that some users were diligent and recorded most of the postmeals BG, some totally ignored it, and the majority of users are somewhere in between.</p>
 </div>
 <div id="imputing-post-meal-bg" class="section level2">
@@ -182,7 +179,7 @@
 <div id="analyzing-pre-and-post-meal-bg-time-intervals" class="section level2">
 <h2><span class="header-section-number">4.5</span> Analyzing pre and post meal BG time intervals</h2>
 <p>Here we look at delays between capturing meals and BG levels. Per study instructions, pre-meal BG levels should be captured at the same time as meals they are associated with, and post-meal BG levels should be captured 2 hours after recording the meal (at which time users receive a reminder from the app); however, the apps also give users flexibility in how they record meals and BG levels. Below we show the distribution of values for premeal BG delay (defined as the difference in minutes between users recording a BG reading and eating a meal), and postmeal BG delay (defined as the difference in minutes between users eating a meal and taking a postmeal BG reading).</p>
-<p><img src="_main_files/figure-html/unnamed-chunk-19-1.png" width="100%" /></p>
+<p><img src="_main_files/figure-html/unnamed-chunk-16-1.png" width="100%" /></p>
 <p>Premeal BG delay distribution has two distinct modes, one at around 5 min and another at around 22 min. This distribution suggests that users developed several different approaches to recording meals and BG levels. In the first scenario, users measured their BG, and recorded this BG with the application before starting the meal (adjusting the BG test time to about 5min back). In the second scenario, there is a longer delay between the captured pre-meal BG level and the captured meal. This suggests that these users may have measured their BG levels, but then proceeded to eat their meal first, and recorded both the meal the captured BG level only after the meal was finished, adjusting the time for BG to about 22 min back). One way to confirm this would be to visually analyze meal images for meals belonging to the second mode and see if those images include already completed meals. The researcher confirmed that in focus groups some participants reported the process of capturing meals to be disruptive; it is possible that these participants developed work-arounds that helped them to record meals without delaying enjoyment of meals while hungry.</p>
 <p>Post-meal BG levels are recorded with a median delay around 2h 15min; this was probably due to the fact that the app was sending users reminders at around 2h after each meal. This distribution has a long tail and a many outliers, probably caused by our post-meal BG imputation method and/or lapses in consistently using the app for all meals. For any analysis that focuses on the question of glycemic impact of the meals such long post-meal interval will create high variability and reduce reliability. In our analysis we filtered meals to only those that have a postmeal BG at least 4h after the meal.</p>
 <div id="selecting-users-for-the-analysis" class="section level3">

@@ -102,24 +102,21 @@
 <li class="chapter" data-level="4.6" data-path="missing-values.html"><a href="missing-values.html#final-selected-meals-subset-for-bg-impact-analysis"><i class="fa fa-check"></i><b>4.6</b> Final selected meals subset for BG impact analysis</a></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>5</b> Results</a><ul>
-<li class="chapter" data-level="5.1" data-path="results.html"><a href="results.html#looking-at-the-time-of-the-meals"><i class="fa fa-check"></i><b>5.1</b> Looking at the time of the meals</a></li>
+<li class="chapter" data-level="5.1" data-path="results.html"><a href="results.html#time-of-the-meals-analysis"><i class="fa fa-check"></i><b>5.1</b> Time of the meals analysis</a></li>
 <li class="chapter" data-level="5.2" data-path="results.html"><a href="results.html#meal-type-analysis"><i class="fa fa-check"></i><b>5.2</b> Meal type analysis</a></li>
 <li class="chapter" data-level="5.3" data-path="results.html"><a href="results.html#meal-nutrients-analysis"><i class="fa fa-check"></i><b>5.3</b> Meal nutrients analysis</a></li>
 <li class="chapter" data-level="5.4" data-path="results.html"><a href="results.html#meal-bg-impact-visualization"><i class="fa fa-check"></i><b>5.4</b> Meal BG impact visualization</a></li>
 <li class="chapter" data-level="5.5" data-path="results.html"><a href="results.html#trends-in-calories"><i class="fa fa-check"></i><b>5.5</b> Trends in calories</a></li>
 <li class="chapter" data-level="5.6" data-path="results.html"><a href="results.html#trend-in-fasting-bg"><i class="fa fa-check"></i><b>5.6</b> Trend in fasting BG</a></li>
-<li class="chapter" data-level="5.7" data-path="results.html"><a href="results.html#meal-images"><i class="fa fa-check"></i><b>5.7</b> Meal images</a><ul>
-<li class="chapter" data-level="5.7.1" data-path="results.html"><a href="results.html#per-user-correlation-between-variables"><i class="fa fa-check"></i><b>5.7.1</b> Per user correlation between variables</a></li>
-</ul></li>
-<li class="chapter" data-level="5.8" data-path="results.html"><a href="results.html#looking-into-meal-nutrients-estimation-evaluator-vs-user"><i class="fa fa-check"></i><b>5.8</b> Looking into meal nutrients estimation (evaluator vs user)</a></li>
+<li class="chapter" data-level="5.7" data-path="results.html"><a href="results.html#meal-images"><i class="fa fa-check"></i><b>5.7</b> Meal images</a></li>
+<li class="chapter" data-level="5.8" data-path="results.html"><a href="results.html#per-user-correlation-between-variables"><i class="fa fa-check"></i><b>5.8</b> Per user correlation between variables</a></li>
+<li class="chapter" data-level="5.9" data-path="results.html"><a href="results.html#meal-nutrients-estimation-evaluator-vs-user"><i class="fa fa-check"></i><b>5.9</b> Meal nutrients estimation (evaluator vs user)</a></li>
 </ul></li>
 <li class="chapter" data-level="6" data-path="interactive.html"><a href="interactive.html"><i class="fa fa-check"></i><b>6</b> Interactive</a><ul>
 <li class="chapter" data-level="6.1" data-path="interactive.html"><a href="interactive.html#interesting-findings"><i class="fa fa-check"></i><b>6.1</b> 6.1 Interesting Findings</a></li>
 </ul></li>
 <li class="chapter" data-level="7" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>7</b> Conclusion</a></li>
-<li class="chapter" data-level="8" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i><b>8</b> Appendix</a><ul>
-<li class="chapter" data-level="8.1" data-path="appendix.html"><a href="appendix.html#sleep"><i class="fa fa-check"></i><b>8.1</b> Sleep</a></li>
-</ul></li>
+<li class="chapter" data-level="8" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i><b>8</b> Appendix</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
 </ul>
@@ -141,11 +138,11 @@
             <section class="normal" id="section-">
 <div id="conclusion" class="section level1">
 <h1><span class="header-section-number">Chapter 7</span> Conclusion</h1>
-<ul>
-<li><p>One of the conclusions we learned is that in analytics of human behaviour aggregating across people (especially if the number of people in dataset is small) hides the patterns that are apparent when looking at a person’s behaviour</p></li>
-<li><p>We did’t see an easy answer to the question: what are the factors that impact person’s BG. Analyzing relationship between the nutrients and the glycemic impact of a meal we did not see linear correlation, suggesting a more sophisticated methods should be used for further exploration.</p></li>
-<li><p>user dashboard</p></li>
-</ul>
+<p>The exploratory data analysis conducted in this project yielded several notable insights:</p>
+<p>First, perhaps not surprisingly, it showed that the quality, accuracy, and completeness of the dataset collected with self-monitoring is deeply impacted by the features available to users for data collection. Furthermore, the analysis showed that particular design choices of the data collection app have a profound impact on the collected data. For example, our analysis showed considerable variability in time when blood glucose readings were captured in relation to meals (both before and after). This was likely due to the inconvenience of using a smartphone app at mealtime: the need to photograph a meal and enter its ingredients probably left many users with cold meals, which led to workarounds suggested by our analysis (recording meals and BG levels only after meals were consumed). This suggest that datasets can be best understood in the context of how this data was collected and with full awareness of features available for data collection.</p>
+<p>Second, the analysis suggested that aggregating data across individuals yields few insights. However, viewing data for each individual can reveal interesting patterns in regards to their behaviors, and how these behaviors impact their blood glucose levels. This may suggest the need for computational data analysis methods that examine patterns on an individual level may have advantage over methods that require aggregation of data across individuals.</p>
+<p>Furthermore, the relatively simple data analysis techniques used in this project did not reveal any consistent patterns of association between individuals’ captured records (i.e., nutrition in meals) and changes in their blood glucose levels. This may suggest the need for more extensive datasets (more data per person and across individuals) to identify any stable signal. However, it may also suggest that these relationships may be more complex, and possibly non-linear. This suggests the need for more sophisticated computational analysis methods that are better suited for sparse data and non-linear relationships.</p>
+<p>Finally, the lack of straightforward and easy to identify associations in the data may suggest the need for interactive tools for exploratory data analysis. Such tools can help experts (e.g., diabetes educators) to examine different aspects of the dataset and probe different associations consistent with their expert knowledge and expectations. We have explored some of the features for interactive data analysis; future work could further build on our initial explorations.</p>
 
 </div>
             </section>
