@@ -124,20 +124,10 @@ meals.imputed %>%
   ggplot() +
   geom_boxplot(aes(x = type, y = diff)) +
   coord_flip() +
-  facet_wrap(~user_fct, ncol = 6)
+  facet_wrap(~user_fct, ncol = 6) +
+  labs (
+    title = "User estimation error breakdown",
+    x = "Error",
+    y = "Nutrientr"
+  )
 ```
-
-## Sleep
-
-```{r}
-sleep = read_csv(file.path(raw_data_path, "1983", "sleep.csv"), col_types = cols()) %>%
-  mutate(time = as.timestamp(time))
-```
-
-
-Questions:
-* does the amount of sleep impact the first BG reading in the day (pre-breakfast, important!) (the very first pre-breakfst BG reading is considered fasting and is a true-ish representation of glycemic control (how bad is your diabetis)).
-* Does amount (or quality of sleep) have an impoact on pre-breakfast BG (<- new measure). 
-* Urban mith - the quality/amount of sleep may change how people respond to meals, e.g. for the same nutritional breakdown of a meal BG_impoact will be different.
-
-* Fat and protein mediate the impact of carbohidrate. How to show this (focus on the visualization, data may be lacking the signal)
