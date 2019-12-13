@@ -2,18 +2,16 @@
 
 ## Mealyzer application and functionality
 
+Our data is collected from a proprietary application contributed by Kliment which allows users to record their blood glucose level before and after a meal, what they eat for a meal, counts of how many meals exist for each user, the estimation of calorie level of their meals, activity & sleep data from Fitbit devices, and images of what user consumes for each meal. The original data is pulled using code in a GitHub repository and saved in the local dropbox, which contains an individual directory for each user's data.
+
 ## Dataset description
 
-bg readings
+BG Readings: The bg_readings data contains information of all blood glucose values recorded at a given timestamp, in mg/dl, for a particular meal, before or after the meal; columns include: time, bg, meals_kind, meal_id, and readings_kind.
+Meals: The meals data contains all information about each meal the users consumed, including time, meal title, ingredients, meal kind, nutrients evaluation and calories estimation by experts and by users themselves, and nutrient proportions, etc.
+Activities: Only a small portion of users opted-in and shared Fitbit data. We are provided the activities-steps file and the activities-distance file for each user with Fitbit device available. In both files, time is the number of minutes since the anchor_date, while value is the value recorded for that timestamp - either number of steps or distance (in miles). Since the distance data is merely a linear function of the number of steps data, we use the steps data as a proxy for user’s activity level in this project. *anchor_data: midnight eastern on the day before the first meal recording
+Sleep: Only a small portion of users opted-in and shared Fitbit data. In the sleep_overview file for each user, we see the date of sleep, duration, minutes asleep, time in bed, etc. We mainly use minutesAsleep as the proxy for sleep data and compare that with activities and meals data in this project. 
+Meal Photos: Images are in the images folder in each user directory. Users are expected to submit their meal photos for evaluations by the professional nutritionist evaluators. Once the meal photos are uploaded in the app, information on nutritional composition of their meals is recorded and can be found in the meals data. 
 
-meals
-meal details, evaluator nutrients, user nutriends, calculated fields (calculated calories, nutrient proportions)
-
-activities
-
-sleep
-
-meal photos
 
 ## Dataset collection artifacts
 
